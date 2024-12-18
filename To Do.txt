@@ -1,0 +1,77 @@
+Descrição - Aplicação fulstack usando nextJS, Node, Fastify e MySql para criar um sistema de tasks onde 
+qualquer usuario pode criar, editar, pesquisar e deletar suas tasks.
+
+Objetivos
+ inicial - 
+	cria pagina fron-end com NextJS e tailwind, sem funcionalidades
+	Cria banco de dados a ser usado com:
+		User 
+			id - PK AI
+			UserName - Varchar
+			Passwrd - int
+			Email - varchar
+			created_at - DATE
+			updated_at - DATE
+		Task
+			id_task - PK AI
+			task_name - varchar
+			task_description - varchar
+			task_status - ENUM(novo | em progresso | cancelada | feita)
+			created_at - DATE
+			updated_at - DATE
+	Base backEnd para comunicação entre front e back, usando fatify.
+
+ avançada -
+	jogar cada faze em servidores locais na rede
+	criar a comunicação entre eles
+	testar cada faze e edição possivel
+
+Back-end
+	banco de dado
+		construir
+		jogar na nuvem
+	API 
+		buscar da nuvem o banco
+		criar dados
+		buscar dados
+		editar sistema de login
+			usuario preenche username e email
+			usuario recebe por email uma senha gerada
+			usuario consegue entra no aplicativo apenas com a senha gerada
+		ligar com front-end
+	
+
+front-end - 
+	paginas:
+		pagina de login
+			login
+			registro
+			password miss
+				enter email
+				new password
+		tasks
+			padrao, com todas as tasks
+				tasks existentes
+				filtro de pesquisa por titulo
+			task especifica
+				titulo
+				texto
+				estado
+				botão -
+					editar
+					deletar
+			criação de nova task
+				text:inpu
+					titulo
+					texto
+					estado - novo | em progresso | cancelada | feita
+						novo sendo o padrão
+				botão
+					enviar
+					cancelar
+			edição de task
+				text:inpu
+				botão
+					editar
+					cancelar
+

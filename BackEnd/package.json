@@ -1,0 +1,17 @@
+{
+  "name": "task_api",
+  "version": "1.0.0",
+  "description": "api for tasks fullstack project",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch server.js"
+  },
+  "author": "juse",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/mysql": "^5.0.1",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.0",
+    "mysql2": "^3.11.5"
+  }
+}
