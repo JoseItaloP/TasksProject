@@ -32,16 +32,16 @@ const TaskRoute = (fastify, opt, done) =>{
     fastify.get("/user/task", optGetAllTask)
 
     // GET single task
-    fastify.get("/user/task:idtask", optGetTask)
+    fastify.get("/user/task/:id", optGetTask)
 
     // POST Create new taks
     fastify.post("/user/task", optPostTask)
 
     // DELETE taks
-    fastify.delete("/user/task:idtask", optDeleteTask)
+    fastify.delete("/user/task/:id", optDeleteTask)
 
     // PUT edit taks
-    fastify.put("/user/task:idtask", optEditTask)
+    fastify.put("/user/task/:id", optEditTask)
 
     done();
 }

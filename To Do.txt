@@ -2,56 +2,83 @@ Descrição - Aplicação fulstack usando nextJS, Node, Fastify e MySql para cri
 qualquer usuario pode criar, editar, pesquisar e deletar suas tasks.
 
 Objetivos
- inicial - 
-	cria pagina fron-end com NextJS e tailwind, sem funcionalidades
-	Cria banco de dados a ser usado com:
-		User 
-			id - PK AI
-			UserName - Varchar
-			Passwrd - int
-			Email - varchar
-			created_at - DATE
-			updated_at - DATE
-		Task
-			id_task - PK AI
-			task_name - varchar
-			task_description - varchar
-			task_status - ENUM(novo | em progresso | cancelada | feita)
-			created_at - DATE
-			updated_at - DATE
-	Base backEnd para comunicação entre front e back, usando fatify.
+
 
  avançada -
 	jogar cada faze em servidores locais na rede
 	criar a comunicação entre eles
 	testar cada faze e edição possivel
 
+Paginas front-end - 
+
+	
+	Header User edit 
+	Arrumar parte de login - 
+		Reforma de criação de conta
+			usuario fornece Username e email
+			recebe mensagem por email com senha
+			deve entra só com esta senha
+		controle de usuario por Token em cookie
+		Areá de 'se mante logado?' box
+		Miss password pge
+		Miss Email page
+	Pagina para 'Loading'
+	travar butões quando Loading
+	space in tasks in user(fazer maior)
+	Pagina de erro ao transição entre paginas:
+		Login
+		click em task
+
+	
+	Bugs - 
+		User em header não carrega em loggin
+		ao clickar na task ela aparece a task mas vai pra pagina '/' em fundo
+
 Back-end
-	banco de dado
-		construir
-		jogar na nuvem
+	
 	API 
-		buscar da nuvem o banco
+		
 		criar dados
 		buscar dados
 		editar sistema de login
 			usuario preenche username e email
 			usuario recebe por email uma senha gerada
 			usuario consegue entra no aplicativo apenas com a senha gerada
+			Gerenciar sistema de JWT para segurança no login
+				-controle de JWT e jogar no front-end como HttpOnly cookies
+		Linkar tabela de tasks com a do usuario que faria estas tasks
+		configurar novo banco na nuvem para se manter
+			tabela User -
+				|Name string NOT NULL
+				|Email string NOT NULL
+				|Password NOT NULL
+				|token NOT NULL
+				|my_tasks [array]
+				|created_at DATE NOT NULL
+				|updated_at DATE 
+			tabela Tasks -
+				|ID AI number not null
+				|Nome string NOT NULL
+				|Descrição string NOT NULL
+				|Status string NOT NULL	
+				|Priority string NOT NULL
+				|created_at DATE NOT NULL
+				|updated_at DATE 
+		
 		ligar com front-end
+		Jogar backend na nuvem e configurações finais.
 	
 
 front-end - 
 	paginas:
 		pagina de login
-			login
-			registro
+			
 			password miss
 				enter email
 				new password
 		tasks
 			padrao, com todas as tasks
-				tasks existentes
+			
 				filtro de pesquisa por titulo
 			task especifica
 				titulo

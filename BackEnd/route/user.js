@@ -30,10 +30,10 @@ const UserRoute = (fastify, opt, done) => {
     fastify.post("/user", optCreateUser)
 
     //DELETE drop user
-    fastify.delete("/user:iduser", optDropUser)
+    fastify.delete("/user/:id", optDropUser)
 
     //PUT change datas
-    fastify.put("/user:id", optChangeUser)
+    fastify.put("/user/:id", optChangeUser)
 
     done()
 }

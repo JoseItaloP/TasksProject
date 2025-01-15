@@ -1,0 +1,23 @@
+GET http://localhost:3000/user
+###
+POST http://localhost:3000/user/task 
+Content-Type: application/json
+
+{
+    "task_name": "task_test5",
+    "task_description": "task de teste para conexão 5",
+    "task_status":  "new"
+}
+
+### DELETE
+DELETE http://localhost:3000/user/task/1
+
+### Update
+PUT http://localhost:3000/user/task/3
+Content-Type: application/json
+
+{
+    "task_name": "correr",
+    "task_description": "correr na praça 3x na semena por, pelomenos, 1hora",
+    "task_status":  "new"
+}

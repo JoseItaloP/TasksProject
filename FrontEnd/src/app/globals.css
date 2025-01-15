@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: #FE9D5C;
+  background: #2F5369;
+  font-family: Poppins, Helvetica, sans-serif;
+}
+
+.buttonHAnimation {       
+  transition: 0.5s      
+}
+
+.buttonHAnimation:hover {
+  cursor:pointer;
+  background-color: #FE7F2D;
+  border-color: #264354;
+  color: #264354;
+}
+
+.buttonHAnimationINV {       
+  transition: 0.5s      
+}
+
+.buttonHAnimationINV:hover {
+  cursor:pointer;
+  background-color: #264354;
+  border-color:  #FE7F2D;
+  color: #FE7F2D;
+}
+
+.textoLinha{
+  text-shadow: 0 0 3px #000
+}
+
