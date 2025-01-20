@@ -50,13 +50,11 @@ const DropUser = async (req, reply) => {
 const ChangeUser = async (req, reply) => {
   try{
     const {id} = req.params;
-    const {Username, Email} = req.body;
+    const {Username,Password, Email} = req.body;
     const con = await connection();
-    const date = JSON.stringify(getFormatData());
+    const date = getFormatData();
 
-    if(Username|Email === null){reply.code(500).send('Preencha todos os valores')}
-
-    await con.query(`UPDATE User2 SET UserName='${Username}', Email='${Email}', updated_at=${date} WHERE id=${id}`)
+    await con.query(`UPDATE User SET UserName='${Username}', Password='${Password}', Email='${Email}', updated_at=${date} WHERE ID=${id}`)
 
     const [result, table] = await con.query("SELECT * FROM User");
     reply.send(result);

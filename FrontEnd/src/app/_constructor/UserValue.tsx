@@ -1,4 +1,4 @@
-
+'use server'
 import { dropCookes } from "./cookiesWork";
 import { cookies } from "next/headers";
 
@@ -106,7 +106,11 @@ async function LogoutLocalUser() {
     created_at: new Date(),
     my_tasks: [],
   };
-  return await dropCookes();
+  const dropedC = await dropCookes();
+  if(dropedC){
+    console.log('DropedC: ', dropedC)
+    return true
+  }
 }
 
 async function ReturnUser() {
@@ -146,11 +150,43 @@ async function RegistratUser(NewUser: NewUserData){
   }
 }
 
+async function EditUser(NewEdit: {
+  ID: number;
+  UserName: string;
+  Password: string,
+  Email: string,
+}){ 
+  let retorno = false
+  try{
+    const res = await fetch(`http://localhost:3000/user/${NewEdit.ID}`,{
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Username: NewEdit.UserName,
+        Password: NewEdit.Password,
+        Email: NewEdit.Email
+      })
+    })
+    const data = await res.json()
+    if (data){
+      retorno = true
+    }
+  }catch(e){
+    console.error(e)
+  }finally{
+    return retorno
+  }
+
+}
+
 export {
   LoginUser,
   getLogedLocal,
   LoginUserID,
   LogoutLocalUser,
   ReturnUser,
-  RegistratUser
+  RegistratUser,
+  EditUser
 };

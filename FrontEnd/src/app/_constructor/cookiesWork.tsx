@@ -22,6 +22,7 @@ async function getCooks(){
 async function dropCookes(){
     const cookStore = await cookies();
      cookStore.delete('UserID')
+    return true
 }
 
 export {

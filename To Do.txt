@@ -11,8 +11,7 @@ Objetivos
 
 Paginas front-end - 
 
-	
-	Header User edit 
+	User edit fetchar quando editado e passar para outra pagina
 	Arrumar parte de login - 
 		Reforma de criação de conta
 			usuario fornece Username e email
