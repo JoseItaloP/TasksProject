@@ -41,8 +41,10 @@ async function FilterTasksUser() {
       const res = await fetch("http://localhost:3000/user/task", methods);
   
       const data: taskType[] = await res.json();
-  
-      filtredTasksUser = data.filter((task) => UserTasks.includes(task.ID));
+      console.log('Data: ', data)
+      if(UserTasks){
+        filtredTasksUser = data.filter((task) => UserTasks.includes(task.ID));
+      }
   
     } catch (e) {
       console.error(e);
@@ -100,8 +102,13 @@ async function createNewTask(newTask: newTaskType): Promise<ErroType[] | null>{
     return errors.length > 0 ? errors : null;
 }
 
-async function UpdateTask(newTask: NewTaskUpdateType){
+async function UpdateTask(newTask: NewTaskUpdateType): Promise<ErroType[] | null>{
+  const errors: ErroType[] = [];
   const {Name, Descrição, Priority, Status, TaskID} = newTask
+  if(Name.length == 0){
+    errors.push({id: Date.now(), message:'Todos os dados devem estar preenchidos'})
+    return errors
+  }
   try{
     const fetchData = await fetch(`http://localhost:3000/user/task/${TaskID}`,
       {
@@ -119,11 +126,15 @@ async function UpdateTask(newTask: NewTaskUpdateType){
     )
   const data = await fetchData.json()
   if(data){
-    console.log('Cls OK')
-    return true
+    return null
+  }else{
+    errors.push({id: Date.now(), message:'Erro ao buscar dados, tente novamente.'})
+    return errors
   }
   }catch(e){
-    console.error('Error: ', e)
+    errors.push({id: Date.now(), message:'Erro ao buscar dados, tente novamente.'})
+    console.error('Erros: ', e)
+    return errors
   }
 
 }

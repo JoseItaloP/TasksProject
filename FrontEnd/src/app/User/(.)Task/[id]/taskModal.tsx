@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
-import { NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
+import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
 import { getTask, UpdateTask } from "@/app/_constructor/TaskValue";
+import LoadingPage from "@/app/_constructor/LoadingPage";
 
 export default function TaskModal({ params }: { params: number }) {
   const [taskID, setTaskID]           = useState<number | null>(null);
@@ -18,6 +19,8 @@ export default function TaskModal({ params }: { params: number }) {
   const [taskDescription, setTaskDescription] = useState('');
   const [taskStatus, setTaskStatus] = useState('');
   const [taskPriority, setTaskPriority] = useState('');
+  const [loading, setLoading] = useState(false)
+  const [erros, setErros] = useState<ErroType[]>([]);
 
   const router = useRouter();
 
@@ -88,6 +91,7 @@ export default function TaskModal({ params }: { params: number }) {
   };
 
   async function hamdleSubmit() {
+    setLoading(true)
     const NewTask: NewTaskUpdateType = {
         Name: taskName,
         Descrição: taskDescription,
@@ -98,6 +102,12 @@ export default function TaskModal({ params }: { params: number }) {
       try{
         const upDate = await UpdateTask(NewTask)
         if(upDate){
+          setLoading(false)
+          setErros(upDate)
+          setTimeout(() => {
+            setErros((prev) => prev.filter((e) => e.id !== upDate[0].id)); 
+      }, 5000);
+        }else{
           router.push(`/User`)
         }
       }catch(e){
@@ -106,7 +116,7 @@ export default function TaskModal({ params }: { params: number }) {
   }
 
   if (!task) {
-    return <p>Carregando...</p>;
+    return <LoadingPage />;
   }
 
   return (
@@ -115,8 +125,23 @@ export default function TaskModal({ params }: { params: number }) {
     bg-hot-300 text-cold-800 
     flex flex-col rounded-t-xl"
     >
+      
       {edit ? (
         <div className="z-20  h-full w-full absolute flex flex-col items-center bg-cold-900/30">
+          {erros.map((erro) => (
+                <div
+                  key={erro.id}
+                  className=" absolute
+                  w-2/4 top-0 bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl z-50"
+                >
+                  <p className="flex-1">{erro.message}</p>
+                  <IoIosClose
+                    className="cursor-pointer text-2xl ml-2"
+                    onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+                  />
+                </div>
+              ))}
+          {loading ? <LoadingPage /> : ''}
           <div className=" absolute h-3/4 w-3/4 top-1 ">
             <section className="flex justify-between items-center bg-cold-900 text-hot-800 p-2">
               <h1>Edit Task {task.Nome}</h1>

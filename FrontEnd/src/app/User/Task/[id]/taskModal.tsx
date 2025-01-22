@@ -1,6 +1,7 @@
 "use client"
 
-import { NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
+import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
+import LoadingPage from "@/app/_constructor/LoadingPage";
 import { getTask, UpdateTask } from "@/app/_constructor/TaskValue";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -20,6 +21,8 @@ export default function TaskModal({params}: {params: number}){
     const [taskStatus, setTaskStatus]           = useState('');
     const [taskPriority, setTaskPriority]       = useState('');
     const router                                = useRouter();
+    const [loading, setLoading] = useState(false)
+    const [erros, setErros] = useState<ErroType[]>([]);
 
     useEffect(() => {
         async function resolveParams() {
@@ -97,6 +100,7 @@ export default function TaskModal({params}: {params: number}){
       };
 
       async function hamdleSubmit() {
+        setLoading(true)
         const NewTask: NewTaskUpdateType = {
             Name: taskName,
             Descrição: taskDescription,
@@ -104,42 +108,110 @@ export default function TaskModal({params}: {params: number}){
             Status: taskStatus,
             TaskID: taskID
         }
-          try{
-            const upDate = await UpdateTask(NewTask)
-            if(upDate){
-              router.push(`/User`)
-            }
-          }catch(e){
-            console.error('Erro: ', e)
-          }
+      try{
+        const upDate = await UpdateTask(NewTask)
+        if(upDate){
+          setLoading(false)
+          setErros(upDate)
+          setTimeout(() => {
+            setErros((prev) => prev.filter((e) => e.id !== upDate[0].id)); 
+      }, 5000);
+        }else{
+          router.push(`/User`)
+        }
+      }catch(e){
+        console.error('Erro: ', e)
+      }
       }
 
       if (!task) {
-        return <p>Carregando...</p>;
+        return (
+          <main className="h-full w-full flex items-center justify-center">
+            <LoadingPage />
+          <section className="p-5 bg-cold-900 h-5/6 w-3/4 border border-hot-900 rounded-xl flex flex-col">
+            <h1 className="w-full text-center"></h1>
+    
+            <div className="h-5/6 w-full">
+              <h2 className="flex justify-between items-center">
+                <p>Descrição</p>
+                <button onClick={()=>setEdit(true)}>Editar</button>
+                </h2>
+              <p
+                className="bg-cold-600 border border-hot-800 rounded text-hot-800 p-2 
+                        h-full
+                        overflow-auto text-ellipsis 
+                        "
+              >
+                
+              </p>
+            </div>
+    
+            <div className="flex mt-6 w-full">
+              <h3>Status</h3>:
+              <p
+                className={` ml-2 ${getStatus} 
+                            ${ColorLineS ? "textoLinha" : ""}
+                            `}
+              >
+                
+              </p>
+              <h3 className="ml-16">Prioridade</h3>:
+              <p
+                className={`ml-2 ${getPriority}
+                            ${ColorLineP ? "textoLinha" : ""}
+                            `}
+              >
+                
+              </p>
+            </div>
+            <div className="flex">
+                <h2>Criado em:</h2>
+                <p className="ml-1 text-zinc-900"></p>
+            </div>
+          </section>
+          </main>
+        );
       }
       return (
         <main className="h-full w-full flex items-center justify-center">
             {edit ? (
-                    <div className="z-20 h-full w-full absolute flex flex-col items-center justify-center bg-cold-900/30 top-0">
-                      <div className=" absolute h-3/4 w-3/4">
-                        <section className="flex justify-between items-center bg-cold-900 text-hot-800 p-2">
+                    <div className="z-20 h-full w-full absolute flex flex-col items-center justify-center bg-hot-200/20 top-0">
+                      {erros.map((erro) => (
+                                      <div
+                                        key={erro.id}
+                                        className=" absolute
+                                        w-2/4 top-0 bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl z-50"
+                                      >
+                                        <p className="flex-1">{erro.message}</p>
+                                        <IoIosClose
+                                          className="cursor-pointer text-2xl ml-2"
+                                          onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+                                        />
+                                      </div>
+                                    ))}
+                      {loading ? <LoadingPage /> : ''}
+                      <div className=" absolute h-2/4 w-4/5 ">
+                        <section className="flex justify-between items-center 
+                        bg-cold-900 text-hot-800 p-2
+                        border-x border-t border-hot-900 rounded-t
+                        ">
                           <h1>Edit Task {task.Nome}</h1>
                           <p onClick={() => setEdit(false)}>
                             <IoIosClose className="text-2xl cursor-pointer"/>
                           </p>
                         </section>
-                        <section className="bg-hot-500 p-4  h-full">
+                        <section className="bg-hot-200 p-4 border-x border-b border-hot-900 h-full">
                           <form
-                            className="flex flex-col justify-between w-full h-full overflow-clip"
+                            className="flex flex-col justify-between w-full h-full overflow-clip "
                             onSubmit={(e) => {
                               e.preventDefault();
                               hamdleSubmit();
                             }}
                           >
                             <label>
-                              <h1 className="mb-2 text-cold-800">Nome da task</h1>
+                              <h1 className="mb-2 text-cold-800 text-2xl">Nome da task</h1>
                               <input
-                                className=" text-base p-1 w-full bg-cold-800 text-hot-900 rounded "
+                                className=" text-base p-2 w-full bg-cold-800 text-hot-900 rounded "
                                 type="text"
                                 name="Nome"
                                 id="Nome"
@@ -148,17 +220,17 @@ export default function TaskModal({params}: {params: number}){
                               />
                             </label>
                             <label>
-                              <h1 className="mb-2 text-cold-800">Descrição da task</h1>
+                              <h1 className="mb-2 text-cold-800 text-2xl">Descrição da task</h1>
                               <textarea
                                 name="Descrição"
                                 id="Descrição"
-                                className="w-full h-full bg-cold-800 text-hot-900 rounded p-1 resize-none"
+                                className="w-full h-full bg-cold-800 text-hot-900 rounded p-2 resize-none"
                                 value={taskDescription}
                                 onChange={(e) => setTaskDescription(e.target.value)}
                               ></textarea>
                             </label>
                             <label className="flex items-center mb-4 mt-8">
-                              <h1 className="mr-2 text-cold-800">Status inicial: </h1>
+                              <h1 className="mr-2 text-cold-800 text-xl">Status inicial: </h1>
                               <select
                                 className="bg-hot-800 text-cold-800 text-lg"
                                 onChange={(e) => {
@@ -175,7 +247,7 @@ export default function TaskModal({params}: {params: number}){
                               </select>
                             </label>
                             <label className="flex items-center mb-4">
-                              <h1 className="mr-2 text-cold-800">Prioridade inicial: </h1>
+                              <h1 className="mr-2 text-cold-800 text-xl">Prioridade inicial: </h1>
                               <select
                                 className="bg-hot-800 text-cold-800 text-lg"
                                 name="prioridade"
@@ -202,7 +274,7 @@ export default function TaskModal({params}: {params: number}){
                       </div>
                     </div>
                   ) : (
-                    ""
+                    ''
                   )}
           <section className="p-5 bg-cold-900 h-5/6 w-3/4 border border-hot-900 rounded-xl flex flex-col">
             <h1 className="w-full text-center">{task.Nome}</h1>

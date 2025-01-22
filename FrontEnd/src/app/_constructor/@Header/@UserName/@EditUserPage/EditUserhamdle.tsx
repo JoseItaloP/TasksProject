@@ -1,5 +1,6 @@
 'use server'
 
+import { ErroType } from "@/app/_constructor/_Types";
 import { EditUser, LogoutLocalUser } from "@/app/_constructor/UserValue";
 
 export default async function EditUserhamdle(NewEdit: {
@@ -7,29 +8,31 @@ export default async function EditUserhamdle(NewEdit: {
     UserName: string;
     Password: string,
     Email: string,
-  }){
-    let retorno = false
-    if(NewEdit.UserName == null || NewEdit.Password == null || NewEdit.Email == null){
-      return retorno
+  }): Promise<ErroType[] | null>{
+
+    const errors: ErroType[] = [];
+    if(NewEdit.UserName.length == 0 || NewEdit.Password.length == 0 || NewEdit.Email.length == 0){
+      errors.push({id: Date.now(), message: "Todos os dados devem estar preenchidos."})
+      return errors
+
     }
     try{
-      const result = await EditUser(NewEdit)
-      if(result){
-        console.log('Resultado editUserH: ', result)
-        
-        const logOut = await LogoutLocalUser()
-        console.log('Logout: ',logOut)
 
-        retorno = true
-        console.log('Retornou em editUserH')
+      const result = await EditUser(NewEdit)
+
+      if(result){
+        await LogoutLocalUser()
       }
     }catch(e){
+
       console.error('Error: ', e)
-      return retorno
+      errors.push({id: Date.now(), message: "Algo de errado ocorreu, cheque o console."})
+      return errors
+
     }finally{
-      console.log('Finally')
-      console.log('Retorno: ', retorno)
-      return retorno
+
+      return null
+
     }
     
 }

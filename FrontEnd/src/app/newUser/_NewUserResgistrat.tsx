@@ -1,12 +1,18 @@
 'use server'
-import { NewUserData } from "../_constructor/_Types";
+import { ErroType, NewUserData } from "../_constructor/_Types";
 import { RegistratUser } from "../_constructor/UserValue";
 
-export default async function NewUserResgistrat (NewUser: NewUserData): Promise<boolean> {
+export default async function NewUserResgistrat (NewUser: NewUserData): Promise<ErroType[] | null> {
+    const errors: ErroType[] = [];
     const responce = await RegistratUser(NewUser);
-    if(responce){
-        return true
+    console.log('Responsta em user Resgister: ', responce)
+    if(responce == 200){
+        return null
+    }else if(responce == 500){
+        errors.push({ id: Date.now(), message: "Usuario ou Email já cadastrados." });
+        return errors;
     }else{
-        return false
+        errors.push({ id: Date.now(), message: "Algum erro ocorreu." });
+    return errors;
     }
 }

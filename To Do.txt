@@ -11,28 +11,24 @@ Objetivos
 
 Paginas front-end - 
 
-	User edit fetchar quando editado e passar para outra pagina
 	Arrumar parte de login - 
 		Reforma de criação de conta
-			usuario fornece Username e email
-			recebe mensagem por email com senha
-			deve entra só com esta senha
+			usuario fornece Username, email e confirmação de email
+
 		controle de usuario por Token em cookie
 		Areá de 'se mante logado?' box
 		Miss password pge
 		Miss Email page
-	Pagina para 'Loading'
-	travar butões quando Loading
+	
 	space in tasks in user(fazer maior)
+
 	Pagina de erro ao transição entre paginas:
 		Login
 		click em task
 
 	
 	Bugs - 
-		User em header não carrega em loggin
-		ao clickar na task ela aparece a task mas vai pra pagina '/' em fundo
-
+		
 Back-end
 	
 	API 

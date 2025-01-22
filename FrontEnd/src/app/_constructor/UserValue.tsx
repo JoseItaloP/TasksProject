@@ -119,8 +119,8 @@ async function ReturnUser() {
 }
 
 async function RegistratUser(NewUser: NewUserData){
-  let staty: boolean = false
-  const {Username, Password, Email} = NewUser
+
+  const {Username, Email} = NewUser
   try{
     
     const methods = {
@@ -130,23 +130,24 @@ async function RegistratUser(NewUser: NewUserData){
       },
       body:JSON.stringify({
         Username: Username,
-        Password: Password,
         Email: Email,
       })
     };
     
     const res = await fetch("http://localhost:3000/user", methods);
 
-    const data = await res.json();
-    if(data.Email === Email){
-      staty = true
+    console.log('response: ', res.status)
+
+    if(res.status == 500){
+      return 500
+    }else if(res.status == 200){
+      return 200
+    }else{
+      return 0
     }
 
   }catch(e){
-    staty = false
     console.error('Erro: ',e)
-  }finally{
-    return staty
   }
 }
 

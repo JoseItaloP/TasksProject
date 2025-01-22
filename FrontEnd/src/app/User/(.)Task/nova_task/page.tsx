@@ -1,5 +1,6 @@
 "use client";
 import { ErroType, newTaskType } from "@/app/_constructor/_Types";
+import LoadingPage from "@/app/_constructor/LoadingPage";
 import { createNewTask } from "@/app/_constructor/TaskValue";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -11,10 +12,12 @@ export default function NovaTaskModal() {
   const [taskDescription, setTaskDescription] = useState("");
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
+  const [loading, setLoading] = useState(false)
 
   const [erros, setErros] = useState<ErroType[]>([]);
 
   async function hamdleSubmit() {
+    setLoading(true)
     const NewTask: newTaskType = {
       Name: taskName,
       Descrição: taskDescription,
@@ -24,6 +27,7 @@ export default function NovaTaskModal() {
     }
     const resultCrete = await createNewTask(NewTask)
     if(resultCrete){
+      setLoading(false)
       setErros(resultCrete)
       setTimeout(() => {
         setErros((prev) => prev.filter((e) => e.id !== resultCrete[0].id)); 
@@ -42,6 +46,9 @@ export default function NovaTaskModal() {
       p-5 h-2/3 w-2/3 border rounded-xl 
       flex flex-col items-center"
     >
+      {
+        loading ? <LoadingPage /> : ''
+      }
       <div className="absolute top-0">
         {erros.map((erro) => (
           <div

@@ -1,59 +1,31 @@
 "use client";
 import { redirect } from "next/navigation";
 import { NewUserData } from "../_constructor/_Types";
-// import { RegistratUser } from "../_constructor/UserValue";
 import { useState } from "react";
-import ErrorHandler from "../_constructor/ErrorBox";
 import { ErroType } from "../_constructor/_Types";
 import { IoIosClose } from "react-icons/io";
 import NewUserResgistrat from "./_NewUserResgistrat";
 
 export default function NewUser() {
   const [Username, setUsername] = useState("");
-  const [Password, setPassword] = useState("");
-  const [confirme, setconfirme] = useState("");
   const [Email, setEmail] = useState("");
-  const [EqualP, setEqualP] = useState(true);
   const [erros, setErros] = useState<ErroType[]>([]);
 
-  function verifyPassword(e: string) {
-    setconfirme(e);
-
-    if (e !== Password) {
-      console.log("Senha: ", Password);
-      console.log("confirme: ", e);
-      return setEqualP(false);
-    }
-    return setEqualP(true);
-  }
-
   async function hamdleSubmit(){
-    if (EqualP === false) {
-      const newErro: ErroType = ErrorHandler().addError(
-        "As senhas devem ser iguais"
-      );
-      setErros((previeusErro) => [...previeusErro, newErro]);
-      setTimeout(() => {
-        setErros((prevErros) => prevErros.filter((erro) => erro.id !== newErro.id));
-      }, 5000);
-      return
-    }
+    
     const NewUser: NewUserData = {
       Username,
-      Password,
       Email,
     };
     const response = await NewUserResgistrat(NewUser)
     if(response){
-      redirect('/')
-    } else {
-      const newErro: ErroType = ErrorHandler().addError(
-        "Algo de errado ocorreu, tente mais tarde"
-      );
-      setErros((previeusErro) => [...previeusErro, newErro]);
+      // setLoading(false)
+      setErros(response)
       setTimeout(() => {
-        setErros((prevErros) => prevErros.filter((erro) => erro.id !== newErro.id));
+        setErros((prev) => prev.filter((e) => e.id !== response[0].id)); 
       }, 5000);
+    } else {
+      redirect('/Redirect')
     }
   }
 
@@ -95,36 +67,6 @@ export default function NewUser() {
             value={Username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </label>
-        <label className="flex flex-col">
-          <h2 className="text-xl">Password</h2>
-          <input
-            type="password"
-            name="Password"
-            id="Password"
-            className="text-xl p-1 rounded bg-hot-700 text-cold-800"
-            value={Password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <label className="flex flex-col">
-          <h2 className="text-xl">Comfirme a senha</h2>
-          <input
-            type="password"
-            name="confirme"
-            id="confirme"
-            className="text-xl p-1 rounded bg-hot-700 text-cold-800"
-            value={confirme}
-            onChange={(e) => {
-              setconfirme(e.target.value);
-              verifyPassword(e.target.value);
-            }}
-          />
-          {EqualP ? (
-            ""
-          ) : (
-            <p className="text-red-500">As senhas não coinsciden entre si.</p>
-          )}
         </label>
         <label className="flex flex-col">
           <h2 className="text-xl">Email</h2>

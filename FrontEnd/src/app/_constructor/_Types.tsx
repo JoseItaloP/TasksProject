@@ -34,7 +34,6 @@ type UserType = {
 
 type NewUserData = {
     Username: string;
-    Password: string;
     Email: string;
 }
 

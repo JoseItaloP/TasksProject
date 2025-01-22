@@ -6,20 +6,23 @@ import { IoIosClose } from "react-icons/io";
 import { ErroType, newLoginUser } from "../_constructor/_Types";
 import { loginAction } from "./LoginAction";
 import { useRouter } from 'next/navigation'
+import LoadingPage from "../_constructor/LoadingPage";
 
 
 export default function Login() {
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
   const [erros, setErros] = useState<ErroType[]>([]);
+  const [loading, setLoading] = useState(false)
   const router  = useRouter();
 
   async function handleSubmit() {
     const NewUser: newLoginUser = { userName, password}
-
+    setLoading(true)
     const result = await loginAction(NewUser); 
 
     if (result) {
+      setLoading(false)
       setErros(result)
       setTimeout(() => {
         setErros((prev) => prev.filter((e) => e.id !== result[0].id)); 
@@ -32,6 +35,7 @@ export default function Login() {
 
   return (
     <main className="h-full w-full flex flex-col items-center justify-center">
+      {loading ? <LoadingPage /> : ''}
       <div className="absolute top-0">
         {erros.map((erro) => (
           <div
