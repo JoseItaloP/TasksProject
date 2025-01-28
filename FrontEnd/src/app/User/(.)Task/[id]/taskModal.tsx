@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
-import { getTask, UpdateTask } from "@/app/_constructor/TaskValue";
+import { UpdateTask } from "@/app/_constructor/TaskValue";
 import LoadingPage from "@/app/_constructor/LoadingPage";
+import { AuthContext } from "@/app/contexts/AuthContext";
 
 export default function TaskModal({ params }: { params: number }) {
   const [taskID, setTaskID]           = useState<number | null>(null);
@@ -15,54 +16,49 @@ export default function TaskModal({ params }: { params: number }) {
   const [ColorLineP, setColorLineP] = useState<boolean>(false);
   const [ColorLineS, setColorLineS] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
-  const [taskName, setTaskName] = useState('');
-  const [taskDescription, setTaskDescription] = useState('');
-  const [taskStatus, setTaskStatus] = useState('');
-  const [taskPriority, setTaskPriority] = useState('');
+  // const [taskName, setTaskName] = useState('');
+  // const [taskDescription, setTaskDescription] = useState('');
+  // const [taskStatus, setTaskStatus] = useState('');
+  // const [taskPriority, setTaskPriority] = useState('');
   const [loading, setLoading] = useState(false)
   const [erros, setErros] = useState<ErroType[]>([]);
-
+  const {Ftasks} = useContext(AuthContext)
   const router = useRouter();
 
   useEffect(() => {
-   async function resolveParams() {
+    async function resolveParams() {
       const resolvedParams = params;
       setTaskID(resolvedParams);
-    }
-    resolveParams();
-  }, [params]);
-
-  useEffect(() => {
-    async function fetchTask() {
+      
       if (taskID === null) return;
       try {
-        const fetchedTask = await getTask(taskID);
-
-        if (fetchedTask === null) {
+        const taskFind = Ftasks?.find((task)=> task.ID == taskID) || null
+        
+        if (taskFind === null) {
           throw new Error(`Objeto com ID ${taskID} não encontrado`);
         }
 
-        setTask(fetchedTask);
-        setTaskName(fetchedTask.Nome)
-        setTaskDescription(fetchedTask.Descricao)
-        setTaskStatus(fetchedTask.Status)
-        setTaskPriority(fetchedTask.Priority)
+        setTask(taskFind);
+        // setTaskName(fetchedTask.Nome)
+        // setTaskDescription(fetchedTask.Descricao)
+        // setTaskStatus(fetchedTask.Status)
+        // setTaskPriority(fetchedTask.Priority)
 
-        const priorityClass = getPriorityClass(fetchedTask.Priority);
-        const statusClass = getStatusClass(fetchedTask.Status);
+        const priorityClass = getPriorityClass(taskFind.Priority);
+        const statusClass = getStatusClass(taskFind.Status);
+
 
         setPriority(priorityClass);
         setStatus(statusClass);
-
         setColorLineP(priorityClass === "text-media");
         setColorLineS(statusClass === "text-atuando");
+
       } catch (error) {
         console.error(error);
       }
     }
-
-    fetchTask();
-  }, [taskID]);
+    resolveParams();
+  }, [params, Ftasks, taskID]);
 
   const getPriorityClass = (priority: string): string => {
     switch (priority) {
@@ -93,12 +89,12 @@ export default function TaskModal({ params }: { params: number }) {
   async function hamdleSubmit() {
     setLoading(true)
     const NewTask: NewTaskUpdateType = {
-        Name: taskName,
-        Descrição: taskDescription,
-        Priority: taskPriority,
-        Status: taskStatus,
-        TaskID: taskID
-    }
+      Name: task?.Nome || null,
+      Descrição: task?.Descricao || null,
+      Priority: task?.Priority || null,
+      Status: task?.Status || null,
+      TaskID: task?.ID || null
+  }
       try{
         const upDate = await UpdateTask(NewTask)
         if(upDate){
@@ -116,7 +112,7 @@ export default function TaskModal({ params }: { params: number }) {
   }
 
   if (!task) {
-    return <LoadingPage />;
+    return <LoadingPage absolt={true} />;
   }
 
   return (
@@ -141,7 +137,7 @@ export default function TaskModal({ params }: { params: number }) {
                   />
                 </div>
               ))}
-          {loading ? <LoadingPage /> : ''}
+          {loading ? <LoadingPage absolt={true} /> : ''}
           <div className=" absolute h-3/4 w-3/4 top-1 ">
             <section className="flex justify-between items-center bg-cold-900 text-hot-800 p-2">
               <h1>Edit Task {task.Nome}</h1>
@@ -164,8 +160,10 @@ export default function TaskModal({ params }: { params: number }) {
                     type="text"
                     name="Nome"
                     id="Nome"
-                    value={taskName}
-                    onChange={(e) => setTaskName(e.target.value)}
+                    value={task.Nome}
+                                onChange={(e) => setTask((prev) =>
+                                  prev ? { ...prev, Nome: e.target.value } : null 
+                                )}
                   />
                 </label>
                 <label>
@@ -174,19 +172,20 @@ export default function TaskModal({ params }: { params: number }) {
                     name="Descrição"
                     id="Descrição"
                     className="w-full h-full bg-cold-800 text-hot-900 rounded p-1 resize-none"
-                    value={taskDescription}
-                    onChange={(e) => setTaskDescription(e.target.value)}
+                    value={task.Descricao}
+                                onChange={(e) => setTask((prev) =>
+                                  prev ? { ...prev, Descricao: e.target.value } : null 
+                                )}
                   ></textarea>
                 </label>
                 <label className="flex items-center mb-4 mt-8">
                   <h1 className="mr-2">Status inicial: </h1>
                   <select
                     className="bg-hot-800 text-cold-800 text-lg"
-                    onChange={(e) => {
-                      console.log(taskStatus);
-                      setTaskStatus(e.target.value);
-                    }}
-                    value={taskStatus}
+                    onChange={(e) => setTask((prev) =>
+                      prev ? { ...prev, Status: e.target.value } : null 
+                    )}
+                    value={task.Status}
                     name="status"
                     id="status"
                   >
@@ -201,11 +200,10 @@ export default function TaskModal({ params }: { params: number }) {
                     className="bg-hot-800 text-cold-800 text-lg"
                     name="prioridade"
                     id="prioridade"
-                    value={taskPriority}
-                    onChange={(e) => {
-                      console.log(taskPriority);
-                      setTaskPriority(e.target.value);
-                    }}
+                    value={task.Priority}
+                                onChange={(e) => setTask((prev) =>
+                                  prev ? { ...prev, Priority: e.target.value } : null 
+                                )}
                   >
                     <option value="baixa">Baixa</option>
                     <option value="media">Média</option>

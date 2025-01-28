@@ -47,7 +47,7 @@ export default function EditUserPage ({UserData}: {UserData:UserType}) {
     className="h-full w-full flex flex-col items-center justify-between p-2"
     >
       {
-                loading ? <LoadingPage /> : ''
+                loading ? <LoadingPage absolt={true} /> : ''
       }
       {erros.map((erro) => (
                 <div

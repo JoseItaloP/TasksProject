@@ -9,6 +9,7 @@ import NewUserResgistrat from "./_NewUserResgistrat";
 export default function NewUser() {
   const [Username, setUsername] = useState("");
   const [Email, setEmail] = useState("");
+  const [ConfEmail, setConfEmail] = useState("");
   const [erros, setErros] = useState<ErroType[]>([]);
 
   async function hamdleSubmit(){
@@ -16,6 +17,7 @@ export default function NewUser() {
     const NewUser: NewUserData = {
       Username,
       Email,
+      ConfEmail
     };
     const response = await NewUserResgistrat(NewUser)
     if(response){
@@ -77,6 +79,17 @@ export default function NewUser() {
             className="text-xl p-1 rounded bg-hot-700 text-cold-800"
             value={Email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
+        <label className="flex flex-col">
+          <h2 className="text-xl">Confirme o Email</h2>
+          <input
+            type="email"
+            name="Email"
+            id="ConfEmail"
+            className="text-xl p-1 rounded bg-hot-700 text-cold-800"
+            value={ConfEmail}
+            onChange={(e) => setConfEmail(e.target.value)}
           />
         </label>
         <input

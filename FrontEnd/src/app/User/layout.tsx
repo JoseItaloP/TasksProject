@@ -1,0 +1,13 @@
+"use client"
+
+import { AuthProvider } from "../contexts/AuthContext"
+
+export default function LayoutUser({
+    children,
+}: Readonly<{children: React.ReactNode}>){
+    return(
+        <AuthProvider>
+            {children}
+        </AuthProvider>
+    )
+}

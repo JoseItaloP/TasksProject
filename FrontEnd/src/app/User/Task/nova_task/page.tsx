@@ -3,8 +3,9 @@
 import { ErroType, newTaskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { createNewTask } from "@/app/_constructor/TaskValue";
+import { AuthContext } from "@/app/contexts/AuthContext";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
 export default function NovaTask() {
@@ -13,6 +14,7 @@ export default function NovaTask() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
+  const {user} = useContext(AuthContext)
 
   const [erros, setErros] = useState<ErroType[]>([]);
 
@@ -25,7 +27,7 @@ export default function NovaTask() {
       Priority: taskPriority,
       UserID: ''
     }
-    const resultCrete = await createNewTask(NewTask)
+    const resultCrete = await createNewTask(NewTask, user)
     if(resultCrete){
       setLoading(false)
       setErros(resultCrete)
@@ -42,7 +44,7 @@ export default function NovaTask() {
   return (
     <main className="h-full w-full flex items-center justify-center">
       {
-        loading ? <LoadingPage /> : ''
+        loading ? <LoadingPage absolt={true} /> : ''
       }
       <div className="absolute top-0">
               {erros.map((erro) => (

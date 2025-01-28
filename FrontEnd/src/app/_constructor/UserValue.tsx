@@ -1,69 +1,75 @@
 'use server'
-import { dropCookes } from "./cookiesWork";
 import { cookies } from "next/headers";
+import jwt from 'jsonwebtoken'
+import { defaultErro, newLoginUser, NewUserData, UserType } from "./_Types";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+let User: UserType | defaultErro | null = null;
 
+type JwtPayLoad = {
+  id: string;
+  TokenUser: string
+}
 
-import { newLoginUser, NewUserData, UserType } from "./_Types";
-// import { tasksValues } from "./_Tasks/TasksConst";
-// import { headers } from "next/headers";
+async function LoginUser( {UserName, Password}: newLoginUser): Promise<UserType | null> {
 
-let User: UserType = {
-  ID: -1,
-  UserName: "Guest",
-  Password: "",
-  Token: "",
-  Email: "",
-  created_at: new Date(),
-  my_tasks: [],
-};
-
-async function LoginUser( NewUser: newLoginUser): Promise<UserType | null> {
-  const {userName, password} = NewUser;
-
-    const response = await fetch("http://localhost:3000/user", {
-      method: "GET",
+    const response = await fetch("http://localhost:3000/user/Login", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body:JSON.stringify({
+        UserName: UserName,
+        Password: Password,
+      })
     });
     
-    const result: UserType[] = await response.json();
+    const result: UserType | null = await response.json();
+
+    if(result){
+      const jwtPass = process.env.JWT_PASS ?? 'minha-senha';
     
-    const logedUser = result.find(
-      (user) => user.UserName === userName && user.Password === password
-    );
 
-    if(logedUser){
-      const cookieStore = await cookies()
-      cookieStore.set('UserID', `${logedUser.ID}`,{
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        path: "/"
-      })
+      const token = jwt.sign({ id: result.ID, TokenUser: result.Token }, jwtPass, { expiresIn: '1h' });  
 
-      User = logedUser
-      return logedUser
+      const cookieStore = await cookies();
+
+      cookieStore.set('TaskDefine-Token', token, { maxAge: 60 * 60 });
+
+      User = result
+      return result
 
     } else {
       return null
     }
 }
 
-async function LoginUserID(userID: string): Promise<UserType> {
+
+async function LoginUserToken(userToken: string) {
   try {
-    const methods = {
-      method: "GET",
-      headers: {
-        "Content-Types": "application/json",
-      },
-    };
-    const res = await fetch("http://localhost:3000/user", methods);
 
-    const data: UserType[] = await res.json();
+    const jwtPass = process.env.JWT_PASS ?? 'minha-senha';
 
-    const logedUser = data.find((user) => user.ID === Number(userID));
+    if(userToken){
+      const {id, TokenUser} = jwt.verify(userToken, jwtPass) as JwtPayLoad
 
-    User = logedUser || User;
+      const methods = {
+        method: "GET",
+        headers: {
+          "Content-Types": "application/json",
+          "Authorization": `${TokenUser}`
+        },
+  
+      };
+  
+      const res = await fetch(`http://localhost:3000/user:${id}`, methods);
+  
+      const data: UserType | defaultErro = await res.json();
+  
+      return data
+    }
+
+
+
   } catch (e) {
     console.error(e);
   } finally {
@@ -72,27 +78,19 @@ async function LoginUserID(userID: string): Promise<UserType> {
 }
 
 async function getLogedLocal() {
-
   const cookStore = await cookies();
 
-  const UserID: {
-        name: string,
-        value: string
-  } = cookStore.get("UserID") || {
-        name: '',
-        value:''
-  };
+  const token: RequestCookie|null = cookStore.get("TaskDefine-Token") || null
+  
+  if(token){
+    User = await LoginUserToken(token.value)
 
-  User = (await LoginUserID(UserID.value)) || {
-    ID: -1,
-    Nome: "Guest",
-    Password: "",
-    Token: "",
-    my_tasks: [],
-    created_at: new Date(),
-  };
 
-  return User;
+    return User;
+
+  }else{
+    return User
+  }
 }
 
 
@@ -106,17 +104,11 @@ async function LogoutLocalUser() {
     created_at: new Date(),
     my_tasks: [],
   };
-  const dropedC = await dropCookes();
-  if(dropedC){
-    console.log('DropedC: ', dropedC)
-    return true
-  }
+  const cookStore = await cookies();
+  cookStore.delete('TaskDefine-Token')
+  return true
 }
 
-async function ReturnUser() {
-  
-  return User;
-}
 
 async function RegistratUser(NewUser: NewUserData){
 
@@ -135,8 +127,6 @@ async function RegistratUser(NewUser: NewUserData){
     };
     
     const res = await fetch("http://localhost:3000/user", methods);
-
-    console.log('response: ', res.status)
 
     if(res.status == 500){
       return 500
@@ -185,9 +175,8 @@ async function EditUser(NewEdit: {
 export {
   LoginUser,
   getLogedLocal,
-  LoginUserID,
   LogoutLocalUser,
-  ReturnUser,
   RegistratUser,
-  EditUser
+  EditUser,
+  LoginUserToken
 };

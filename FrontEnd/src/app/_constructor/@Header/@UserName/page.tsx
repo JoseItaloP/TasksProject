@@ -1,22 +1,28 @@
 'use client'
 
-import { redirect, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import EditUserPage from "./@EditUserPage/page";
 import LogginOutUser from "./LogginOutUser";
 import { IoIosClose } from "react-icons/io";
-import { UserType } from "../../_Types";
 import LoadingPage from "../../LoadingPage";
+import { AuthContext } from "@/app/contexts/AuthContext";
+import { UserType } from "../../_Types";
 
 
-export default function UserName({userLocal} :  {userLocal: UserType} ) {
-  const UserLoged: UserType = userLocal
+export default function UserName() {
+  const pathName = usePathname();
+  const { user } = useContext(AuthContext);
+  const [UsedUser, setUsedUser]= useState<UserType|null>(null)
   const [editUser, setEditUser] = useState<boolean>(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   
-  useEffect(()=>setLoading(false),[userLocal])
+  useEffect(()=>{
+    setUsedUser(user)
+    setLoading(false)
+  },[user, pathName])
 
   async function LogOut(){
     setLoading(true)
@@ -35,12 +41,13 @@ export default function UserName({userLocal} :  {userLocal: UserType} ) {
     setLoading(true)
     router.push('/User')
   }
-  
+    if(UsedUser){
+
       return editUser ? 
       (<div className="flex flex-col items-center group">
 
-        <Link href='/User' className="g">
-          {UserLoged.UserName}
+        <Link href='/User' >
+          {UsedUser.UserName}
         </Link>
 
       <section className="w-full h-full absolute z-30 left-0 top-0 flex flex-col items-center justify-center bg-cold-900/30 ">
@@ -49,7 +56,7 @@ export default function UserName({userLocal} :  {userLocal: UserType} ) {
 
           <h1 className="bg-cold-800 text-hot-500 w-full max-h-[10%] p-2 flex justify-between rounded-t-lg mb-2">
 
-            <p>Editando {UserLoged.UserName}</p>
+            <p>Editando {UsedUser.UserName}</p>
 
             <button onClick={handleSet}>
               <IoIosClose className="text-2xl cursor-pointer"/>
@@ -57,7 +64,7 @@ export default function UserName({userLocal} :  {userLocal: UserType} ) {
           </h1>
 
           <div className="flex-grow overflow-auto">
-            <EditUserPage UserData={UserLoged} />
+            <EditUserPage UserData={UsedUser} />
           </div>
           
         </section>
@@ -67,11 +74,11 @@ export default function UserName({userLocal} :  {userLocal: UserType} ) {
       :
       (<div className="flex flex-col items-center group hover:cursor-pointer">
         {
-          loading ? <LoadingPage /> : ''
+          loading ? <LoadingPage absolt={true} /> : ''
         }
       
         <button onClick={ToUser} className="g">
-          {userLocal.UserName}
+          {UsedUser.UserName}
         </button>
         <section className={`absolute z-20 mt-8 mr-20 `}>
           <ul className="list-none 
@@ -111,6 +118,9 @@ export default function UserName({userLocal} :  {userLocal: UserType} ) {
           </ul>
         </section>
       </div>)
+    }else{
+      return <h1>User</h1>
+    }
     }
 
 

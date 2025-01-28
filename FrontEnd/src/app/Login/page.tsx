@@ -1,41 +1,35 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 import { ErroType, newLoginUser } from "../_constructor/_Types";
-import { loginAction } from "./LoginAction";
-import { useRouter } from 'next/navigation'
+// import { loginAction } from "./LoginAction";
+// import { useRouter } from 'next/navigation'
 import LoadingPage from "../_constructor/LoadingPage";
+import { AuthContext } from "../contexts/AuthContext";
 
 
 export default function Login() {
-  const [userName, setUserName] = useState('')
-  const [password, setPassword] = useState('')
+  const [UserName, setUserName] = useState('')
+  const [Password, setPassword] = useState('')
   const [erros, setErros] = useState<ErroType[]>([]);
   const [loading, setLoading] = useState(false)
-  const router  = useRouter();
+  // const router  = useRouter();
+  const {singIn} = useContext(AuthContext)
 
   async function handleSubmit() {
-    const NewUser: newLoginUser = { userName, password}
+    const NewUser: newLoginUser = { UserName, Password}
     setLoading(true)
-    const result = await loginAction(NewUser); 
+    await singIn(NewUser) 
 
-    if (result) {
-      setLoading(false)
-      setErros(result)
-      setTimeout(() => {
-        setErros((prev) => prev.filter((e) => e.id !== result[0].id)); 
-      }, 5000);
-
-    }else{
-      router.replace('/User')
-    }
+    
   }
 
   return (
     <main className="h-full w-full flex flex-col items-center justify-center">
-      {loading ? <LoadingPage /> : ''}
+      {loading ? <LoadingPage absolt={true} />
+       : ''}
       <div className="absolute top-0">
         {erros.map((erro) => (
           <div
@@ -70,7 +64,7 @@ export default function Login() {
               name="usename"
               id="usename"
               className="text-xl p-1 rounded bg-cold-900 text-hot-700"
-              value={userName}
+              value={UserName}
               onChange={(e)=>setUserName(e.target.value)}
             />
           </label>
@@ -82,7 +76,7 @@ export default function Login() {
               name="senha"
               id="senha"
               className="text-xl p-1 rounded bg-cold-900 text-hot-700"
-              value={password}
+              value={Password}
               onChange={(e)=>setPassword(e.target.value)}
             />
           </label>

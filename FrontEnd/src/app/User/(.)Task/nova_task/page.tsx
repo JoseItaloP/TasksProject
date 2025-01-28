@@ -2,9 +2,9 @@
 import { ErroType, newTaskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { createNewTask } from "@/app/_constructor/TaskValue";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { useState } from "react";
+import { AuthContext } from "@/app/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
 export default function NovaTaskModal() {
@@ -13,6 +13,8 @@ export default function NovaTaskModal() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
+  const {user} = useContext(AuthContext)
+  const router = useRouter()
 
   const [erros, setErros] = useState<ErroType[]>([]);
 
@@ -25,7 +27,7 @@ export default function NovaTaskModal() {
       Priority: taskPriority,
       UserID: ''
     }
-    const resultCrete = await createNewTask(NewTask)
+    const resultCrete = await createNewTask(NewTask, user)
     if(resultCrete){
       setLoading(false)
       setErros(resultCrete)
@@ -34,7 +36,7 @@ export default function NovaTaskModal() {
       }, 5000);
       
     }else{
-      redirect('/User')
+      router.push('/User')
     }
 
   }
@@ -47,7 +49,7 @@ export default function NovaTaskModal() {
       flex flex-col items-center"
     >
       {
-        loading ? <LoadingPage /> : ''
+        loading ? <LoadingPage absolt={true} /> : ''
       }
       <div className="absolute top-0">
         {erros.map((erro) => (
@@ -64,9 +66,9 @@ export default function NovaTaskModal() {
         ))}
       </div>
       <div className="w-full flex justify-end">
-        <Link href={"/"}>
+        <button onClick={()=>router.back()}>
           <IoIosClose className="text-2xl" />
-        </Link>
+        </button>
       </div>
       <form
         className="flex flex-col justify-around w-2/3 h-full max-h-full overflow-clip"

@@ -15,10 +15,10 @@ type newTaskType = {
     UserID: string;
 }
 type NewTaskUpdateType = {
-    Name: string;
-    Descrição: string;
-    Status: string;
-    Priority: string;
+    Name: string | null;
+    Descrição: string | null;
+    Status: string | null;
+    Priority: string | null;
     TaskID: number | null;
 }
 type UserType = {
@@ -35,6 +35,7 @@ type UserType = {
 type NewUserData = {
     Username: string;
     Email: string;
+    ConfEmail: string;
 }
 
 type ErroType = {
@@ -43,8 +44,12 @@ type ErroType = {
 }
 
 type newLoginUser = {
-    userName: string;
-    password: string;
+    UserName: string;
+    Password: string;
+}
+
+type defaultErro = {
+    message: string
 }
 
 export type {
@@ -54,5 +59,6 @@ export type {
         NewUserData,
         ErroType,
         newLoginUser,
-        NewTaskUpdateType
+        NewTaskUpdateType,
+        defaultErro
     }

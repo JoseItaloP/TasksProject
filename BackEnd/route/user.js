@@ -1,9 +1,20 @@
 const {
     LoginUser,
+    getUsers,
     CreateUser,
+    getUser,
     DropUser,
     ChangeUser
 } = require('../controller/userControler')
+
+const optgetUsers = {
+    handler: getUsers,
+}
+
+const optgetUser = {
+    handler: getUser,
+}
+
 
 const optLoginUser = {
     handler: LoginUser,
@@ -23,8 +34,14 @@ const optChangeUser = {
 
 const UserRoute = (fastify, opt, done) => {
 
-    //GET Loggin user
-    fastify.get("/user", optLoginUser)
+    //GET allUSER
+    fastify.get("/user", optgetUsers)
+
+     //GET USER
+     fastify.get("/user:id", optgetUser)
+
+    //POST get login user
+    fastify.post("/user/Login", optLoginUser)
 
     //POST create user
     fastify.post("/user", optCreateUser)

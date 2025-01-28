@@ -6,10 +6,10 @@ import { ErroType, newLoginUser } from "../_constructor/_Types";
 export async function loginAction(
   NewUser: newLoginUser
 ): Promise<ErroType[] | null> {
-  const { userName, password } = NewUser;
+  const { UserName, Password } = NewUser;
   const errors: ErroType[] = [];
 
-  if (!userName || !password) {
+  if (!UserName || !Password) {
     errors.push({ id: Date.now(), message: "Preencha corretamente os dados." });
     return errors;
   }

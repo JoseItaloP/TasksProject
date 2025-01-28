@@ -1,5 +1,6 @@
-const nodemailer = require("nodemailer")
 
+const nodemailer = require("nodemailer")
+const {v4} = require("uuid")
 const connection = require("../config");
 const getFormatData = require('../functions/FormData').exports
 
@@ -65,11 +66,50 @@ function GeneratePassword(){
       return password
 }
 
-const LoginUser = async (req, reply) => {
+
+const getUsers = async (req, reply) => {
   try {
     const con = await connection();
     const [result, table] = await con.query("SELECT * FROM User");
     reply.send(result);
+  } catch (err) {
+    reply.code(500).send(err);
+  }
+};
+
+const getUser = async (req,reply) =>{
+  const {authorization} = req.headers
+  const {id} = req.params
+  console.log('Server id: ', id)
+  console.log('Server Token: ', authorization)
+  try{
+    const con = await connection();
+    const [result, table] = await con.query(`SELECT * FROM User WHERE ID=${id}`)
+    const token = authorization.split(' ')[1]
+    const ValidateToken = result.Token === token ? true : false
+    if(ValidateToken){
+      reply.send(result)
+    }else{
+      const erro = {message: 'Token invalido!'}
+      reply.code(400).send(erro)
+    }
+  }catch(e){
+    const erro = {message: 'Token invalido!'}
+    reply.code(400).send(erro)
+  }
+};
+
+const LoginUser = async (req, reply) => {
+  try {
+    const con = await connection();
+    const {UserName, Password} = req.body
+
+    const [result, table] = await con.query("SELECT * FROM User");
+    const logedUser = result.find(
+      (user) => user.UserName === UserName && user.Password === Password
+    );
+
+    reply.send(logedUser);
   } catch (err) {
     reply.code(500).send(err);
   }
@@ -81,23 +121,24 @@ const CreateUser = async (req, reply) => {
   try {
     const con = await connection();
     const { Username, Email } = req.body;
-    const token = 'token'
+
+    
     
     const verify = await virifyUserLogin(Username, Email)
-    console.log('verify: ', verify)
+    
     if(verify) {
       console.log('reply erro')
       return reply.code(500).send('Usuario ou Email ja cadastrados, tente outro.')
     }else{
+
       const Password = GeneratePassword()
       const date =  getFormatData();
-  
+      const token = v4();
+
       await con.query(`INSERT INTO User (UserName,Password,Token,created_at,Email) 
                       VALUES ('${Username}','${Password}','${token}',${date},'${Email}')`);
       
       const sendData = await senPassEmail(Email, Password)
-      console.log(sendData)
-  
       
       reply.code(200)
     }
@@ -139,7 +180,9 @@ const ChangeUser = async (req, reply) => {
 
 module.exports = {
   LoginUser,
+  getUsers,
   CreateUser,
+  getUser,
   DropUser,
   ChangeUser,
 };
