@@ -1,7 +1,7 @@
 'use server'
 import { cookies } from "next/headers";
 import jwt from 'jsonwebtoken'
-import { defaultErro, newLoginUser, NewUserData, UserType } from "./_Types";
+import { defaultErro, ErroType, newLoginUser, NewUserData, UserType } from "./_Types";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 let User: UserType | defaultErro | null = null;
 
@@ -10,7 +10,7 @@ type JwtPayLoad = {
   TokenUser: string
 }
 
-async function LoginUser( {UserName, Password}: newLoginUser): Promise<UserType | null> {
+async function LoginUser( {UserName, Password}: newLoginUser): Promise<UserType | ErroType> {
 
     const response = await fetch("http://localhost:3000/user/Login", {
       method: "POST",
@@ -24,22 +24,22 @@ async function LoginUser( {UserName, Password}: newLoginUser): Promise<UserType 
     });
     
     const result: UserType | null = await response.json();
+    if(result === null){
+      const erro = ({id: Date.now(), message: 'Usuário ou senha não identificados no banco de dados'})
+      return erro
+    }else{
 
-    if(result){
       const jwtPass = process.env.JWT_PASS ?? 'minha-senha';
     
-
+  
       const token = jwt.sign({ id: result.ID, TokenUser: result.Token }, jwtPass, { expiresIn: '1h' });  
-
+  
       const cookieStore = await cookies();
-
+  
       cookieStore.set('TaskDefine-Token', token, { maxAge: 60 * 60 });
-
+  
       User = result
       return result
-
-    } else {
-      return null
     }
 }
 

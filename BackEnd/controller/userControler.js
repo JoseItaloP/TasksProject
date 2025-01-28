@@ -108,8 +108,11 @@ const LoginUser = async (req, reply) => {
     const logedUser = result.find(
       (user) => user.UserName === UserName && user.Password === Password
     );
-
-    reply.send(logedUser);
+    if(logedUser){
+      reply.send(logedUser);
+    }else{
+      reply.code(500).send(null)
+    }
   } catch (err) {
     reply.code(500).send(err);
   }

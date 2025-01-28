@@ -15,7 +15,7 @@ Paginas front-end -
 			
 
 	Arrumar parte de login - 
-		Erro ao fazer login com senha errada nao funciona
+		
 		
 		controle de senha com hash
 

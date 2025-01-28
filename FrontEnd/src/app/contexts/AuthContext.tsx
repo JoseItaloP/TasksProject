@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { getLogedLocal, LoginUser } from "../_constructor/UserValue";
-import { defaultErro, newLoginUser, taskType, UserType } from "../_constructor/_Types";
+import { defaultErro, ErroType, newLoginUser, taskType, UserType } from "../_constructor/_Types";
 import { useRouter } from "next/navigation";
 // import { FilterTasksUser } from "../_constructor/TaskValue";
 
@@ -46,7 +46,7 @@ type AuthContextType = {
     user: UserType | null;
     Ftasks: taskType[] | null;
     loading: boolean;
-    singIn: (data: newLoginUser)=>Promise<void>
+    singIn: (data: newLoginUser)=>Promise<ErroType[]|void>
 }
 
 export const AuthContext = createContext({} as AuthContextType)
@@ -91,10 +91,19 @@ export function AuthProvider({children}: {
     }, [user])
 
     async function singIn({UserName, Password}: newLoginUser){
-        const LogedUser: UserType | null = await LoginUser({UserName, Password});
-        setUser(LogedUser)
-        router.refresh()
-        router.push('/User')
+        const LogedUser: UserType | ErroType  = await LoginUser({UserName, Password});
+
+
+        const errors: ErroType[] = [];
+
+        if('ID' in LogedUser){
+          setUser(LogedUser)
+          router.refresh()
+          router.push('/User')
+        } else {
+          errors.push(LogedUser)
+          return errors
+        }
     }
 
     return(

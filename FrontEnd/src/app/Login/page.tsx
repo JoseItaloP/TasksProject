@@ -15,15 +15,31 @@ export default function Login() {
   const [Password, setPassword] = useState('')
   const [erros, setErros] = useState<ErroType[]>([]);
   const [loading, setLoading] = useState(false)
-  // const router  = useRouter();
   const {singIn} = useContext(AuthContext)
 
   async function handleSubmit() {
     const NewUser: newLoginUser = { UserName, Password}
     setLoading(true)
-    await singIn(NewUser) 
+    if(UserName && Password){
+      const LoginErro = await singIn(NewUser) 
+      if(LoginErro){
 
-    
+          setLoading(false)
+          setErros(LoginErro)
+          setTimeout(() => {
+            setErros((prev) => prev.filter((e) => e.id !== LoginErro[0].id)); 
+
+      }, 5000);
+
+      }else{
+
+        setLoading(false)
+        const erros: ErroType[] = []
+        erros.push({id: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos"})
+        setErros(erros)
+  
+      }
+    }
   }
 
   return (
