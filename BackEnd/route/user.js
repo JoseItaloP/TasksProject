@@ -38,7 +38,7 @@ const UserRoute = (fastify, opt, done) => {
     fastify.get("/user", optgetUsers)
 
      //GET USER
-     fastify.get("/user:id", optgetUser)
+     fastify.get("/user/:id", optgetUser)
 
     //POST get login user
     fastify.post("/user/Login", optLoginUser)

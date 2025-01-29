@@ -1,7 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import { getLogedLocal, LoginUser } from "../_constructor/UserValue";
 import { defaultErro, ErroType, newLoginUser, taskType, UserType } from "../_constructor/_Types";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { parseCookies } from "nookies";
 // import { FilterTasksUser } from "../_constructor/TaskValue";
 
 async function FilterTasksUser(user: UserType | null) {
@@ -59,17 +60,25 @@ export function AuthProvider({children}: {
     const [loading, setLoading] = useState<boolean>(false)
     const isAuthenticated = !!user;
     const router = useRouter()
+    const pathName = usePathname();
 
     useEffect(()=>{
-
         async function localToken(){
-            const LocalUser: UserType | defaultErro | null = await getLogedLocal()
+
+            const {'TaskDefine-Token': token} = parseCookies()
+            console.log('token in auth: ',token)
+
+            const LocalUser: UserType | defaultErro | null = await getLogedLocal(token)
             console.log('Retorno LocalUser: ', LocalUser)
+            
             if(LocalUser){
               console.log('Local user1: ', LocalUser)
+
               if('ID' in LocalUser){
+
               console.log('Local user2: ', LocalUser)
                 setUser(LocalUser)
+
               }
             }else{
                 setUser(null)
@@ -77,8 +86,7 @@ export function AuthProvider({children}: {
         }
 
         localToken();
-
-    }, [])
+    }, [pathName])
 
     useEffect(()=>{
         setLoading(true)

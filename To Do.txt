@@ -16,16 +16,12 @@ Paginas front-end -
 
 	Arrumar parte de login - 
 		
-		
 		controle de senha com hash
 
 		Areá de 'se mante logado?' box
 		Miss password pge
 		Miss Email page
-
-	Page principal - 
-		quando vai para ela, Verificar se usuario esta logado, se sim, mostrar pagina diferente,
-			que redirecione para /User
+		
 
 	space in tasks in user(fazer maior)
 	area de senha com olhinho.

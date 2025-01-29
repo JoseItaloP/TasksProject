@@ -1,6 +1,6 @@
 'use client'
 
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { redirect,  useRouter } from "next/navigation";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import EditUserPage from "./@EditUserPage/page";
@@ -12,7 +12,6 @@ import { UserType } from "../../_Types";
 
 
 export default function UserName() {
-  const pathName = usePathname();
   const { user } = useContext(AuthContext);
   const [UsedUser, setUsedUser]= useState<UserType|null>(null)
   const [editUser, setEditUser] = useState<boolean>(false)
@@ -22,7 +21,7 @@ export default function UserName() {
   useEffect(()=>{
     setUsedUser(user)
     setLoading(false)
-  },[user, pathName])
+  },[user])
 
   async function LogOut(){
     setLoading(true)

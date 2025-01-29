@@ -2,7 +2,6 @@
 import { cookies } from "next/headers";
 import jwt from 'jsonwebtoken'
 import { defaultErro, ErroType, newLoginUser, NewUserData, UserType } from "./_Types";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 let User: UserType | defaultErro | null = null;
 
 type JwtPayLoad = {
@@ -44,13 +43,44 @@ async function LoginUser( {UserName, Password}: newLoginUser): Promise<UserType 
 }
 
 
-async function LoginUserToken(userToken: string) {
+// async function LoginUserToken(Token: string) {
+//   try {
+
+//     const jwtPass = process.env.JWT_PASS ?? 'minha-senha';
+//     console.log('token in LoginUser: ',Token)
+//     if(Token){
+//       const {id, TokenUser} = jwt.verify(Token, jwtPass) as JwtPayLoad
+//       console.log('id get: ', id)
+//       const methods = {
+//         method: "GET",
+//         headers: {
+//           "Content-Types": "application/json",
+//           "Authorization": `${TokenUser}`
+//         },
+  
+//       };
+  
+//       const res = await fetch(`http://localhost:3000/user/${id}`, methods);
+  
+//       const data: UserType | defaultErro = await res.json();
+  
+//       User = data
+//     }
+//   } catch (e) {
+//     console.error(e);
+//   } finally {
+//     return User;
+//   }
+// }
+
+async function getLogedLocal(token: string){
   try {
 
     const jwtPass = process.env.JWT_PASS ?? 'minha-senha';
 
-    if(userToken){
-      const {id, TokenUser} = jwt.verify(userToken, jwtPass) as JwtPayLoad
+    if(token){
+      
+      const {id, TokenUser} = jwt.verify(token, jwtPass) as JwtPayLoad
 
       const methods = {
         method: "GET",
@@ -61,15 +91,12 @@ async function LoginUserToken(userToken: string) {
   
       };
   
-      const res = await fetch(`http://localhost:3000/user:${id}`, methods);
+      const res = await fetch(`http://localhost:3000/user/${id}`, methods);
   
       const data: UserType | defaultErro = await res.json();
-  
-      return data
+      console.log('Data:', data)
+      User = data
     }
-
-
-
   } catch (e) {
     console.error(e);
   } finally {
@@ -77,21 +104,6 @@ async function LoginUserToken(userToken: string) {
   }
 }
 
-async function getLogedLocal() {
-  const cookStore = await cookies();
-
-  const token: RequestCookie|null = cookStore.get("TaskDefine-Token") || null
-  
-  if(token){
-    User = await LoginUserToken(token.value)
-
-
-    return User;
-
-  }else{
-    return User
-  }
-}
 
 
 async function LogoutLocalUser() {
@@ -178,5 +190,5 @@ export {
   LogoutLocalUser,
   RegistratUser,
   EditUser,
-  LoginUserToken
+  // LoginUserToken
 };

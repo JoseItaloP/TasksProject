@@ -79,16 +79,18 @@ const getUsers = async (req, reply) => {
 
 const getUser = async (req,reply) =>{
   const {authorization} = req.headers
+  const token = authorization
   const {id} = req.params
-  console.log('Server id: ', id)
-  console.log('Server Token: ', authorization)
   try{
+
     const con = await connection();
-    const [result, table] = await con.query(`SELECT * FROM User WHERE ID=${id}`)
-    const token = authorization.split(' ')[1]
-    const ValidateToken = result.Token === token ? true : false
+    const [result, table] = await con.query(`SELECT * FROM User WHERE ID = ${id}`)
+
+    const ValidateToken = result[0].Token === token ? true : false
+    
+
     if(ValidateToken){
-      reply.send(result)
+      reply.send(result[0])
     }else{
       const erro = {message: 'Token invalido!'}
       reply.code(400).send(erro)
