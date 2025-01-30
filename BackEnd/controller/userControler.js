@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer")
 const {v4} = require("uuid")
 const connection = require("../config");
 const getFormatData = require('../functions/FormData').exports
+const {hash, compare} = require('bcryptjs')
 
 const smtp = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -54,9 +55,9 @@ async function senPassEmail(Email, Senha){
 
 }
 
-function GeneratePassword(){
+function GeneratePassword(PassLen){
   const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ!@#$%^&*()+?><:{}[]";
-      let passwordLength = 16;
+      let passwordLength = PassLen;
       let password = "";
 
       for (let i = 0; i < passwordLength; i++) {
@@ -107,11 +108,25 @@ const LoginUser = async (req, reply) => {
     const {UserName, Password} = req.body
 
     const [result, table] = await con.query("SELECT * FROM User");
-    const logedUser = result.find(
-      (user) => user.UserName === UserName && user.Password === Password
+    const logedUserName = result.find(
+      (user) => user.UserName === UserName
     );
-    if(logedUser){
-      reply.send(logedUser);
+    if(logedUserName){
+      const {Password: dataSenha, Salt_Key} = logedUserName
+
+      const passToCompare = JSON.stringify(Password) + JSON.stringify(Salt_Key)
+
+      const comparePass = await compare(passToCompare, dataSenha)
+
+      console.log('comparação de senha com salt_key: ', comparePass)
+
+      if(comparePass){
+
+        reply.send(logedUserName)
+
+      }else{
+        reply.code(500).send(null)
+      }
     }else{
       reply.code(500).send(null)
     }
@@ -125,23 +140,28 @@ const LoginUser = async (req, reply) => {
 const CreateUser = async (req, reply) => {
   try {
     const con = await connection();
-    const { Username, Email } = req.body;
 
-    
+    const { Username, Email } = req.body;
     
     const verify = await virifyUserLogin(Username, Email)
-    
+  
+
     if(verify) {
-      console.log('reply erro')
+    
       return reply.code(500).send('Usuario ou Email ja cadastrados, tente outro.')
     }else{
+      
+      const Password = GeneratePassword(8)
+      const SaltK = GeneratePassword(16)
+      const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltK)
 
-      const Password = GeneratePassword()
+      const hashedPassword = await hash(SaltPass, 8)
+
       const date =  getFormatData();
       const token = v4();
 
-      await con.query(`INSERT INTO User (UserName,Password,Token,created_at,Email) 
-                      VALUES ('${Username}','${Password}','${token}',${date},'${Email}')`);
+      await con.query(`INSERT INTO User (UserName,Password,Token,created_at,Email, Salt_key) 
+                      VALUES ('${Username}','${hashedPassword}','${token}',${date},'${Email}', '${SaltK}')`);
       
       const sendData = await senPassEmail(Email, Password)
       
@@ -183,6 +203,55 @@ const ChangeUser = async (req, reply) => {
   }
 };
 
+const findEmail = async (req,reply)=>{
+  const {UserName} = req.body
+  try{
+
+    const con = await connection();
+
+    const [result, table] = await con.query(`SELECT * FROM User WHERE UserName='${UserName}'`)
+    
+    if(result.length>0){
+      reply.send(result[0])
+    }else{
+      reply.code(500).send(null)
+    }
+
+  }catch(e){
+    reply.code(500).send(null)
+  }
+}
+
+const findPass = async (req,reply)=>{
+  const {Email} = req.body
+  try{
+
+    const con = await connection();
+
+    const [result, table] = await con.query(`SELECT * FROM User WHERE Email='${Email}'`)
+    console.log('result:', result[0])
+    if(result[0]){
+      console.log('entrou')
+      const Password = GeneratePassword(8)
+      const SaltK = GeneratePassword(16)
+      const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltK)
+
+      const hashedPassword = await hash(SaltPass, 8)
+      const dateUpdate = getFormatData();
+
+      await con.query(`UPDATE User SET Password='${hashedPassword}', updated_at=${dateUpdate}, Salt_Key='${SaltK}' WHERE ID=${result[0].ID}`)
+
+      const sendData = await senPassEmail(Email, Password)
+      reply.send(true)
+    }else{
+      reply.code(500).send(false)
+    }
+
+  }catch(e){
+    reply.code(500).send(false)
+  }
+}
+
 module.exports = {
   LoginUser,
   getUsers,
@@ -190,5 +259,7 @@ module.exports = {
   getUser,
   DropUser,
   ChangeUser,
+  findEmail,
+  findPass
 };
  

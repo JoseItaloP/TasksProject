@@ -10,7 +10,7 @@ import { IoIosClose } from "react-icons/io"
 export default function EditUserPage ({UserData}: {UserData:UserType}) {
 
   const [name, setName] = useState(UserData.UserName)
-  const [senha, setSenha] = useState(UserData.Password)
+  const [senha, setSenha] = useState('')
   const [email, setEmail] = useState(UserData.Email)
   const [loading, setLoading] = useState(false)
   const [erros, setErros] = useState<ErroType[]>([]);

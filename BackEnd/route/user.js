@@ -4,7 +4,9 @@ const {
     CreateUser,
     getUser,
     DropUser,
-    ChangeUser
+    ChangeUser,
+    findEmail,
+    findPass
 } = require('../controller/userControler')
 
 const optgetUsers = {
@@ -32,6 +34,13 @@ const optChangeUser = {
     handler: ChangeUser,
 }
 
+const optFindEmail={
+    handler: findEmail,
+}
+
+const optFindPass={
+    handler: findPass,
+}
 const UserRoute = (fastify, opt, done) => {
 
     //GET allUSER
@@ -45,6 +54,11 @@ const UserRoute = (fastify, opt, done) => {
 
     //POST create user
     fastify.post("/user", optCreateUser)
+
+    //POST get Email
+    fastify.post("/user/findEmail", optFindEmail)
+
+    fastify.post("/user/findPas", optFindPass)
 
     //DELETE drop user
     fastify.delete("/user/:id", optDropUser)

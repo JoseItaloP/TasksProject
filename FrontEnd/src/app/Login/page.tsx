@@ -18,7 +18,7 @@ export default function Login() {
   const router = useRouter()
 
   async function handleSubmit() {
-    const NewUser: newLoginUser = { UserName, Password}
+    const NewUser: newLoginUser = { UserName, Password }
     setLoading(true)
     if(UserName && Password){
       const LoginErro = await singIn(NewUser) 
@@ -37,6 +37,10 @@ export default function Login() {
         const erros: ErroType[] = []
         erros.push({id: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos"})
         setErros(erros)
+        setTimeout(() => {
+          setErros((prev) => prev.filter((e) => e.id !== erros[0].id)); 
+
+        }, 5000);
   
       }
     }
@@ -118,10 +122,25 @@ export default function Login() {
           <h1 className="text-xl my-2">Não possui conta?</h1>
           <button
           onClick={()=>router.push('/newUser')}
-            className="w-full bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"
+            className="mb-2 w-3/4 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"
           >
             Registre-se!
           </button>
+          <div className="flex ">
+
+          <button
+          onClick={()=>router.push('/findEmail')}
+            className="mr-1 w-3/4 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"
+          >
+            Esqueci o Email
+          </button>
+          <button
+          onClick={()=>router.push('/findPassword')}
+            className="ml-1 w-3/4 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"
+          >
+            Esqueci a Senha
+          </button>
+          </div>
         </section>
       </main>
     );
