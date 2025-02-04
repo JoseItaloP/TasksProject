@@ -94,7 +94,7 @@ async function getLogedLocal(token: string){
       const res = await fetch(`http://localhost:3000/user/${id}`, methods);
   
       const data: UserType | defaultErro = await res.json();
-      console.log('Data User:', data)
+      
       User = data
     }
   } catch (e) {

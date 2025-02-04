@@ -11,15 +11,6 @@ Objetivos
 
 Paginas front-end - 
 
-	space in tasks in user(fazer maior)
-	area de senha com olhinho.
-
-	Pagina de erro ao transição entre paginas:
-		Login
-		click em task
-
-	
-	Bugs - 
 		
 Back-end
 	

@@ -36,15 +36,18 @@ export function LiTaks({ task }: { task: taskType }) {
          rounded flex items-center justify-between
          my-2 h-16 p-2 buttonHAnimation"
       >
-        <h1 className="text-2xl font-bold mr-4 left-0 w-1/6">{task.Nome}</h1>
+        <h1 className="text-2xl font-bold mr-4 left-0 w-1/6 overflow-hidden whitespace-nowrap">{task.Nome}</h1>
         <p className=" overflow-hidden text-ellipsis whitespace-nowrap w-4/6">
           {task.Descricao}
         </p>
-        <section className="ml-4 w-1/6 flex items-center">
+        <section className="ml-4 w-1/6 
+        flex items-center 
+        max-[900px]:flex-col max-[900px]:mr-2  ">
           <h2 className={`text-sm font-bold ${getPriorityC()}`}>
             {task.Priority}
           </h2>
-          <strong className="mx-1">|</strong>
+          <strong className="mx-1 
+          max-[900px]:rotate-90 max-[900px]:-my-1">|</strong>
           <h2 className={`text-sm font-bold ${getStatusC()}`}>{task.Status}</h2>
         </section>
       </Link>

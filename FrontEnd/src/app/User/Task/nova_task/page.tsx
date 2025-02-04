@@ -2,7 +2,6 @@
 
 import { ErroType, newTaskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
-import { createNewTask } from "@/app/_constructor/TaskValue";
 import { AuthContext } from "@/app/contexts/AuthContext";
 import { redirect } from "next/navigation";
 import { useContext, useState } from "react";
@@ -14,7 +13,7 @@ export default function NovaTask() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
-  const {user} = useContext(AuthContext)
+  const {createNewTask} = useContext(AuthContext)
 
   const [erros, setErros] = useState<ErroType[]>([]);
 
@@ -27,7 +26,7 @@ export default function NovaTask() {
       Priority: taskPriority,
       UserID: ''
     }
-    const resultCrete = await createNewTask(NewTask, user)
+    const resultCrete = await createNewTask(NewTask)
     if(resultCrete){
       setLoading(false)
       setErros(resultCrete)

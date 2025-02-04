@@ -35,7 +35,10 @@ export default function NewUser() {
   return (
     <section
       className="bg-cold-900 border-x border-x-hot-900 
-        h-full w-2/3 flex flex-col items-center"
+        h-full w-2/3 flex flex-col items-center 
+        max-[800px]:py-20 max-[800px]:w-3/4
+        
+        "
     >
       <div className="absolute">
         {erros.map((erro) => (
@@ -51,7 +54,7 @@ export default function NewUser() {
           </div>
         ))}
       </div>
-      <h1 className="text-2xl mt-8">Registre-se</h1>
+      <h1 className="text-2xl mt-8 max-[800px]:mt-8 max-[900px]:mt-16">Registre-se</h1>
       <form
         className="flex flex-col justify-around h-full w-3/4"
         onSubmit={(e) => {
@@ -59,7 +62,7 @@ export default function NewUser() {
           hamdleSubmit()
         }}
       >
-        <label className="flex flex-col">
+        <label className="flex flex-col max-[800px]:my-2">
           <h2 className="text-xl">Username</h2>
           <input
             type="text"
@@ -70,7 +73,7 @@ export default function NewUser() {
             onChange={(e) => setUsername(e.target.value)}
           />
         </label>
-        <label className="flex flex-col">
+        <label className="flex flex-col max-[800px]:my-2">
           <h2 className="text-xl">Email</h2>
           <input
             type="email"
@@ -81,7 +84,7 @@ export default function NewUser() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="flex flex-col">
+        <label className="flex flex-col max-[800px]:my-2">
           <h2 className="text-xl">Confirme o Email</h2>
           <input
             type="email"
@@ -95,7 +98,10 @@ export default function NewUser() {
         <input
           type="submit"
           value="Enviar"
-          className="p-4 bg-hot-800 text-cold-900 buttonHAnimationINV border border-hot-900 rounded"
+          className="p-4 bg-hot-800 text-cold-900 buttonHAnimationINV 
+          border border-hot-900 rounded
+          max-[800px]:mt-4
+          "
         />
       </form>
     </section>

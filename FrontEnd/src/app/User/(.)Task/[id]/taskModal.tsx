@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
-import { UpdateTask } from "@/app/_constructor/TaskValue";
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
 
@@ -16,13 +15,9 @@ export default function TaskModal({ params }: { params: number }) {
   const [ColorLineP, setColorLineP] = useState<boolean>(false);
   const [ColorLineS, setColorLineS] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
-  // const [taskName, setTaskName] = useState('');
-  // const [taskDescription, setTaskDescription] = useState('');
-  // const [taskStatus, setTaskStatus] = useState('');
-  // const [taskPriority, setTaskPriority] = useState('');
   const [loading, setLoading] = useState(false)
   const [erros, setErros] = useState<ErroType[]>([]);
-  const {Ftasks} = useContext(AuthContext)
+  const {Ftasks, UpdateTask} = useContext(AuthContext)
   const router = useRouter();
 
   useEffect(() => {
@@ -39,11 +34,6 @@ export default function TaskModal({ params }: { params: number }) {
         }
 
         setTask(taskFind);
-        // setTaskName(fetchedTask.Nome)
-        // setTaskDescription(fetchedTask.Descricao)
-        // setTaskStatus(fetchedTask.Status)
-        // setTaskPriority(fetchedTask.Priority)
-
         const priorityClass = getPriorityClass(taskFind.Priority);
         const statusClass = getStatusClass(taskFind.Status);
 

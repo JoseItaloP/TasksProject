@@ -91,17 +91,17 @@ export default function FindEmail() {
         className="flex flex-col items-center"
       >
         <label className="flex flex-col items-center my-2">
-          <h1 className="text-2xl mb-4">Forneça o nome de Usuário para continuar</h1>
+          <h1 className="text-2xl mb-4 text-center">Forneça o nome de Usuário para continuar</h1>
           <input
             type="text"
             name=""
             id=""
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-            className="w-full p-2 text-cold-800 bg-hot-700 border border-cold-800 rounded"
+            className="w-full max-[800px]:w-3/4 p-2 text-cold-800 bg-hot-700 border border-cold-800 rounded"
           />
         </label>
-        <input type="submit" value="Resgatar Email" className="w-3/5 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"/>
+        <input type="submit" value="Resgatar Email" className="w-3/5 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900 "/>
       </form>
     </main>
   );

@@ -6,46 +6,32 @@ import { ErroType, newLoginUser } from "../_constructor/_Types";
 import LoadingPage from "../_constructor/LoadingPage";
 import { AuthContext } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { FaEye, FaEyeSlash  } from "react-icons/fa";
 
 
 export default function Login() {
   const [UserName, setUserName] = useState('')
   const [Password, setPassword] = useState('')
+  const [typeP, setTypeP] = useState('password')
+  const [eye, setEye] = useState(false)
  
   const [erros, setErros] = useState<ErroType[]>([]);
-  const [loading, setLoading] = useState(false)
-  const {user, singIn} = useContext(AuthContext)
+  
+  const {userHeader, singIn, loading} = useContext(AuthContext)
   const router = useRouter()
 
   async function handleSubmit() {
     const NewUser: newLoginUser = { UserName, Password }
-    setLoading(true)
-    if(UserName && Password){
       const LoginErro = await singIn(NewUser) 
       if(LoginErro){
-
-          setLoading(false)
           setErros(LoginErro)
           setTimeout(() => {
             setErros((prev) => prev.filter((e) => e.id !== LoginErro[0].id)); 
-
-      }, 5000);
-
-      }else{
-
-        setLoading(false)
-        const erros: ErroType[] = []
-        erros.push({id: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos"})
-        setErros(erros)
-        setTimeout(() => {
-          setErros((prev) => prev.filter((e) => e.id !== erros[0].id)); 
-
-        }, 5000);
-  
+          }, 5000);
       }
-    }
+    
   }
-  if(user){
+  if(userHeader){
     return(
       <main className="h-full w-full flex flex-col items-center justify-center">
         <h1 className="text-4xl mb-2">Você já esta logado!</h1>
@@ -58,7 +44,7 @@ export default function Login() {
       <main className="h-full w-full flex flex-col items-center justify-center">
         {loading ? <LoadingPage absolt={true} />
          : ''}
-        <div className="absolute top-0">
+        <div className="absolute top-0" key={erros.length}>
           {erros.map((erro) => (
             <div
               key={erro.id}
@@ -73,7 +59,7 @@ export default function Login() {
           ))}
         </div>
   
-        <section className="bg-cold-800 text-hot-700 h-2/4 border border-hot-900 rounded flex flex-col items-center justify-between">
+        <section className="bg-cold-800 text-hot-700 h-2/4 max-[900px]:h-2/5 max-[800px]:h-2/4 max-[400px]:h-3/4 border  border-hot-900 rounded flex flex-col items-center  ">
           <h1 className="my-1/4 text-2xl bg-cold-900 w-full p-2 rounded-t">
             Login
           </h1>
@@ -99,19 +85,38 @@ export default function Login() {
   
             <label className="flex flex-col ">
               <h2 className="text-xl">Senha:</h2>
+
+              <div className="flex items-center justify-end">
+
               <input
-                type="password"
+                type={typeP}
                 name="senha"
                 id="senha"
-                className="text-xl p-1 rounded bg-cold-900 text-hot-700"
+                className="text-xl p-1 rounded bg-cold-900 text-hot-700 
+                
+                "
                 value={Password}
                 onChange={(e)=>setPassword(e.target.value)}
               />
+              {eye ? 
+              <FaEyeSlash 
+              className="absolute z-10 mr-2"
+              onClick={()=>{
+                setEye(!eye)
+                setTypeP('password')}} />
+              : 
+              <FaEye  
+              className="absolute z-10 mr-2"
+              onClick={()=>{
+                setEye(!eye)
+                setTypeP('text')}}/>
+            }
+              </div>
             </label>
   
             <button
               type="submit"
-              className="w-full bg-cold-900 text-hot-800 p-2 mb-4 buttonHAnimation"
+              className="w-full bg-cold-900 text-hot-800 p-2 mb-4 buttonHAnimation max-[800px]:mt-4"
             >
               Enviar
             </button>

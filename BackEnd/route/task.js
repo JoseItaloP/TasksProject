@@ -1,6 +1,6 @@
 const {
     getTasks,
-    getTask,
+    getUserTasks,
     postTasks,
     deleteTasks,
     putTasks
@@ -11,7 +11,7 @@ const optGetAllTask = {
 }
 
 const optGetTask = {
-    handler: getTask,
+    handler: getUserTasks,
 }
 
 const optPostTask = {
@@ -31,8 +31,9 @@ const TaskRoute = (fastify, opt, done) =>{
     // GET tasks
     fastify.get("/user/task", optGetAllTask)
 
-    // GET single task
+    // GET user Tasks 
     fastify.get("/user/task/:id", optGetTask)
+    
 
     // POST Create new taks
     fastify.post("/user/task", optPostTask)

@@ -2,7 +2,6 @@
 
 import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
-import {  UpdateTask } from "@/app/_constructor/TaskValue";
 import { AuthContext } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
@@ -17,15 +16,11 @@ export default function TaskModal({params}: {params: number}){
     const [ColorLineS, setColorLineS]           = useState<boolean>(false);
     const [CreadoEm, setCreadoEm]               = useState('')
     const [edit, setEdit]                       = useState<boolean>(false);
-    // const [taskName, setTaskName]               = useState('');
-    // const [taskDescription, setTaskDescription] = useState('');
-    // const [taskStatus, setTaskStatus]           = useState('');
-    // const [taskPriority, setTaskPriority]       = useState('');
     const router                                = useRouter();
     const [loading, setLoading] = useState(false)
     const [erros, setErros] = useState<ErroType[]>([]);
     
-    const {Ftasks} = useContext(AuthContext)
+    const {Ftasks, UpdateTask} = useContext(AuthContext)
         
 
     useEffect(() => {
@@ -42,10 +37,6 @@ export default function TaskModal({params}: {params: number}){
             }
     
             setTask(taskFind);
-            // setTaskName(fetchedTask.Nome)
-            // setTaskDescription(fetchedTask.Descricao)
-            // setTaskStatus(fetchedTask.Status)
-            // setTaskPriority(fetchedTask.Priority)
     
             const priorityClass = getPriorityClass(taskFind.Priority);
             const statusClass = getStatusClass(taskFind.Status);
@@ -71,46 +62,6 @@ export default function TaskModal({params}: {params: number}){
         resolveParams();
       }, [params, Ftasks, taskID]);
     
-      // useEffect(() => {
-      //   async function fetchTask() {
-      //     if (taskID === null) return;
-      //     try {
-      //       const taskFind = Ftasks?.find((task)=> task.ID == taskID) || null
-            
-      //       if (taskFind === null) {
-      //         throw new Error(`Objeto com ID ${taskID} não encontrado`);
-      //       }
-    
-      //       setTask(taskFind);
-      //       // setTaskName(fetchedTask.Nome)
-      //       // setTaskDescription(fetchedTask.Descricao)
-      //       // setTaskStatus(fetchedTask.Status)
-      //       // setTaskPriority(fetchedTask.Priority)
-    
-      //       const priorityClass = getPriorityClass(taskFind.Priority);
-      //       const statusClass = getStatusClass(taskFind.Status);
-
-      //       const createdAt = JSON.stringify(taskFind?.created_at) || "";
-      //       setCreadoEm(createdAt
-      //       .replace(/\D/g, '')
-      //       .slice(0, 8)
-      //       .match(/(\d{4})(\d{2})(\d{2})/)
-      //       ?.slice(1, 4)
-      //       .reverse()
-      //       .join('/') || '00/00/0000')
-    
-      //       setPriority(priorityClass);
-      //       setStatus(statusClass);
-      //       setColorLineP(priorityClass === "text-media");
-      //       setColorLineS(statusClass === "text-atuando");
-      //     } catch (error) {
-      //       console.error(error);
-      //     }
-      //   }
-    
-      //   fetchTask();
-      // }, [taskID]);
-
       const getPriorityClass = (priority: string): string => {
         switch (priority) {
           case "baixa":

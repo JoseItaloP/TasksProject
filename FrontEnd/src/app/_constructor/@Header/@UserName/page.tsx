@@ -4,7 +4,6 @@ import { redirect,  useRouter } from "next/navigation";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import EditUserPage from "./@EditUserPage/page";
-import LogginOutUser from "./LogginOutUser";
 import { IoIosClose } from "react-icons/io";
 import LoadingPage from "../../LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
@@ -12,16 +11,18 @@ import { UserType } from "../../_Types";
 
 
 export default function UserName() {
-  const { user } = useContext(AuthContext);
+  const { userHeader, LogginOutUser } = useContext(AuthContext);
   const [UsedUser, setUsedUser]= useState<UserType|null>(null)
   const [editUser, setEditUser] = useState<boolean>(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   
   useEffect(()=>{
-    setUsedUser(user)
-    setLoading(false)
-  },[user])
+    console.log('userheader: ', userHeader)
+    setEditUser(false)
+    setUsedUser(userHeader)
+    
+  },[userHeader])
 
   async function LogOut(){
     setLoading(true)
@@ -38,7 +39,9 @@ export default function UserName() {
 
   function ToUser(){
     setLoading(true)
+    router.refresh()
     router.push('/User')
+    setLoading(false)
   }
     if(UsedUser){
 

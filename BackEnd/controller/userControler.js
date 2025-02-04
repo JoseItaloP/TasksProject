@@ -192,11 +192,22 @@ const ChangeUser = async (req, reply) => {
     const {Username,Password, Email} = req.body;
     const con = await connection();
     const date = getFormatData();
+    if(Password){
+      const SaltK = GeneratePassword(16)
+      const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltK)
+      const hashedPassword = await hash(SaltPass, 8)
+  
+      await con.query(`UPDATE User SET UserName='${Username}', Password='${hashedPassword}', Email='${Email}', Salt_Key='${SaltK}', updated_at=${date} WHERE ID=${id}`)
+  
+      const [result] = await con.query("SELECT * FROM User");
+      reply.send(result);
+    }else{
+      await con.query(`UPDATE User SET UserName='${Username}',  Email='${Email}', updated_at=${date} WHERE ID=${id}`)
+  
+      const [result] = await con.query("SELECT * FROM User");
+      reply.send(result);
+    }
 
-    await con.query(`UPDATE User SET UserName='${Username}', Password='${Password}', Email='${Email}', updated_at=${date} WHERE ID=${id}`)
-
-    const [result, table] = await con.query("SELECT * FROM User");
-    reply.send(result);
 
   }catch(err){
     reply.code(500).send(err)

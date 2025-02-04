@@ -1,23 +1,27 @@
 'use client'
 
 import { ErroType, UserType } from "@/app/_constructor/_Types"
-import { useState } from "react"
-import EditUserhamdle from "./EditUserhamdle"
-import useGoRouter from "@/app/_constructor/GoRouter"
+import { useContext, useState } from "react"
 import LoadingPage from "@/app/_constructor/LoadingPage"
 import { IoIosClose } from "react-icons/io"
+import { FaEye, FaEyeSlash  } from "react-icons/fa";
+import { AuthContext } from "@/app/contexts/AuthContext"
+import { useRouter } from "next/navigation"
 
 export default function EditUserPage ({UserData}: {UserData:UserType}) {
 
   const [name, setName] = useState(UserData.UserName)
   const [senha, setSenha] = useState('')
   const [email, setEmail] = useState(UserData.Email)
-  const [loading, setLoading] = useState(false)
   const [erros, setErros] = useState<ErroType[]>([]);
-  const goToRoute = useGoRouter()
+
+  const {EditUserhamdle, loading} = useContext(AuthContext)
+
+  const [typeP, setTypeP] = useState('password')
+  const [eye, setEye] = useState(false)
+  const router = useRouter()
 
   async function hamdleSubmit(){
-    setLoading(true)
     const NewEdit = {
       ID: UserData.ID,
       UserName: name,
@@ -28,13 +32,12 @@ export default function EditUserPage ({UserData}: {UserData:UserType}) {
      const result = await EditUserhamdle(NewEdit)
 
      if(result){
-      setLoading(false)
       setErros(result)
       setTimeout(() => {
         setErros((prev) => prev.filter((e) => e.id !== result[0].id)); 
       }, 5000);
      }else{
-      goToRoute('Login')
+      router.push('/Login')
      }
     
   }
@@ -69,7 +72,23 @@ export default function EditUserPage ({UserData}: {UserData:UserType}) {
       
       <label htmlFor="" className="flex flex-col w-full">
         <h1 className="font-semibold">Senha</h1>
-        <input type="password" name="" id="" value={senha} onChange={(e)=>setSenha(e.target.value)} className="w-full bg-cold-800 text-hot-800 rounded p-1 border border-white"/>
+          <div className="flex items-center justify-end">
+            <input type={typeP} name="" id="" value={senha} onChange={(e)=>setSenha(e.target.value)} className="w-full bg-cold-800 text-hot-800 rounded p-1 border border-white"/>
+            {eye ? 
+              <FaEyeSlash 
+              className="absolute z-10 mr-2 text-hot-800"
+              onClick={()=>{
+                setEye(!eye)
+                setTypeP('password')}} />
+              : 
+              <FaEye  
+              className="absolute z-10 mr-2 text-hot-800"
+              onClick={()=>{
+                setEye(!eye)
+                setTypeP('text')}}/>
+            }
+          </div>
+        
       </label>
 
       <label htmlFor="" className="flex flex-col w-full">

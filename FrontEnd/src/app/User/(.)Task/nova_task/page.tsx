@@ -1,7 +1,6 @@
 "use client";
 import { ErroType, newTaskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
-import { createNewTask } from "@/app/_constructor/TaskValue";
 import { AuthContext } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
@@ -13,32 +12,35 @@ export default function NovaTaskModal() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
-  const {user} = useContext(AuthContext)
+  const {createNewTask, user} = useContext(AuthContext)
   const router = useRouter()
 
   const [erros, setErros] = useState<ErroType[]>([]);
 
   async function hamdleSubmit() {
+
     setLoading(true)
-    const NewTask: newTaskType = {
+   
+    const newTask: newTaskType = {
       Name: taskName,
       Descrição: taskDescription,
       Status: taskStatus,
       Priority: taskPriority,
       UserID: ''
     }
-    const resultCrete = await createNewTask(NewTask, user)
+    const User = user
+    const data = {newTask, User}
+    const resultCrete = await createNewTask(data)
     if(resultCrete){
       setLoading(false)
       setErros(resultCrete)
       setTimeout(() => {
         setErros((prev) => prev.filter((e) => e.id !== resultCrete[0].id)); 
       }, 5000);
-      
     }else{
-      router.push('/User')
+      router.refresh()
+      router.push(`/User`)
     }
-
   }
 
   return (
@@ -134,7 +136,7 @@ export default function NovaTaskModal() {
         <input
           type="submit"
           value="Enviar"
-          className="w-full p-2 bg-hot-700 text-cold-700 rounded"
+          className="w-full p-2 bg-hot-700 text-cold-700 rounded border border-cold-300 buttonHAnimationINV"
         />
       </form>
     </section>
