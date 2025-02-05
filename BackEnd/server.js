@@ -1,18 +1,30 @@
 require('dotenv').config()
-const fastify = require("fastify")({ logger: true });
-const cords = require ('@fastify/cors')
-fastify.register(cords)
-fastify.register(require("./route/task"));
-fastify.register(require('./route/user'))
+import Fastify  from 'fastify';
+import cords from '@fastify/cors'
+import TaskRoute from './route/task'
+import UserRoute from './route/user';
+const app = Fastify({
+  logger: true,
+})
+app.register(cords)
+app.register(TaskRoute);
+app.register(UserRoute)
 
+app.get('/hello',()=>{
+  return 'hello'
+})
 
-const start = async () => {
-  try {
-    await fastify.listen({ port: process.env.PORT_CONNECTION });
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
+app.listen({port: process.env.PORT_CONNECTION}).then(()=>{
+  console.log('conected')
+})
 
-start();
+// const start = async () => {
+//   try {
+//     await fastify.listen({ port: process.env.PORT_CONNECTION });
+//   } catch (err) {
+//     fastify.log.error(err);
+//     process.exit(1);
+//   }
+// };
+
+// start();
