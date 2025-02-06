@@ -52,6 +52,29 @@ type defaultErro = {
     message: string
 }
 
+type AuthContextType = {
+    isAuthenticated: boolean;
+    user: UserType | null;
+    userHeader: UserType | null;
+    getLoginUser: () => Promise<UserType | null>;
+    EditUserhamdle: (NewEdit: {
+      ID: number;
+      UserName: string;
+      Password: string;
+      Email: string;
+    }) => Promise<ErroType[] | null>;
+    UpdateTask: (newTask: NewTaskUpdateType) => Promise<ErroType[] | null>;
+    createNewTask: (
+      {newTask, User}: 
+      {newTask: newTaskType, User: UserType | null}
+      ) => Promise<ErroType[] | null>;
+    Ftasks: taskType[] | null;
+    loading: boolean;
+    loadingTasks: boolean;
+    LogginOutUser: () => Promise<boolean>;
+    singIn: (data: newLoginUser) => Promise<ErroType[] | void>;
+  };
+
 export type {
         taskType,
         UserType,
@@ -60,5 +83,6 @@ export type {
         ErroType,
         newLoginUser,
         NewTaskUpdateType,
-        defaultErro
+        defaultErro,
+        AuthContextType
     }

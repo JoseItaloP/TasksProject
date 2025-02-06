@@ -1,7 +1,7 @@
 'use server'
 import { cookies } from "next/headers";
 import jwt from 'jsonwebtoken'
-import { defaultErro, ErroType, newLoginUser, NewUserData, UserType } from "./_Types";
+import { defaultErro, ErroType, newLoginUser, NewUserData, taskType, UserType } from "./_Types";
 let User: UserType | defaultErro | null = null;
 
 type JwtPayLoad = {
@@ -42,36 +42,6 @@ async function LoginUser( {UserName, Password}: newLoginUser): Promise<UserType 
     }
 }
 
-
-// async function LoginUserToken(Token: string) {
-//   try {
-
-//     const jwtPass = process.env.JWT_PASS ?? 'minha-senha';
-//     console.log('token in LoginUser: ',Token)
-//     if(Token){
-//       const {id, TokenUser} = jwt.verify(Token, jwtPass) as JwtPayLoad
-//       console.log('id get: ', id)
-//       const methods = {
-//         method: "GET",
-//         headers: {
-//           "Content-Types": "application/json",
-//           "Authorization": `${TokenUser}`
-//         },
-  
-//       };
-  
-//       const res = await fetch(`http://localhost:3000/user/${id}`, methods);
-  
-//       const data: UserType | defaultErro = await res.json();
-  
-//       User = data
-//     }
-//   } catch (e) {
-//     console.error(e);
-//   } finally {
-//     return User;
-//   }
-// }
 
 async function getLogedLocal(token: string){
   try {
@@ -184,11 +154,41 @@ async function EditUser(NewEdit: {
 
 }
 
+async function FilterTasksUser(user: UserType | null) {
+  const User: UserType | null = user;
+
+  if (User) {
+
+    const IDuSER = User.ID;
+
+    try {
+      const methods = {
+        method: "GET",
+        headers: {
+          "Content-Types": "application/json",
+        },
+      };
+
+      const res = await fetch(`http://localhost:3000/user/task/${IDuSER}`, methods);
+      const data: taskType[] = await res.json();
+
+      console.log("Data: ", data);
+      return data
+     
+    } catch (e) {
+      console.error(e);
+      return [];
+    } 
+  } else {
+    return [];
+  }
+}
+
 export {
   LoginUser,
   getLogedLocal,
   LogoutLocalUser,
   RegistratUser,
   EditUser,
-  // LoginUserToken
+  FilterTasksUser
 };

@@ -1,82 +1,14 @@
-
-const nodemailer = require("nodemailer")
 const {v4} = require("uuid")
-const connection = require("../config");
+const connection = require('../config')
 const getFormatData = require('../functions/FormData').exports
 const {hash, compare} = require('bcryptjs')
-
-const smtp = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth:{
-    user: "verifyers843@gmail.com",
-    pass: "tzja ywez jjmw gozi"
-  },
-  tls: {
-    ciphers: 'SSLv3'
-  }
-})
-
-async function virifyUserLogin(UserName, Email){
-  const con = await connection();
-  const [result, table] = await con.query("SELECT * FROM User");
-  const resposta = result.map((user)=>{
-    if(user.UserName == UserName || user.Email == Email){
-      return true
-    }
-  })
-  const isTrue = resposta.find((value)=>value === true)
-  if(isTrue){
-    return true
-  }else{
-    return false
-  }
-}
-
-async function senPassEmail(Email, Senha){
-  const configEmail = {
-    from: "verifyers843@gmail.com",
-    to: `${Email}`,
-    subject: "Senha do site de tarefas",
-    html: `<h1>Esta será a senha da sua conta:</h1>
-            <strong>${Senha}</strong>
-    `
-  }
-  new Promise((resolve, reject)=>{
-    smtp.sendMail(configEmail).then(res => {
-      smtp.close()
-      return resolve(res)
-    }).catch(error => {
-      console.error(error)
-    })
-  })
+const {
+  virifyUserLogin,
+  senPassEmail,
+  GeneratePassword
+} = require('../functions/UserSuporte')
 
 
-}
-
-function GeneratePassword(PassLen){
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ!@#$%^&*()+?><:{}[]";
-      let passwordLength = PassLen;
-      let password = "";
-
-      for (let i = 0; i < passwordLength; i++) {
-        let randomNumber = Math.floor(Math.random() * chars.length);
-        password += chars.substring(randomNumber, randomNumber + 1);
-      }
-      return password
-}
-
-
-const getUsers = async (req, reply) => {
-  try {
-    const con = await connection();
-    const [result, table] = await con.query("SELECT * FROM User");
-    reply.send(result);
-  } catch (err) {
-    reply.code(500).send(err);
-  }
-};
 
 const getUser = async (req,reply) =>{
   const {authorization} = req.headers
@@ -118,7 +50,6 @@ const LoginUser = async (req, reply) => {
 
       const comparePass = await compare(passToCompare, dataSenha)
 
-      console.log('comparação de senha com salt_key: ', comparePass)
 
       if(comparePass){
 
@@ -173,25 +104,14 @@ const CreateUser = async (req, reply) => {
   }
 };
 
-const DropUser = async (req, reply) => {
-  try {
-    const { id } = req.params;
-    const con = await connection();
-    await con.query(`DELETE FROM User2 WHERE id=${id}`);
-
-    const [result, table] = await con.query("SELECT * FROM User");
-    reply.send(result);
-  } catch (err) {
-    reply.code(500).send(err);
-  }
-};
-
 const ChangeUser = async (req, reply) => {
   try{
+
     const {id} = req.params;
     const {Username,Password, Email} = req.body;
     const con = await connection();
     const date = getFormatData();
+
     if(Password){
       const SaltK = GeneratePassword(16)
       const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltK)
@@ -200,7 +120,9 @@ const ChangeUser = async (req, reply) => {
       await con.query(`UPDATE User SET UserName='${Username}', Password='${hashedPassword}', Email='${Email}', Salt_Key='${SaltK}', updated_at=${date} WHERE ID=${id}`)
   
       const [result] = await con.query("SELECT * FROM User");
+
       reply.send(result);
+
     }else{
       await con.query(`UPDATE User SET UserName='${Username}',  Email='${Email}', updated_at=${date} WHERE ID=${id}`)
   
@@ -240,9 +162,9 @@ const findPass = async (req,reply)=>{
     const con = await connection();
 
     const [result, table] = await con.query(`SELECT * FROM User WHERE Email='${Email}'`)
-    console.log('result:', result[0])
+    
     if(result[0]){
-      console.log('entrou')
+      
       const Password = GeneratePassword(8)
       const SaltK = GeneratePassword(16)
       const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltK)
@@ -253,6 +175,7 @@ const findPass = async (req,reply)=>{
       await con.query(`UPDATE User SET Password='${hashedPassword}', updated_at=${dateUpdate}, Salt_Key='${SaltK}' WHERE ID=${result[0].ID}`)
 
       const sendData = await senPassEmail(Email, Password)
+      
       reply.send(true)
     }else{
       reply.code(500).send(false)
@@ -265,10 +188,8 @@ const findPass = async (req,reply)=>{
 
 module.exports = {
   LoginUser,
-  getUsers,
   CreateUser,
   getUser,
-  DropUser,
   ChangeUser,
   findEmail,
   findPass

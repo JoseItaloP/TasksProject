@@ -3,53 +3,44 @@ const getFormatData = require("../functions/FormData").exports;
 
 const getTasks = async (req, reply) => {
   try {
+
     const con = await connection();
+
     const [result, table] = await con.query("SELECT * FROM Tasks");
+
     reply.send(result);
+
   } catch (err) {
+
     reply.code(500).send(err);
+
   }
 };
 
-// const getTask = async (req, reply) => {
-//   try {
-//     const { id } = req.params;
-//     const con = await connection();
-//     const [result, table] = await con.query(
-//       `SELECT * FROM Tasks WHERE id_task=${id}`
-//     );
-
-//     reply.send(result);
-//   } catch (err) {
-//     reply.code(500).send(err);
-//   }
-// };
-
 const getUserTasks = async (req, reply) => {
   const { id } = req.params;
-  console.log('gettasks')
   try {
     const con = await connection();
 
-    // Pegando os dados do usuário
+   
     const [result] = await con.query(`SELECT my_tasks FROM User WHERE ID=${id}`);
 
     if (result.length === 0) {
       return reply.code(404).send({ message: "Usuário não encontrado" });
     }
-    console.log('result: ', result)
 
-    // Pegando todas as tarefas
+    
     const [tasks] = await con.query("SELECT * FROM Tasks");
-    console.log('tasks: ', tasks)
 
     const filteredTasks = tasks.filter((task) => result[0].my_tasks.includes(task.ID));
-    console.log('filtro: ', filteredTasks)
 
     reply.send(filteredTasks);
+
   } catch (err) {
+
     console.error("Erro ao buscar tarefas do usuário:", err);
     reply.code(500).send(err);
+    
   }
 };
 

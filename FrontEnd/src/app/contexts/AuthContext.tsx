@@ -4,6 +4,7 @@ import {
   getLogedLocal,
   LoginUser,
   LogoutLocalUser,
+  FilterTasksUser
 } from "../_constructor/UserValue";
 import {
   defaultErro,
@@ -16,59 +17,8 @@ import {
 } from "../_constructor/_Types";
 import { usePathname, useRouter } from "next/navigation";
 import { parseCookies } from "nookies";
+import { AuthContextType } from "../_constructor/_Types";
 
-async function FilterTasksUser(user: UserType | null) {
-  const User: UserType | null = user;
-
-  if (User) {
-
-    const IDuSER = User.ID;
-
-    try {
-      const methods = {
-        method: "GET",
-        headers: {
-          "Content-Types": "application/json",
-        },
-      };
-
-      const res = await fetch(`http://localhost:3000/user/task/${IDuSER}`, methods);
-      const data: taskType[] = await res.json();
-
-      console.log("Data: ", data);
-      return data
-     
-    } catch (e) {
-      console.error(e);
-      return [];
-    } 
-  } else {
-    return [];
-  }
-}
-
-type AuthContextType = {
-  isAuthenticated: boolean;
-  user: UserType | null;
-  userHeader: UserType | null;
-  getLoginUser: () => Promise<UserType | null>;
-  EditUserhamdle: (NewEdit: {
-    ID: number;
-    UserName: string;
-    Password: string;
-    Email: string;
-  }) => Promise<ErroType[] | null>;
-  UpdateTask: (newTask: NewTaskUpdateType) => Promise<ErroType[] | null>;
-  createNewTask: (
-    {newTask, User}: 
-    {newTask: newTaskType, User: UserType | null}
-    ) => Promise<ErroType[] | null>;
-  Ftasks: taskType[] | null;
-  loading: boolean;
-  loadingTasks: boolean;
-  LogginOutUser: () => Promise<boolean>;
-  singIn: (data: newLoginUser) => Promise<ErroType[] | void>;
-};
 
 export const AuthContext = createContext({} as AuthContextType);
 
@@ -87,7 +37,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { "TaskDefine-Token": token } = parseCookies();
 
       if (token) {
-        console.log(token);
         const LocalUser: UserType | defaultErro | null = await getLogedLocal(
           token
         );
