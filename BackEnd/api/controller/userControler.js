@@ -157,6 +157,7 @@ const findEmail = async (req,reply)=>{
 
 const findPass = async (req,reply)=>{
   const {Email} = req.body
+  console.log(Email)
   try{
 
     const con = await connection();

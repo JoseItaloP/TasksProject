@@ -14,9 +14,8 @@ export default async function PassHamdler (Email: string): Promise<ErroType[] | 
             })
         }
         const response = await fetch(`${process.env.API_URL}/user/findPas`,methods)
-        const data: boolean = await response.json()
-
-        
+        const data: boolean = await response.json();
+        console.log(data)
         
         if(data){
             return true

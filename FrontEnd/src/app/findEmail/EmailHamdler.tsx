@@ -16,7 +16,6 @@ export default async function EmailHamdler (UserName: string): Promise<ErroType[
         const response = await fetch(`${process.env.API_URL}/user/findEmail`,methods)
         const data: UserType = await response.json()
 
-        
         if(data){
             return data.Email
         }else{
