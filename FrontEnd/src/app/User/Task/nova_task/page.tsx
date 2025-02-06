@@ -13,12 +13,14 @@ export default function NovaTask() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
-  const {createNewTask} = useContext(AuthContext)
+  const {createNewTask, user} = useContext(AuthContext)
 
   const [erros, setErros] = useState<ErroType[]>([]);
 
   async function hamdleSubmit() {
+
     setLoading(true)
+
     const NewTask: newTaskType = {
       Name: taskName,
       Descrição: taskDescription,
@@ -26,7 +28,9 @@ export default function NovaTask() {
       Priority: taskPriority,
       UserID: ''
     }
-    const resultCrete = await createNewTask(NewTask)
+    const User = user
+    const resultCrete = await createNewTask({NewTask, User})
+
     if(resultCrete){
       setLoading(false)
       setErros(resultCrete)
@@ -93,7 +97,7 @@ export default function NovaTask() {
             <select
               className="bg-hot-800 text-cold-800 text-lg"
               onChange={(e) => {
-                console.log(taskStatus);
+                
                 setTaskStatus(e.target.value);
               }}
               name="status"
@@ -111,7 +115,7 @@ export default function NovaTask() {
               name="prioridade"
               id="prioridade"
               onChange={(e) => {
-                console.log(taskPriority);
+
                 setTaskPriority(e.target.value);
               }}
             >

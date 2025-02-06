@@ -14,10 +14,10 @@ import {
   NewTaskUpdateType,
   taskType,
   UserType,
+  AuthContextType
 } from "../_constructor/_Types";
 import { usePathname, useRouter } from "next/navigation";
 import { parseCookies } from "nookies";
-import { AuthContextType } from "../_constructor/_Types";
 
 
 export const AuthContext = createContext({} as AuthContextType);
@@ -54,13 +54,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user !== null) {
-      console.log("Data User:", user);
+      
       setLoading(false);
 
       async function setingTasks() {
         setLoadingTasks(true);
         const filtredTasks = await FilterTasksUser(user);
-        console.log('filtrado: ', filtredTasks)
+        
         setFtasks(filtredTasks);
         
         setLoadingTasks(false);
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(LocalUser);
         setUserHeader(LocalUser);
         setLoading(false);
-        return LocalUser; // Agora retorna corretamente o usuário
+        return LocalUser; 
       }
     }
 
@@ -105,11 +105,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
     if ("ID" in LogedUser) {
+
       setUser(LogedUser);
-      console.log(user);
+
       setLoading(false);
+
       router.refresh();
       router.push("/User");
+
     } else {
       setLoading(false);
       errors.push(LogedUser);
@@ -190,7 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const fetchData = await fetch(
-        `http://localhost:3000/user/task/${TaskID}`,
+        `${process.env.API_URL}/user/task/${TaskID}`,
         {
           method: "PUT",
           headers: {
@@ -236,9 +239,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function createNewTask({newTask, User}: {newTask: newTaskType, User: UserType | null}): Promise<ErroType[] | null> {
+  async function createNewTask({NewTask, User}: 
+    {NewTask: newTaskType, User: UserType | null}): Promise<ErroType[] | null> {
 
-    const { Name, Descrição, Priority, Status } = newTask;
+    const { Name, Descrição, Priority, Status } = NewTask;
 
     const UserID = User?.ID;
     const errors: ErroType[] = [];
@@ -250,14 +254,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   
     try {
-      const fetchData = await fetch("http://localhost:3000/user/task", {
+      const fetchData = await fetch(`${process.env.API_URL}/user/task`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Name, Descrição, Priority, Status, UserID }),
       });
   
       const result = await fetchData.json();
-      console.log('resultado: ', result)
 
       if (result) {
 
@@ -265,12 +268,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         const filtredTasks = await FilterTasksUser(User);
 
-        console.log("Tasks filtradas:", filtredTasks);
         
         if (filtredTasks) {
           setFtasks(filtredTasks);
         }
-        console.log('tasks updated: ', Ftasks)
   
         setLoadingTasks(false);
         return null;

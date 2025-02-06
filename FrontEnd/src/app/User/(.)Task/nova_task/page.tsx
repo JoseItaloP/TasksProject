@@ -21,7 +21,7 @@ export default function NovaTaskModal() {
 
     setLoading(true)
    
-    const newTask: newTaskType = {
+    const NewTask: newTaskType = {
       Name: taskName,
       Descrição: taskDescription,
       Status: taskStatus,
@@ -29,7 +29,7 @@ export default function NovaTaskModal() {
       UserID: ''
     }
     const User = user
-    const data = {newTask, User}
+    const data = {NewTask, User}
     const resultCrete = await createNewTask(data)
     if(resultCrete){
       setLoading(false)
@@ -105,7 +105,7 @@ export default function NovaTaskModal() {
           <select
             className="bg-hot-800 text-cold-800 text-lg"
             onChange={(e) => {
-              console.log(taskStatus);
+              
               setTaskStatus(e.target.value);
             }}
             name="status"
@@ -123,7 +123,7 @@ export default function NovaTaskModal() {
             name="prioridade"
             id="prioridade"
             onChange={(e) => {
-              console.log(taskPriority);
+              
               setTaskPriority(e.target.value);
             }}
           >

@@ -18,7 +18,7 @@ export default function UserName() {
   const router = useRouter()
   
   useEffect(()=>{
-    console.log('userheader: ', userHeader)
+    
     setEditUser(false)
     setUsedUser(userHeader)
     

@@ -6,7 +6,7 @@ export default async function NewUserResgistrat (NewUser: NewUserData): Promise<
     const errors: ErroType[] = [];
     if(NewUser.Email === NewUser.ConfEmail){
         const responce = await RegistratUser(NewUser);
-        console.log('Responsta em user Resgister: ', responce)
+        
         if(responce == 200){
             return null
         }else if(responce == 500){

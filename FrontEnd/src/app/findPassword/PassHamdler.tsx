@@ -13,10 +13,10 @@ export default async function PassHamdler (Email: string): Promise<ErroType[] | 
                 Email: Email
             })
         }
-        const response = await fetch('http://localhost:3000/user/findPas',methods)
+        const response = await fetch(`${process.env.API_URL}/user/findPas`,methods)
         const data: boolean = await response.json()
 
-        console.log('data: ', data)
+        
         
         if(data){
             return true

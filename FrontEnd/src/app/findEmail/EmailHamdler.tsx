@@ -13,7 +13,7 @@ export default async function EmailHamdler (UserName: string): Promise<ErroType[
                 UserName: UserName
             })
         }
-        const response = await fetch('http://localhost:3000/user/findEmail',methods)
+        const response = await fetch(`${process.env.API_URL}/user/findEmail`,methods)
         const data: UserType = await response.json()
 
         
