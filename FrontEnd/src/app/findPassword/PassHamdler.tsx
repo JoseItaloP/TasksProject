@@ -1,5 +1,5 @@
-import { ErroType } from "../_constructor/_Types";
 
+import { ErroType } from "../_constructor/_Types";
 
 export default async function PassHamdler (Email: string): Promise<ErroType[] | null | boolean> {
     const Erros: ErroType[] = []
@@ -13,9 +13,10 @@ export default async function PassHamdler (Email: string): Promise<ErroType[] | 
                 Email: Email
             })
         }
-        const response = await fetch(`${process.env.API_URL}/user/findPas`,methods)
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/findPas`,methods)
+
         const data: boolean = await response.json();
-        console.log(data)
         
         if(data){
             return true

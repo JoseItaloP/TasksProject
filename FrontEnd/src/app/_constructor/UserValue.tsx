@@ -20,7 +20,7 @@ async function LoginUser({
   UserName,
   Password,
 }: newLoginUser): Promise<UserType | ErroType> {
-  const response = await fetch(`${process.env.API_URL}/user/Login`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/Login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +39,7 @@ async function LoginUser({
     };
     return erro;
   } else {
-    const jwtPass = process.env.JWT_PASS ?? "minha-senha";
+    const jwtPass = process.env.NEXT_PUBLIC_JWT_PASS ?? "minha-senha";
 
     const token = jwt.sign(
       { id: result.ID, TokenUser: result.Token },
@@ -58,7 +58,7 @@ async function LoginUser({
 
 async function getLogedLocal(token: string) {
   try {
-    const jwtPass = process.env.JWT_PASS ?? "minha-senha";
+    const jwtPass = process.env.NEXT_PUBLIC_JWT_PASS ?? "minha-senha";
 
     if (token) {
       const { id, TokenUser } = jwt.verify(token, jwtPass) as JwtPayLoad;
@@ -71,7 +71,7 @@ async function getLogedLocal(token: string) {
         },
       };
 
-      const res = await fetch(`${process.env.API_URL}/user/${id}`, methods);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${id}`, methods);
 
       const data: UserType | defaultErro = await res.json();
 
@@ -113,7 +113,7 @@ async function RegistratUser(NewUser: NewUserData) {
       }),
     };
 
-    const res = await fetch(`${process.env.API_URL}/user`, methods);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, methods);
 
     if (res.status == 500) {
       return 500;
@@ -135,7 +135,7 @@ async function EditUser(NewEdit: {
 }) {
   let retorno = false;
   try {
-    const res = await fetch(`${process.env.API_URL}/user/${NewEdit.ID}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${NewEdit.ID}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -172,7 +172,7 @@ async function FilterTasksUser(user: UserType | null) {
       };
 
       const res = await fetch(
-        `${process.env.API_URL}/user/task/${IDuSER}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/task/${IDuSER}`,
         methods
       );
       const data: taskType[] = await res.json();
@@ -187,6 +187,8 @@ async function FilterTasksUser(user: UserType | null) {
     return [];
   }
 }
+
+
 
 export {
   LoginUser,

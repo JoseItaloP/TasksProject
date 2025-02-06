@@ -193,7 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const fetchData = await fetch(
-        `${process.env.API_URL}/user/task/${TaskID}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/task/${TaskID}`,
         {
           method: "PUT",
           headers: {
