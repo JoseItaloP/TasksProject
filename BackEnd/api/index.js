@@ -1,7 +1,7 @@
 
 const fastify = require('fastify')({logger: true})
 
-fastify.register(require('./route/user'),{Headers: 'Access-Control-Allow-Origin: *'})
+fastify.register(require('./route/user'))
 fastify.register(require('./route/task'))
 
 fastify.get('/', async (req, reply) => {
