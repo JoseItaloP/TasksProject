@@ -72,24 +72,28 @@ const LoginUser = async (req, reply) => {
     const con = await connection();
     const {UserName, Password} = req.body
     
-    console.error('UserName from body: ', UserName)
-    console.error('Password from body: ', Password)
 
     const [result, table] = await con.query("SELECT * FROM User");
-    console.log('Result from data: ', result)
+    
 
     const logedUserName = result.find(
       (user) => user.UserName === UserName
     );
 
-    console.error('Filter from UserName: ', logedUserName)
 
     if(logedUserName){
       const {Password: dataSenha, Salt_Key} = logedUserName
 
+      console.error('Senha do usuario: ',dataSenha)
+      console.error('Salt-key: ',Salt_Key)
+
       const passToCompare = JSON.stringify(Password) + JSON.stringify(Salt_Key)
 
+      console.log('Pass to compare: ', passToCompare)
+
       const comparePass = await compare(passToCompare, dataSenha)
+
+      console.error('Compare: ', comparePass)
 
 
       if(comparePass){
@@ -103,7 +107,7 @@ const LoginUser = async (req, reply) => {
       reply.code(500).send(null)
     }
   } catch (err) {
-    reply.code(500).send(err);
+    reply.code(500).send(null);
   }
 };
 
