@@ -94,6 +94,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     const errors: ErroType[] = [];
     if(UserName === '' || Password === ''){
+      console.log('UserName: ', UserName)
+      console.log('Password: ', Password)
       errors.push({id: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos"})
       return errors
     }
