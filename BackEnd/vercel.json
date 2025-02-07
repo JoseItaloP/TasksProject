@@ -4,5 +4,15 @@
       "source": "/(.*)",
       "destination": "/api"
     }
+  ],
+  "routes": [
+    {
+      "source": "/(.*)",
+      "destination": "/api",
+      "method": ["GET", "POST", "PUT", "DELETE"],
+      "headers":{
+        "Access-Control-Allow-Origin": "https://tasks-project-alpha.vercel.app/"
+      }
+    }
   ]
 }
