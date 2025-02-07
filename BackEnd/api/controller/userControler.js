@@ -71,11 +71,19 @@ const LoginUser = async (req, reply) => {
   try {
     const con = await connection();
     const {UserName, Password} = req.body
+    
+    console.error('UserName from body: ', UserName)
+    console.error('Password from body: ', Password)
 
     const [result, table] = await con.query("SELECT * FROM User");
+    console.log('Result from data: ', result)
+
     const logedUserName = result.find(
       (user) => user.UserName === UserName
     );
+
+    console.error('Filter from UserName: ', logedUserName)
+
     if(logedUserName){
       const {Password: dataSenha, Salt_Key} = logedUserName
 

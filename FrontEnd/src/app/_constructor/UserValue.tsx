@@ -32,6 +32,9 @@ async function LoginUser({
   });
 
   const result: UserType | null = await response.json();
+
+  console.log('resultado: ', result)
+
   if (result === null) {
     const erro = {
       id: Date.now(),
