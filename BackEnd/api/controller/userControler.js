@@ -162,11 +162,10 @@ const findPass = async (req,reply)=>{
     const con = await connection();
 
     const [result, table] = await con.query(`SELECT * FROM User WHERE Email='${Email}'`)
-    console.error('resultado: ', result)
     
     if(result[0]){
-      console.error('resultado: ', result)
       const Password = GeneratePassword(8)
+      console.log('senha: ', Password)
       const SaltK = GeneratePassword(16)
       const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltK)
 
@@ -176,7 +175,7 @@ const findPass = async (req,reply)=>{
       await con.query(`UPDATE User SET Password='${hashedPassword}', updated_at=${dateUpdate}, Salt_Key='${SaltK}' WHERE ID=${result[0].ID}`)
 
       const sendData = await senPassEmail(Email, Password)
-      
+      console.error('resultado: ', sendData)
       reply.send(true)
     }else{
       reply.code(500).send(false)
