@@ -9,9 +9,9 @@ fastify.addHook('onRequest', (req, reply, done) => {
 });
 
 
-// fastify.options('*', (req, reply) => {
-//   reply.status(204).send();
-// });
+fastify.options('*', (req, reply) => {
+  reply.status(204).send();
+});
 
 fastify.register(require('./route/user'));
 fastify.register(require('./route/task'));
