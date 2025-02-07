@@ -8,6 +8,7 @@
   "routes": [
     {
       "headers":{
+        "src": "/(.*)",
         "Access-Control-Allow-Origin": "https://tasks-project-alpha.vercel.app/"
       }
     }
