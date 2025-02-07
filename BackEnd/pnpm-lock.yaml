@@ -11,9 +11,6 @@ importers:
       '@fastify/cors':
         specifier: ^10.0.2
         version: 10.0.2
-      '@fastify/mysql':
-        specifier: ^5.0.2
-        version: 5.0.2
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -52,9 +49,6 @@ packages:
 
   '@fastify/fast-json-stringify-compiler@4.3.0':
     resolution: {integrity: sha512-aZAXGYo6m22Fk1zZzEUKBvut/CIIQe/BapEORnxiD5Qr0kPHqqI69NtEMCme74h+at72sPhbkb4ZrLd1W3KRLA==}
-
-  '@fastify/mysql@5.0.2':
-    resolution: {integrity: sha512-YFIKgtEnLM84HELiKkgxw1Q65kUx4A/X+v2m09TdcDw9BkgRV78aaxiNCQbiZ+2dghlOrLCA9QhiUa8cerKGsg==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -400,11 +394,6 @@ snapshots:
   '@fastify/fast-json-stringify-compiler@4.3.0':
     dependencies:
       fast-json-stringify: 5.10.0
-
-  '@fastify/mysql@5.0.2':
-    dependencies:
-      fastify-plugin: 5.0.1
-      mysql2: 3.12.0
 
   abort-controller@3.0.0:
     dependencies:
