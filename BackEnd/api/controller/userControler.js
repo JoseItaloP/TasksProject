@@ -162,9 +162,10 @@ const findPass = async (req,reply)=>{
     const con = await connection();
 
     const [result, table] = await con.query(`SELECT * FROM User WHERE Email='${Email}'`)
+    console.error('resultado: ', result)
     
     if(result[0]){
-      
+      console.error('resultado: ', result)
       const Password = GeneratePassword(8)
       const SaltK = GeneratePassword(16)
       const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltK)
