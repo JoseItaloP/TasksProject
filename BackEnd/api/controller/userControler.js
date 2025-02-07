@@ -84,17 +84,9 @@ const LoginUser = async (req, reply) => {
     if(logedUserName){
       const {Password: dataSenha, Salt_key} = logedUserName
 
-      console.error('Senha do usuario: ',dataSenha)
-      console.error('Salt-key: ',Salt_key)
-
       const passToCompare = JSON.stringify(Password) + JSON.stringify(Salt_key)
 
-      console.log('Pass to compare: ', passToCompare)
-
       const comparePass = await compare(passToCompare, dataSenha)
-
-      console.error('Compare: ', comparePass)
-
 
       if(comparePass){
 
