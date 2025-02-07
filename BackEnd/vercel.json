@@ -1,16 +1,16 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/api"
+      "src": "/(.*)",
+      "dest": "/api"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/api",
+      "dest": "src/api",
       "headers":{
-        "Access-Control-Allow-Origin": "https://tasks-project-alpha.vercel.app/"
+        "Access-Control-Allow-Origin": "*"
       }
     }
   ]
