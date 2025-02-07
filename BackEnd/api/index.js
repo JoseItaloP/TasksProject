@@ -1,14 +1,17 @@
 const fastify = require('fastify')({ logger: true });
 
+// Middleware para definir CORS em todas as respostas
+fastify.addHook('onRequest', (req, reply, done) => {
+  reply.header('Access-Control-Allow-Origin', 'https://tasks-project-alpha.vercel.app');
+  reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  reply.header('Access-Control-Allow-Credentials', 'true'); // Se precisar de cookies/autenticação
+  done();
+});
 
-// Tratamento de requisições OPTIONS manualmente (caso o plugin falhe)
+// Tratar requisições OPTIONS separadamente (preflight)
 fastify.options('*', (req, reply) => {
-  reply
-    .header('Access-Control-Allow-Origin', 'https://tasks-project-alpha.vercel.app')
-    .header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-    .header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    .status(204)
-    .send();
+  reply.status(204).send();
 });
 
 // Registrar rotas
