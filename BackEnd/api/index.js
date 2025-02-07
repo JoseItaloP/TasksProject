@@ -1,13 +1,5 @@
 const fastify = require('fastify')({ logger: true });
-const cors = require('@fastify/cors');
 
-// Configuração de CORS no Fastify
-fastify.register(cors, {
-  origin: ['https://tasks-project-alpha.vercel.app'], // Permite apenas este domínio
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-});
 
 // Tratamento de requisições OPTIONS manualmente (caso o plugin falhe)
 fastify.options('*', (req, reply) => {
