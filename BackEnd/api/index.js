@@ -11,7 +11,7 @@ fastify.get('/', async (req, reply) => {
 export default async function handler(req, reply) {
   await fastify.ready()
  
-  reply.setHeader('Access-Control-Allow-Origin', 'https://tasks-project-alpha.vercel.app')
+  reply.setHeader('Access-Control-Allow-Origin', '*')
   reply.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
 
   if (req.method === 'OPTIONS') {
