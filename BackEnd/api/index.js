@@ -5,8 +5,9 @@ import cors from '@fastify/cors'
 
 const app = Fastify({
   logger: true,
+}).register(cors, {
+  origin: 'https://tasks-project-alpha.vercel.app/'
 });
-await app.register(cors)
 app.register(UserRoute)
 app.register(TaskRoute)
 
