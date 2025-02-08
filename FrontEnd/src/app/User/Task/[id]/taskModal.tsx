@@ -20,23 +20,25 @@ export default function TaskModal({params}: {params: number}){
     
     const [erros, setErros] = useState<ErroType[]>([]);
     
-    const {setingTasks, UpdateTask, getLoginUser, loadingTasks} = useContext(AuthContext)
+    const {Ftasks, UpdateTask, getLoginUser, loadingTasks} = useContext(AuthContext)
         
 
     useEffect(() => {
         async function resolveParams() {
           
           if (params === null) {
-            router.push('/')
+            // router.push('/')
             return;
           }
 
           try {
             const localLogin = await getLoginUser()
             if(localLogin){
-              const localTasks = await setingTasks(localLogin)
-              console.log('TasksLocais: ', localTasks)
-              const taskFind = localTasks?.find((task)=> task.ID == params) || null
+              // const localTasks = await setingTasks(localLogin)
+
+              console.log('TasksLocais: ', Ftasks)
+
+              const taskFind = Ftasks?.find((task)=> task.ID == params) || null
               
               if (taskFind === null) {
                 
@@ -73,7 +75,7 @@ export default function TaskModal({params}: {params: number}){
           }
         }
         resolveParams();
-      }, [params]);
+      }, [params, Ftasks]);
     
       const getPriorityClass = (priority: string): string => {
         switch (priority) {
