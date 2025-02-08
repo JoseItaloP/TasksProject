@@ -27,6 +27,7 @@ export default function TaskModal({params}: {params: number}){
         async function resolveParams() {
           
           if (params === null) {
+            console.error('object')
             // router.push('/')
             return;
           }
