@@ -34,6 +34,7 @@ export default function TaskModal({params}: {params: number}){
 
           try {
             const localTasks = await setingTasks()
+            console.log('TasksLocais: ', localTasks)
             const taskFind = localTasks?.find((task)=> task.ID == params) || null
             
             if (taskFind === null) {

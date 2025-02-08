@@ -293,6 +293,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function setingTasks() {
     setLoadingTasks(true);
     const filtredTasks = await FilterTasksUser(user);
+    console.log('User: ', user)
+    console.log('Resultado filtro: ', filtredTasks)
     
     setFtasks(filtredTasks);
     setLoadingTasks(false);
