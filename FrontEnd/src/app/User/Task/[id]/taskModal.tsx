@@ -26,14 +26,16 @@ export default function TaskModal({params}: {params: number}){
     useEffect(() => {
         async function resolveParams() {
           setLoading(true)
-          const resolvedParams = params;
-          setTaskID(resolvedParams);
-          
-          if (taskID === null) {
+
+          if (params === null) {
             setLoading(false)
+            router.push('/')
             return;
           }
+
           try {
+            setTaskID(params);
+
             const taskFind = Ftasks?.find((task)=> task.ID == taskID) || null
             
             if (taskFind === null) {
@@ -67,7 +69,7 @@ export default function TaskModal({params}: {params: number}){
           }
         }
         resolveParams();
-      }, [params, Ftasks, taskID]);
+      }, [params, Ftasks]);
     
       const getPriorityClass = (priority: string): string => {
         switch (priority) {
