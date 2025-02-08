@@ -20,52 +20,56 @@ export default function TaskModal({params}: {params: number}){
     
     const [erros, setErros] = useState<ErroType[]>([]);
     
-    const {setingTasks, UpdateTask, loadingTasks} = useContext(AuthContext)
+    const {setingTasks, UpdateTask, getLoginUser, loadingTasks} = useContext(AuthContext)
         
 
     useEffect(() => {
         async function resolveParams() {
           
           if (params === null) {
-            
             router.push('/')
             return;
           }
 
           try {
-            const localTasks = await setingTasks()
-            console.log('TasksLocais: ', localTasks)
-            const taskFind = localTasks?.find((task)=> task.ID == params) || null
-            
-            if (taskFind === null) {
+            const localLogin = await getLoginUser()
+            if(localLogin){
+              const localTasks = await setingTasks(localLogin)
+              console.log('TasksLocais: ', localTasks)
+              const taskFind = localTasks?.find((task)=> task.ID == params) || null
               
-              throw new Error(`Objeto com ID ${params} não encontrado`);
+              if (taskFind === null) {
+                
+                throw new Error(`Objeto com ID ${params} não encontrado`);
+              }
+      
+              setTask(taskFind);
+      
+              const priorityClass = getPriorityClass(taskFind.Priority);
+              const statusClass = getStatusClass(taskFind.Status);
+  
+              const createdAt = JSON.stringify(taskFind?.created_at) || "";
+              setCreadoEm(createdAt
+              .replace(/\D/g, '')
+              .slice(0, 8)
+              .match(/(\d{4})(\d{2})(\d{2})/)
+              ?.slice(1, 4)
+              .reverse()
+              .join('/') || '00/00/0000')
+      
+              setPriority(priorityClass);
+              setStatus(statusClass);
+              setColorLineP(priorityClass === "text-media");
+              setColorLineS(statusClass === "text-atuando");
+            }else{
+              // router.push('/')
             }
-    
-            setTask(taskFind);
-    
-            const priorityClass = getPriorityClass(taskFind.Priority);
-            const statusClass = getStatusClass(taskFind.Status);
-
-            const createdAt = JSON.stringify(taskFind?.created_at) || "";
-            setCreadoEm(createdAt
-            .replace(/\D/g, '')
-            .slice(0, 8)
-            .match(/(\d{4})(\d{2})(\d{2})/)
-            ?.slice(1, 4)
-            .reverse()
-            .join('/') || '00/00/0000')
-    
-            setPriority(priorityClass);
-            setStatus(statusClass);
-            setColorLineP(priorityClass === "text-media");
-            setColorLineS(statusClass === "text-atuando");
             
 
           } catch (error) {
             
             console.error(error);
-            router.push('/')
+            // router.push('/')
           }
         }
         resolveParams();
