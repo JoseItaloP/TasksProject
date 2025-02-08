@@ -291,6 +291,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
   
   async function setingTasks() {
+    getLoginUser()
     setLoadingTasks(true);
     const filtredTasks = await FilterTasksUser(user);
     console.log('User: ', user)
