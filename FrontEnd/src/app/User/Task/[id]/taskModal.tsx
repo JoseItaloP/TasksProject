@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
 export default function TaskModal({params}: {params: number}){
-    const [taskID, setTaskID]                   = useState<number | null>(null);
+    
     const [task, setTask]                       = useState<taskType | null>(null);
     const [getPriority, setPriority]            = useState<string>("");
     const [getStatus, setStatus]                = useState<string>("");
@@ -26,7 +26,7 @@ export default function TaskModal({params}: {params: number}){
     useEffect(() => {
         async function resolveParams() {
           setLoading(true)
-
+          console.log('Params: ', params)
           if (params === null) {
             setLoading(false)
             router.push('/')
@@ -34,13 +34,12 @@ export default function TaskModal({params}: {params: number}){
           }
 
           try {
-            setTaskID(params);
-
-            const taskFind = Ftasks?.find((task)=> task.ID == taskID) || null
+            console.log('Ftasks: ', Ftasks)
+            const taskFind = Ftasks?.find((task)=> task.ID == params) || null
             
             if (taskFind === null) {
               setLoading(false)
-              throw new Error(`Objeto com ID ${taskID} não encontrado`);
+              throw new Error(`Objeto com ID ${params} não encontrado`);
             }
     
             setTask(taskFind);
