@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     const errors: ErroType[] = [];
     if(UserName === '' || Password === ''){
-
+      setLoading(false)
       errors.push({id: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos"})
       return errors
       
@@ -108,9 +108,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if ("ID" in LogedUser) {
 
-      setUser(LogedUser);
-
       setLoading(false);
+      setUser(LogedUser);
 
       router.refresh();
       router.push("/User");

@@ -25,14 +25,19 @@ export default function TaskModal({params}: {params: number}){
 
     useEffect(() => {
         async function resolveParams() {
+          setLoading(true)
           const resolvedParams = params;
           setTaskID(resolvedParams);
           
-          if (taskID === null) return;
+          if (taskID === null) {
+            setLoading(false)
+            return;
+          }
           try {
             const taskFind = Ftasks?.find((task)=> task.ID == taskID) || null
             
             if (taskFind === null) {
+              setLoading(false)
               throw new Error(`Objeto com ID ${taskID} não encontrado`);
             }
     
@@ -54,8 +59,10 @@ export default function TaskModal({params}: {params: number}){
             setStatus(statusClass);
             setColorLineP(priorityClass === "text-media");
             setColorLineS(statusClass === "text-atuando");
+            setLoading(false)
 
           } catch (error) {
+            setLoading(false)
             console.error(error);
           }
         }
@@ -116,7 +123,7 @@ export default function TaskModal({params}: {params: number}){
       if (!task) {
         return (
           <main className="h-full w-full flex items-center justify-center">
-            <LoadingPage absolt={true} />
+            {loading ? <LoadingPage absolt={true} /> : ''}
           <section className="p-5 bg-cold-900 h-5/6 w-3/4 border border-hot-900 rounded-xl flex flex-col">
             <h1 className="w-full text-center"></h1>
     
