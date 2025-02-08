@@ -180,11 +180,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function UpdateTask(
     newTask: NewTaskUpdateType
   ): Promise<ErroType[] | null> {
+    setLoadingTasks(true);
 
     const errors: ErroType[] = [];
     const { Name, Descrição, Priority, Status, TaskID } = newTask;
 
     if (Name == null || Descrição == null) {
+      setLoadingTasks(false)
       errors.push({
         id: Date.now(),
         message: "Todos os dados devem estar preenchidos",
@@ -224,6 +226,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null;
 
       } else {
+        setLoadingTasks(false)
         errors.push({
           id: Date.now(),
           message: "Erro ao buscar dados, tente novamente.",
@@ -231,6 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return errors;
       }
     } catch (e) {
+      setLoadingTasks(false)
       errors.push({
         id: Date.now(),
         message: "Erro ao buscar dados, tente novamente.",
@@ -286,6 +290,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return errors.length > 0 ? errors : null;
   }
   
+  async function setingTasks() {
+    setLoadingTasks(true);
+    const filtredTasks = await FilterTasksUser(user);
+    
+    setFtasks(filtredTasks);
+    setLoadingTasks(false);
+    return filtredTasks
+  }
 
   return (
     <AuthContext.Provider
@@ -302,6 +314,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         UpdateTask,
         createNewTask,
         singIn,
+        setingTasks
       }}
     >
       {children}

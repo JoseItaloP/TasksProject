@@ -17,28 +17,27 @@ export default function TaskModal({params}: {params: number}){
     const [CreadoEm, setCreadoEm]               = useState('')
     const [edit, setEdit]                       = useState<boolean>(false);
     const router                                = useRouter();
-    const [loading, setLoading] = useState(false)
+    
     const [erros, setErros] = useState<ErroType[]>([]);
     
-    const {Ftasks, UpdateTask} = useContext(AuthContext)
+    const {setingTasks, UpdateTask, loadingTasks} = useContext(AuthContext)
         
 
     useEffect(() => {
         async function resolveParams() {
-          setLoading(true)
-          console.log('Params: ', params)
+          
           if (params === null) {
-            setLoading(false)
+            
             router.push('/')
             return;
           }
 
           try {
-            console.log('Ftasks: ', Ftasks)
-            const taskFind = Ftasks?.find((task)=> task.ID == params) || null
+            const localTasks = await setingTasks()
+            const taskFind = localTasks?.find((task)=> task.ID == params) || null
             
             if (taskFind === null) {
-              setLoading(false)
+              
               throw new Error(`Objeto com ID ${params} não encontrado`);
             }
     
@@ -60,15 +59,16 @@ export default function TaskModal({params}: {params: number}){
             setStatus(statusClass);
             setColorLineP(priorityClass === "text-media");
             setColorLineS(statusClass === "text-atuando");
-            setLoading(false)
+            
 
           } catch (error) {
-            setLoading(false)
+            
             console.error(error);
+            router.push('/')
           }
         }
         resolveParams();
-      }, [params, Ftasks]);
+      }, [params]);
     
       const getPriorityClass = (priority: string): string => {
         switch (priority) {
@@ -97,7 +97,7 @@ export default function TaskModal({params}: {params: number}){
       };
 
       async function hamdleSubmit() {
-        setLoading(true)
+        
         const NewTask: NewTaskUpdateType = {
             Name: task?.Nome || null,
             Descrição: task?.Descricao || null,
@@ -108,7 +108,7 @@ export default function TaskModal({params}: {params: number}){
       try{
         const upDate = await UpdateTask(NewTask)
         if(upDate){
-          setLoading(false)
+          
           setErros(upDate)
           setTimeout(() => {
             setErros((prev) => prev.filter((e) => e.id !== upDate[0].id)); 
@@ -124,7 +124,7 @@ export default function TaskModal({params}: {params: number}){
       if (!task) {
         return (
           <main className="h-full w-full flex items-center justify-center">
-            {loading ? <LoadingPage absolt={true} /> : ''}
+            {loadingTasks ? <LoadingPage absolt={true} /> : ''}
           <section className="p-5 bg-cold-900 h-5/6 w-3/4 border border-hot-900 rounded-xl flex flex-col">
             <h1 className="w-full text-center"></h1>
     
@@ -186,7 +186,7 @@ export default function TaskModal({params}: {params: number}){
                                         />
                                       </div>
                                     ))}
-                      {loading ? <LoadingPage absolt={true} /> : ''}
+                      {loadingTasks ? <LoadingPage absolt={true} /> : ''}
                       <div className=" absolute h-2/4 w-4/5 ">
                         <section className="flex justify-between items-center 
                         bg-cold-900 text-hot-800 p-2

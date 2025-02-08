@@ -73,6 +73,7 @@ type AuthContextType = {
     loadingTasks: boolean;
     LogginOutUser: () => Promise<boolean>;
     singIn: (data: newLoginUser) => Promise<ErroType[] | void>;
+    setingTasks: () => Promise<taskType[]>
   };
 
 export type {
