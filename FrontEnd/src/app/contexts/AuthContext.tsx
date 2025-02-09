@@ -259,7 +259,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   
     try {
-      const fetchData = await fetch(`${process.env.API_URL}/user/task`, {
+      const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Name, Descrição, Priority, Status, UserID }),

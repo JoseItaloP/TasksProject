@@ -12,9 +12,9 @@ export default function NovaTaskModal() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
-  const {createNewTask, user} = useContext(AuthContext)
   const router = useRouter()
-
+  
+  const {createNewTask, user} = useContext(AuthContext)
   const [erros, setErros] = useState<ErroType[]>([]);
 
   async function hamdleSubmit() {
