@@ -46,7 +46,6 @@ export default function TaskModal({params}: {params: Promise<{  id: number }>}){
         
                 const priorityClass = getPriorityClass(taskFind.Priority);
                 const statusClass = getStatusClass(taskFind.Status);
-                console.log('creadi em: ', taskFind.created_at)
     
                 const createdAt = JSON.parse(JSON.stringify(taskFind.created_at)) || "";
                 setCreadoEm(
