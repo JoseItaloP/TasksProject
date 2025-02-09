@@ -50,12 +50,9 @@ export default function TaskModal({params}: {params: Promise<{  id: number }>}){
     
                 const createdAt = JSON.stringify(taskFind.created_at) || "";
                 setCreadoEm(createdAt
-                                      .replace(/\D/g, '')
-                                      .slice(0, 8)
-                                      .match(/(\d{4})(\d{2})(\d{2})/)
-                                      ?.slice(1, 4)
-                                      .reverse()
-                                      .join('/') || '00/00/0000')
+                                    .split('-') 
+                                    .reverse() 
+                                    .join('/') || '00/00/0000')
         
                 setPriority(priorityClass);
                 setStatus(statusClass);
