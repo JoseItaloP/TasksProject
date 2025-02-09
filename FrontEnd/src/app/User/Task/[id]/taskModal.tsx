@@ -48,11 +48,14 @@ export default function TaskModal({params}: {params: Promise<{  id: number }>}){
                 const statusClass = getStatusClass(taskFind.Status);
                 console.log('creadi em: ', taskFind.created_at)
     
-                const createdAt = JSON.stringify(taskFind.created_at) || "";
-                setCreadoEm(createdAt
-                                    .split('-') 
-                                    .reverse() 
-                                    .join('/') || '00/00/0000')
+                const createdAt = JSON.parse(JSON.stringify(taskFind.created_at)) || "";
+                setCreadoEm(
+                  createdAt
+                    .split('-')
+                    .map((item: string) => parseInt(item, 10)) // Remove zeros à esquerda
+                    .reverse()
+                    .join('/') || '00/00/0000'
+                );
         
                 setPriority(priorityClass);
                 setStatus(statusClass);
