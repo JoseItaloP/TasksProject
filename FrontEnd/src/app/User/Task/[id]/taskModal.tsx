@@ -3,7 +3,7 @@
 import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
@@ -16,7 +16,7 @@ export default function TaskModal({params}: {params: Promise<{  id: number }>}){
     const [ColorLineS, setColorLineS]           = useState<boolean>(false);
     const [CreadoEm, setCreadoEm]               = useState('')
     const [edit, setEdit]                       = useState<boolean>(false);
-    // const router                                = useRouter();
+    const router                                = useRouter();
     
     const [erros, setErros] = useState<ErroType[]>([]);
     
@@ -26,26 +26,19 @@ export default function TaskModal({params}: {params: Promise<{  id: number }>}){
     useEffect(() => {
         async function resolveParams() {
           const IDP = (await params).id
-          if (params === null) {
+          if (IDP === null) {
             console.error('object')
-            // router.push('/')
+            router.push('/')
             return;
           }
           else{
-
-          
           if(Ftasks){
-
             try {
               
-                // const localTasks = await setingTasks(localLogin)
-  
-                console.log('TasksLocais: ', Ftasks)
   
                 const taskFind = Ftasks?.find((task)=> task.ID == IDP) || null
                 
                 if (taskFind === null) {
-                  
                   throw new Error(`Objeto com ID ${IDP} não encontrado`);
                 }
         
@@ -53,15 +46,16 @@ export default function TaskModal({params}: {params: Promise<{  id: number }>}){
         
                 const priorityClass = getPriorityClass(taskFind.Priority);
                 const statusClass = getStatusClass(taskFind.Status);
+                console.log('creadi em: ', taskFind.created_at)
     
-                const createdAt = JSON.stringify(taskFind?.created_at) || "";
+                const createdAt = JSON.stringify(taskFind.created_at) || "";
                 setCreadoEm(createdAt
-                .replace(/\D/g, '')
-                .slice(0, 8)
-                .match(/(\d{4})(\d{2})(\d{2})/)
-                ?.slice(1, 4)
-                .reverse()
-                .join('/') || '00/00/0000')
+                                      .replace(/\D/g, '')
+                                      .slice(0, 8)
+                                      .match(/(\d{4})(\d{2})(\d{2})/)
+                                      ?.slice(1, 4)
+                                      .reverse()
+                                      .join('/') || '00/00/0000')
         
                 setPriority(priorityClass);
                 setStatus(statusClass);
@@ -73,7 +67,7 @@ export default function TaskModal({params}: {params: Promise<{  id: number }>}){
             } catch (error) {
               
               console.error(error);
-              // router.push('/')
+              router.push('/')
             }
           }
         }
