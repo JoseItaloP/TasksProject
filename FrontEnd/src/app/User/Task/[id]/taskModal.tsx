@@ -3,7 +3,7 @@
 import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
@@ -16,11 +16,11 @@ export default function TaskModal({params}: {params: number}){
     const [ColorLineS, setColorLineS]           = useState<boolean>(false);
     const [CreadoEm, setCreadoEm]               = useState('')
     const [edit, setEdit]                       = useState<boolean>(false);
-    const router                                = useRouter();
+    // const router                                = useRouter();
     
     const [erros, setErros] = useState<ErroType[]>([]);
     
-    const {Ftasks, UpdateTask, getLoginUser, loadingTasks} = useContext(AuthContext)
+    const {Ftasks, UpdateTask,  loadingTasks} = useContext(AuthContext)
         
 
     useEffect(() => {
@@ -31,48 +31,47 @@ export default function TaskModal({params}: {params: number}){
             // router.push('/')
             return;
           }
+          if(Ftasks){
 
-          try {
-            const localLogin = await getLoginUser()
-            if(localLogin){
-              // const localTasks = await setingTasks(localLogin)
-
-              console.log('TasksLocais: ', Ftasks)
-
-              const taskFind = Ftasks?.find((task)=> task.ID == params) || null
+            try {
               
-              if (taskFind === null) {
-                
-                throw new Error(`Objeto com ID ${params} não encontrado`);
-              }
-      
-              setTask(taskFind);
-      
-              const priorityClass = getPriorityClass(taskFind.Priority);
-              const statusClass = getStatusClass(taskFind.Status);
+                // const localTasks = await setingTasks(localLogin)
   
-              const createdAt = JSON.stringify(taskFind?.created_at) || "";
-              setCreadoEm(createdAt
-              .replace(/\D/g, '')
-              .slice(0, 8)
-              .match(/(\d{4})(\d{2})(\d{2})/)
-              ?.slice(1, 4)
-              .reverse()
-              .join('/') || '00/00/0000')
-      
-              setPriority(priorityClass);
-              setStatus(statusClass);
-              setColorLineP(priorityClass === "text-media");
-              setColorLineS(statusClass === "text-atuando");
-            }else{
+                console.log('TasksLocais: ', Ftasks)
+  
+                const taskFind = Ftasks?.find((task)=> task.ID == params) || null
+                
+                if (taskFind === null) {
+                  
+                  throw new Error(`Objeto com ID ${params} não encontrado`);
+                }
+        
+                setTask(taskFind);
+        
+                const priorityClass = getPriorityClass(taskFind.Priority);
+                const statusClass = getStatusClass(taskFind.Status);
+    
+                const createdAt = JSON.stringify(taskFind?.created_at) || "";
+                setCreadoEm(createdAt
+                .replace(/\D/g, '')
+                .slice(0, 8)
+                .match(/(\d{4})(\d{2})(\d{2})/)
+                ?.slice(1, 4)
+                .reverse()
+                .join('/') || '00/00/0000')
+        
+                setPriority(priorityClass);
+                setStatus(statusClass);
+                setColorLineP(priorityClass === "text-media");
+                setColorLineS(statusClass === "text-atuando");
+              
+              
+  
+            } catch (error) {
+              
+              console.error(error);
               // router.push('/')
             }
-            
-
-          } catch (error) {
-            
-            console.error(error);
-            // router.push('/')
           }
         }
         resolveParams();
@@ -122,7 +121,7 @@ export default function TaskModal({params}: {params: number}){
             setErros((prev) => prev.filter((e) => e.id !== upDate[0].id)); 
       }, 5000);
         }else{
-          router.push(`/User`)
+          // router.push(`/User`)
         }
       }catch(e){
         console.error('Erro: ', e)
@@ -176,7 +175,7 @@ export default function TaskModal({params}: {params: number}){
           </section>
           </main>
         );
-      }
+      }else{
       return (
         <main className="h-full w-full flex items-center justify-center">
             {edit ? (
@@ -325,5 +324,6 @@ export default function TaskModal({params}: {params: number}){
             </div>
           </section>
         </main>
-      );
+        );
+      }
     }
