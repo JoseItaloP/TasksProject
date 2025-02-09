@@ -132,7 +132,7 @@ export default function NovaTaskModal() {
             <option value="alta">Alta</option>
           </select>
         </label>
-        {/* created_at: Date; */}
+        
         <input
           type="submit"
           value="Enviar"

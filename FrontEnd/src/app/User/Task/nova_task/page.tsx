@@ -3,7 +3,7 @@
 import { ErroType, newTaskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
@@ -13,9 +13,10 @@ export default function NovaTask() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
-  const {createNewTask, user} = useContext(AuthContext)
+  const {createNewTask,  getLoginUser} = useContext(AuthContext)
 
   const [erros, setErros] = useState<ErroType[]>([]);
+  const router = useRouter()
 
   async function hamdleSubmit() {
 
@@ -28,8 +29,9 @@ export default function NovaTask() {
       Priority: taskPriority,
       UserID: ''
     }
-    const User = user
-    const resultCrete = await createNewTask({NewTask, User})
+    const User = await getLoginUser()
+    const data = {NewTask, User}
+    const resultCrete = await createNewTask(data)
 
     if(resultCrete){
       setLoading(false)
@@ -39,6 +41,7 @@ export default function NovaTask() {
       }, 5000);
       
     }else{
+      router.refresh()
       redirect('/User')
     }
 
@@ -124,11 +127,11 @@ export default function NovaTask() {
               <option value="alta">Alta</option>
             </select>
           </label>
-          {/* created_at: Date; */}
+          
           <input
             type="submit"
             value="Enviar"
-            className="w-full p-2 bg-hot-700 text-cold-700 rounded"
+            className="w-full p-2 bg-hot-700 text-cold-700 rounded buttonHAnimationINV"
           />
         </form>
       </section>
