@@ -4,7 +4,7 @@ import { ErroType, newTaskType } from "@/app/_constructor/_Types";
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
 import { redirect, useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
 export default function NovaTask() {
@@ -17,6 +17,16 @@ export default function NovaTask() {
 
   const [erros, setErros] = useState<ErroType[]>([]);
   const router = useRouter()
+
+  useEffect(()=>{
+    async function GetUser(){
+      const user = await getLoginUser()
+      if(user === null){
+        router.push('/')
+      }
+    }
+    GetUser()
+  }, [])
 
   async function hamdleSubmit() {
 
