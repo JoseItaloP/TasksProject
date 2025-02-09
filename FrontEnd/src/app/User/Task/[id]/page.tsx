@@ -3,9 +3,10 @@ import { useContext, useEffect } from "react";
 import TaskModal from "./taskModal";
 import { AuthContext } from "@/app/contexts/AuthContext";
 
-export default  function Page({ params }: {  params: {id: number }}){
-  const IDparams =  params.id
+export default  function Page({ params }: {  params: Promise<{ id: number }>; }){
+  
   const {getLoginUser} = useContext(AuthContext)
+
   useEffect(()=>{
     async function pegarUser(){
       await getLoginUser()
@@ -14,5 +15,5 @@ export default  function Page({ params }: {  params: {id: number }}){
   },[])
 
   
-  return <TaskModal params={Number(IDparams)}/>
+  return <TaskModal params={params}/>
 }

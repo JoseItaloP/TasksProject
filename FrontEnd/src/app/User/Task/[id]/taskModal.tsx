@@ -7,7 +7,7 @@ import { AuthContext } from "@/app/contexts/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
-export default function TaskModal({params}: {params: number}){
+export default function TaskModal({params}: {params: Promise<{  id: number }>}){
     
     const [task, setTask]                       = useState<taskType | null>(null);
     const [getPriority, setPriority]            = useState<string>("");
@@ -25,12 +25,15 @@ export default function TaskModal({params}: {params: number}){
 
     useEffect(() => {
         async function resolveParams() {
-          
+          const IDP = (await params).id
           if (params === null) {
             console.error('object')
             // router.push('/')
             return;
           }
+          else{
+
+          
           if(Ftasks){
 
             try {
@@ -39,11 +42,11 @@ export default function TaskModal({params}: {params: number}){
   
                 console.log('TasksLocais: ', Ftasks)
   
-                const taskFind = Ftasks?.find((task)=> task.ID == params) || null
+                const taskFind = Ftasks?.find((task)=> task.ID == IDP) || null
                 
                 if (taskFind === null) {
                   
-                  throw new Error(`Objeto com ID ${params} não encontrado`);
+                  throw new Error(`Objeto com ID ${IDP} não encontrado`);
                 }
         
                 setTask(taskFind);
@@ -73,6 +76,7 @@ export default function TaskModal({params}: {params: number}){
               // router.push('/')
             }
           }
+        }
         }
         resolveParams();
       }, [params, Ftasks]);
