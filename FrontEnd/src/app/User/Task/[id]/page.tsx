@@ -1,4 +1,4 @@
-'use context'
+'use client'
 import { useContext, useEffect } from "react";
 import TaskModal from "./taskModal";
 import { AuthContext } from "@/app/contexts/AuthContext";
