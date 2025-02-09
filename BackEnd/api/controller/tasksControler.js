@@ -48,7 +48,6 @@ const postTasks = async (req, reply) => {
   try {
     const { Name,Descrição,Status, Priority, UserID } = req.body;
     
-    
 
     const data = getFormatData();
     const con = await connection();
@@ -57,10 +56,8 @@ const postTasks = async (req, reply) => {
                         VALUES ('${Name}', '${Descrição}', '${Status}', '${Priority}', ${data})`);
 
     const [result, table] = await con.query("SELECT * FROM Tasks");
-
-    const [UserAtual, UserTable] = await con.query(`SELECT my_tasks FROM User WHERE ID=${UserID}`)
-
-    const UserTasks = UserAtual
+    const [UserAtual, UserTable] = await con.query(`SELECT * FROM User WHERE ID=${UserID}`)
+    const UserTasks = UserAtual[0].my_tasks
 
     UserTasks.push(result[result.length - 1].ID)
 
