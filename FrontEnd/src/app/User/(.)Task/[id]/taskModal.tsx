@@ -7,7 +7,7 @@ import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
 
-export default function TaskModal({ params }: { params: number }) {
+export default function TaskModal({ params }: { params: number | null }) {
   const [taskID, setTaskID]           = useState<number | null>(null);
   const [task, setTask] = useState<taskType | null>(null);
   const [getPriority, setPriority] = useState<string>("");
@@ -25,7 +25,7 @@ export default function TaskModal({ params }: { params: number }) {
       const resolvedParams = params;
       setTaskID(resolvedParams);
       
-      if (taskID === null) return;
+      if (taskID === null) return router.push('/');
       try {
         const taskFind = Ftasks?.find((task)=> task.ID == taskID) || null
         

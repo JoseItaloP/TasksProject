@@ -32,6 +32,7 @@ export function LiTaks({ task }: { task: taskType }) {
     <li>
       <Link
         href={`/User/Task/${task.ID}`}
+        data-testid={`test_${task.ID}`}
         className="bg-cold-900 border border-hot-800
          rounded flex items-center justify-between
          my-2 h-16 p-2 buttonHAnimation"

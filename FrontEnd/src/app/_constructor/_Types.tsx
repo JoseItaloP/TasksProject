@@ -66,7 +66,7 @@ type AuthContextType = {
     UpdateTask: (newTask: NewTaskUpdateType) => Promise<ErroType[] | null>;
     createNewTask: (
       {NewTask, User}: 
-      {NewTask: newTaskType, User: UserType | null}
+          { NewTask: newTaskType, User: UserType }
       ) => Promise<ErroType[] | null>;
     Ftasks: taskType[] | null;
     loading: boolean;

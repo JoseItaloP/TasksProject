@@ -2,7 +2,7 @@
 import { ErroType, NewUserData } from "../_constructor/_Types";
 import { RegistratUser } from "../_constructor/UserValue";
 
-export default async function NewUserResgistrat (NewUser: NewUserData): Promise<ErroType[] | null> {
+export default async function NewUserResgistrat(NewUser: NewUserData): Promise<ErroType[] | null> {
     const errors: ErroType[] = [];
     if(NewUser.Email === NewUser.ConfEmail){
         const responce = await RegistratUser(NewUser);
@@ -21,4 +21,4 @@ export default async function NewUserResgistrat (NewUser: NewUserData): Promise<
         return errors;
     }
     }
-    
+

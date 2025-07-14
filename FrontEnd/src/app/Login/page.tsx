@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useContext, useState } from "react";
 import { IoIosClose } from "react-icons/io";
@@ -17,11 +17,12 @@ export default function Login() {
  
   const [erros, setErros] = useState<ErroType[]>([]);
   
-  const {userHeader, singIn, loading} = useContext(AuthContext)
+  const { singIn, userHeader, loading } = useContext(AuthContext)
   const router = useRouter()
 
   async function handleSubmit() {
     const NewUser: newLoginUser = { UserName, Password }
+
       const LoginErro = await singIn(NewUser) 
       if(LoginErro){
           setErros(LoginErro)
@@ -32,11 +33,11 @@ export default function Login() {
   }
   
   if(userHeader){
-    return(
+    return (
       <main className="h-full w-full flex flex-col items-center justify-center">
         <h1 className="text-4xl mb-2">Você já esta logado!</h1>
         <h2 className="text-xl mb-2">Click abaixo para ir para sua pagina de tasks.</h2>
-        <button onClick={()=>router.push('/User')} className="w-1/4 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900">Minha pagina</button>
+        <button onClick={() => router.push('/User')} className="w-1/4 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900">Minha pagina</button>
       </main>
     )
   }else{
@@ -67,8 +68,8 @@ export default function Login() {
           <form
             className="flex flex-col justify-between h-full mt-4 px-5"
             onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
+              e.preventDefault()
+              handleSubmit()
             }}
           >
             <label className="flex flex-col ">
@@ -84,20 +85,20 @@ export default function Login() {
             </label>
   
             <label className="flex flex-col ">
+
               <h2 className="text-xl">Senha:</h2>
-
               <div className="flex items-center justify-end">
-
               <input
                 type={typeP}
                 name="senha"
                 id="senha"
-                className="text-xl p-1 rounded bg-cold-900 text-hot-700 
-                
+                  className="text-xl p-1 rounded bg-cold-900 text-hot-700 
                 "
                 value={Password}
                 onChange={(e)=>setPassword(e.target.value)}
+                  data-testid='passwordLogin'
               />
+
               {eye ? 
               <FaEyeSlash 
               className="absolute z-10 mr-2"
@@ -117,6 +118,7 @@ export default function Login() {
             <button
               type="submit"
               className="w-full bg-cold-900 text-hot-800 p-2 mb-4 buttonHAnimation max-[800px]:mt-4"
+
             >
               Enviar
             </button>

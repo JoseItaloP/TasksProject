@@ -4,8 +4,8 @@ import { useState } from "react";
 import LoadingPage from "../_constructor/LoadingPage";
 import { ErroType } from "../_constructor/_Types";
 import { IoIosClose } from "react-icons/io";
-import EmailHamdler from "./EmailHamdler";
 import { useRouter } from "next/navigation";
+import ExitHamdler from "../helper/ExitHamdler";
 
 export default function FindEmail() {
   const [userName, setUserName] = useState<string>("");
@@ -17,7 +17,7 @@ export default function FindEmail() {
   async function hamdleSubmit() {
     setLoading(true);
     if (userName) {
-      const findEmail: ErroType[] | string | null = await EmailHamdler(userName);
+      const findEmail: ErroType[] | string | null = await ExitHamdler.EmailHamdler(userName);
       if (findEmail) {
         if(Array.isArray(findEmail)){
             setLoading(false);

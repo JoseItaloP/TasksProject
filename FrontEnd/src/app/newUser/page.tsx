@@ -4,7 +4,7 @@ import { NewUserData } from "../_constructor/_Types";
 import { useState } from "react";
 import { ErroType } from "../_constructor/_Types";
 import { IoIosClose } from "react-icons/io";
-import NewUserResgistrat from "./_NewUserResgistrat";
+import ExitHamdler from "../helper/ExitHamdler";
 
 export default function NewUser() {
   const [Username, setUsername] = useState("");
@@ -19,7 +19,7 @@ export default function NewUser() {
       Email,
       ConfEmail
     };
-    const response = await NewUserResgistrat(NewUser)
+    const response = await ExitHamdler.NewUserResgistrat(NewUser)
     if(response){
       // setLoading(false)
       setErros(response)

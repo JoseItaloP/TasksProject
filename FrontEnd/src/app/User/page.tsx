@@ -8,15 +8,15 @@ import { useRouter } from "next/navigation"
 import { UserType } from "../_constructor/_Types"
 
 export default function Main() {
-  const {  loading, getLoginUser, user } = useContext(AuthContext)
+  const { loading, getLoginUser, user } = useContext(AuthContext)
   const router = useRouter()
-  const [, setUserInUse] = useState<UserType | null>(null)
+  const [userInUse, setUserInUse] = useState<UserType | null>(null)
 
   useEffect(() => {
     async function getData(){
 
-      const usuario = await getLoginUser()
-      if(usuario){
+      if (!user) {
+        const usuario = await getLoginUser()
         setUserInUse(usuario)
       }else{
         router.push('/')
@@ -32,7 +32,7 @@ export default function Main() {
       return (
         <main className="h-full flex flex-col justify-between">
           {loading ? <LoadingPage absolt={true} /> : ''}
-            <h1 className="ml-2">Tarefas de {user?.UserName}</h1>
+          <h1 className="ml-2">Tarefas de {userInUse?.UserName}</h1>
             
             <NewTask />
   

@@ -5,7 +5,7 @@ import LoadingPage from "../_constructor/LoadingPage";
 import { ErroType } from "../_constructor/_Types";
 import { IoIosClose } from "react-icons/io";
 import { useRouter } from "next/navigation";
-import PassHamdler from "./PassHamdler";
+import ExitHamdler from "../helper/ExitHamdler";
 
 export default function FindPassword() {
   const [userEmail, setUserEmail] = useState<string>("");
@@ -17,7 +17,7 @@ export default function FindPassword() {
   async function hamdleSubmit() {
     setLoading(true);
     if (userEmail) {
-        const findPassword = await PassHamdler(userEmail)
+      const findPassword = await ExitHamdler.PassHamdler(userEmail)
         if (findPassword) {
             if(Array.isArray(findPassword)){
                 setLoading(false);
@@ -73,7 +73,7 @@ export default function FindPassword() {
             key={erro.id}
             className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
           >
-            <p className="flex-1">{erro.message}</p>
+            <p className="flex-1" data-testid='erroMessage'>{erro.message}</p>
             <IoIosClose
               className="cursor-pointer text-2xl ml-2"
               onClick={() =>

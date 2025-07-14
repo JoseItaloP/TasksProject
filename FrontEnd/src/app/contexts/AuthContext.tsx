@@ -1,4 +1,9 @@
-import { createContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import {
   EditUser,
   getLogedLocal,
@@ -7,6 +12,7 @@ import {
   FilterTasksUser
 } from "../_constructor/UserValue";
 import {
+  AuthContextType,
   defaultErro,
   ErroType,
   newLoginUser,
@@ -14,14 +20,16 @@ import {
   NewTaskUpdateType,
   taskType,
   UserType,
-  AuthContextType
 } from "../_constructor/_Types";
-import { usePathname, useRouter } from "next/navigation";
+import {
+  usePathname,
+  useRouter
+} from "next/navigation";
 import { parseCookies } from "nookies";
 
 
 export const AuthContext = createContext({} as AuthContextType);
-
+export const useAuthContext = () => useContext(AuthContext)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserType | null>(null);
   const [userHeader, setUserHeader] = useState<UserType | null>(null);
@@ -30,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loadingTasks, setLoadingTasks] = useState<boolean>(false);
   const isAuthenticated = !!user;
   const router = useRouter();
-  const pathName = usePathname();
+  const pathName = usePathname;
 
   useEffect(() => {
     async function localToken() {
@@ -103,8 +111,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       UserName,
       Password,
     });
-
-
 
     if ("ID" in LogedUser) {
 
@@ -245,7 +251,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function createNewTask({NewTask, User}: 
-    {NewTask: newTaskType, User: UserType | null}): Promise<ErroType[] | null> {
+    { NewTask: newTaskType, User: UserType }): Promise<ErroType[] | null> {
 
     const { Name, Descrição, Priority, Status } = NewTask;
 
@@ -306,18 +312,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated,
-        user,
-        Ftasks,
+        singIn,
         loading,
-        loadingTasks,
+        user,
+        isAuthenticated,
         userHeader,
+        Ftasks,
+        loadingTasks,
         getLoginUser,
         LogginOutUser,
         EditUserhamdle,
         UpdateTask,
         createNewTask,
-        singIn,
         setingTasks
       }}
     >
@@ -325,3 +331,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
