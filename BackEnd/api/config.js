@@ -11,7 +11,4 @@ const conectar = async () =>{
     return connection
 }
 
-
-
-
 module.exports = conectar;

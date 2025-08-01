@@ -1,14 +1,18 @@
-const connection = require("../config");
-const getFormatData = require("../functions/FormData").exports;
+
+const { PrismaClient } = require("../../generated/prisma/client")
+
+const prisma = new PrismaClient()
+
+/*test
+{"id":"688a6d93c177b94408372afc","Nome":"TestTASK","Descricao":"Task descricao","Status":"Atuando","Priority":"Média","createdAt":"2025-07-30T19:08:03.973Z","updatedAt":null}
+*/
 
 const getTasks = async (req, reply) => {
   try {
 
-    const con = await connection();
+    const result = await prisma.tasks.findMany()
 
-    const [result, table] = await con.query("SELECT * FROM Tasks");
-
-    reply.send(result);
+    reply.code(200).send(result);
 
   } catch (err) {
 
@@ -20,25 +24,24 @@ const getTasks = async (req, reply) => {
 const getUserTasks = async (req, reply) => {
   const { id } = req.params;
   try {
-    const con = await connection();
+    const userFind = await prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
 
-   
-    const [result] = await con.query(`SELECT my_tasks FROM User WHERE ID=${id}`);
-
-    if (result.length === 0) {
+    if (!userFind) {
       return reply.code(404).send({ message: "Usuário não encontrado" });
     }
 
     
-    const [tasks] = await con.query("SELECT * FROM Tasks");
+    const tasks = await prisma.tasks.findMany()
 
-    const filteredTasks = tasks.filter((task) => result[0].my_tasks.includes(task.ID));
+    const filteredTasks = tasks.filter((task) => userFind.myTasks.includes(task.id));
 
     reply.send(filteredTasks);
 
   } catch (err) {
-
-    console.error("Erro ao buscar tarefas do usuário:", err);
     reply.code(500).send(err);
     
   }
@@ -46,23 +49,40 @@ const getUserTasks = async (req, reply) => {
 
 const postTasks = async (req, reply) => {
   try {
-    const { Name,Descrição,Status, Priority, UserID } = req.body;
-    
-    const data = getFormatData();
-    const con = await connection();
 
-    await con.query(`INSERT INTO Tasks (Nome, Descricao, Status, Priority, created_at)
-                        VALUES ('${Name}', '${Descrição}', '${Status}', '${Priority}', ${data})`);
+    const { Nome, Descricao, Status, Priority, UserID: id } = req.body;
 
-    const [result, table] = await con.query("SELECT * FROM Tasks");
-    const [UserAtual, UserTable] = await con.query(`SELECT * FROM User WHERE ID=${UserID}`)
-    const UserTasks = UserAtual[0].my_tasks
+    const findUser = await prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
 
-    UserTasks.push(result[result.length - 1].ID)
+    if (findUser == null) { return reply.code(500).send('Usuario não encontrado.') }
 
-    await con.query(`UPDATE User SET my_tasks=JSON_ARRAY(${UserTasks}) WHERE ID=${UserID}`)
+    const newTask = await prisma.tasks.create({
+      data: {
+        Nome,
+        Descricao,
+        Status,
+        Priority
+      }
+    })
 
-    reply.send(true);
+    const UserTasks = findUser.myTasks
+
+    UserTasks.push(newTask.id)
+
+    await prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        myTasks: UserTasks
+      }
+    })
+
+    reply.code(201).send(newTask);
 
   } catch (err) {
     reply.code(500).send(err);
@@ -72,11 +92,15 @@ const postTasks = async (req, reply) => {
 const deleteTasks = async (req, reply) => {
   try {
     const { id } = req.params;
-    const con = await connection();
-    await con.query(`DELETE FROM Tasks WHERE id_task=${id}`);
+    await prisma.tasks.delete({
+      where: {
+        id
+      }
+    })
 
-    const [result, table] = await con.query("SELECT * FROM Tasks");
-    reply.send(result);
+    const tasksFetch = await prisma.tasks.findMany()
+
+    reply.code(200).send(tasksFetch);
   } catch (err) {
     reply.code(500).send(err);
   }
@@ -84,19 +108,31 @@ const deleteTasks = async (req, reply) => {
 
 const putTasks = async (req, reply) => {
   try {
-    const { Name, Descrição, Priority, Status } = req.body;
-    if (Name | Descrição | (Priority === null)| (Status === null))
-      return reply.code(500).send("Preencha todos os valores");
+
+    const { Nome, Descricao, Priority, Status } = req.body;
     const { id } = req.params;
-    const data = getFormatData()
 
-    const con = await connection();
-    await con.query(
-      `UPDATE Tasks SET Nome='${Name}', Descricao='${Descrição}', Status='${Status}', Priority='${Priority}', updated_at=${data} WHERE ID=${id}`
-    );
+    if ((Nome === null) | (Descricao === null) | (Priority === null) | (Status === null))
+      return reply.code(500).send("Preencha todos os valores");
+    const data = new Date()
 
-    const [result, table] = await con.query("SELECT * FROM Tasks");
-    reply.send(result);
+    await prisma.tasks.update({
+      where: {
+        id
+      },
+      data: {
+        Nome,
+        Descricao,
+        Priority,
+        Status,
+        updatedAt: data
+      }
+    })
+
+    const tasksFetch = await prisma.tasks.findMany()
+
+
+    reply.code(200).send(tasksFetch);
   } catch (err) {
     reply.code(500).send(err);
   }

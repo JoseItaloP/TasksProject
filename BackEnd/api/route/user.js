@@ -39,7 +39,6 @@ const optFindPass={
 }
 const UserRoute = (fastify, opt, done) => {
 
-
      //GET USER
      fastify.get("/user/:id", optgetUser)
 
