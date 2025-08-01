@@ -23,7 +23,7 @@ export default function EditUserPage ({UserData}: {UserData:UserType}) {
 
   async function hamdleSubmit(){
     const NewEdit = {
-      ID: UserData.ID,
+      id: UserData.id,
       UserName: name,
       Password: senha,
       Email: email,
@@ -34,7 +34,7 @@ export default function EditUserPage ({UserData}: {UserData:UserType}) {
      if(result){
       setErros(result)
       setTimeout(() => {
-        setErros((prev) => prev.filter((e) => e.id !== result[0].id)); 
+        setErros((prev) => prev.filter((e) => e.erroId !== result[0].erroId)); 
       }, 5000);
      }else{
       router.push('/Login')
@@ -54,26 +54,28 @@ export default function EditUserPage ({UserData}: {UserData:UserType}) {
       }
       {erros.map((erro) => (
                 <div
-                  key={erro.id}
+          key={erro.erroId}
                   className=" absolute
                   w-2/4 top-0 bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
                 >
                   <p className="flex-1">{erro.message}</p>
                   <IoIosClose
                     className="cursor-pointer text-2xl ml-2"
-                    onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+            onClick={() => setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))}
                   />
                 </div>
               ))}
       <label htmlFor="" className="flex flex-col w-full">
         <h1 className="font-semibold">Nome</h1>
-        <input type="text" name="" id="" value={name} onChange={(e)=>setName(e.target.value)} className="w-full bg-cold-800 text-hot-800 rounded p-1 border border-white"/>
+        <input type="text" name="editUserName" id="editUserName" value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full bg-cold-800 text-hot-800 rounded p-1 border border-white" />
       </label>
       
       <label htmlFor="" className="flex flex-col w-full">
         <h1 className="font-semibold">Senha</h1>
           <div className="flex items-center justify-end">
-            <input type={typeP} name="" id="" value={senha} onChange={(e)=>setSenha(e.target.value)} className="w-full bg-cold-800 text-hot-800 rounded p-1 border border-white"/>
+          <input type={typeP} name="editUserPass" id="editUserPass" value={senha} onChange={(e) => setSenha(e.target.value)} className="w-full bg-cold-800 text-hot-800 rounded p-1 border border-white" />
             {eye ? 
               <FaEyeSlash 
               className="absolute z-10 mr-2 text-hot-800"

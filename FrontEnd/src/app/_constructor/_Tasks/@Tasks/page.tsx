@@ -24,7 +24,7 @@ export default function Tasks() {
 
         <ul className="px-4 flex-1 overflow-y-auto">
           {Ftasks && Ftasks.length > 0 ? (
-            Ftasks.map((task) => <LiTaks key={task.ID} task={task} />)
+            Ftasks.map((task) => <LiTaks key={task.id} task={task} />)
           ) : (
             <h1>Sem tarefa válida nesta conta.</h1>
           )}

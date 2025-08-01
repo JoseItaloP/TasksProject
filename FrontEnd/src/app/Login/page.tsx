@@ -23,11 +23,11 @@ export default function Login() {
   async function handleSubmit() {
     const NewUser: newLoginUser = { UserName, Password }
 
-      const LoginErro = await singIn(NewUser) 
-      if(LoginErro){
+    const LoginErro = await singIn(NewUser)
+    if (LoginErro) {
           setErros(LoginErro)
           setTimeout(() => {
-            setErros((prev) => prev.filter((e) => e.id !== LoginErro[0].id)); 
+            setErros((prev) => prev.filter((e) => e.erroId !== LoginErro[0].erroId)); 
           }, 5000);
       }
   }
@@ -48,13 +48,13 @@ export default function Login() {
         <div className="absolute top-0" key={erros.length}>
           {erros.map((erro) => (
             <div
-              key={erro.id}
+              key={erro.erroId}
               className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
             >
               <p className="flex-1">{erro.message}</p>
               <IoIosClose
                 className="cursor-pointer text-2xl ml-2"
-                onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+                onClick={() => setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))}
               />
             </div>
           ))}

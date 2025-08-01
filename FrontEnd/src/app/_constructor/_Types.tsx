@@ -1,45 +1,45 @@
  type taskType = {
-        ID: number;
+     id: string;
         Nome: string;
         Descricao: string;
         Status: string;
         Priority: string;
-        created_at: Date;
-        updated_at?: Date;
+     createdAt: Date;
+     updatedAt?: Date;
     }
 type newTaskType = {
-    Name: string;
-    Descrição: string;
+    Nome: string;
+    Descricao: string;
     Status: string;
     Priority: string;
     UserID: string;
 }
 type NewTaskUpdateType = {
-    Name: string | null;
-    Descrição: string | null;
+    Nome: string | null;
+    Descricao: string | null;
     Status: string | null;
     Priority: string | null;
-    TaskID: number | null;
+    TaskID: string | null;
 }
 type UserType = {
-    ID: number;
+    id: number;
     UserName: string;
     Password: string;
     Email: string;
     Token: string;
-    my_tasks: number[];
-    created_at: Date;
-    updated_at?: Date;
+    myTasks: string[];
+    createdAt: Date;
+    updatedAt?: Date;
 }
 
 type NewUserData = {
-    Username: string;
+    UserName: string;
     Email: string;
     ConfEmail: string;
 }
 
 type ErroType = {
-    id: number;
+    erroId: number;
     message: string;
 }
 
@@ -58,7 +58,7 @@ type AuthContextType = {
     userHeader: UserType | null;
     getLoginUser: () => Promise<UserType | null>;
     EditUserhamdle: (NewEdit: {
-      ID: number;
+        id: number;
       UserName: string;
       Password: string;
       Email: string;
@@ -73,7 +73,8 @@ type AuthContextType = {
     loadingTasks: boolean;
     LogginOutUser: () => Promise<boolean>;
     singIn: (data: newLoginUser) => Promise<ErroType[] | void>;
-    setingTasks: (localLogin: UserType) => Promise<taskType[]>
+    setingTasks: (localLogin: UserType) => Promise<taskType[]>;
+    deleteTask: (idTask: string) => Promise<ErroType[] | null>
   };
 
 export type {

@@ -35,7 +35,7 @@ async function LoginUser({
 
   if (result === null) {
     const erro = {
-      id: Date.now(),
+      erroId: Date.now(),
       message: "Usuário ou senha não identificados no banco de dados",
     };
     return erro;
@@ -43,7 +43,7 @@ async function LoginUser({
     const jwtPass = process.env.NEXT_PUBLIC_JWT_PASS ?? "minha-senha";
 
     const token = jwt.sign(
-      { id: result.ID, TokenUser: result.Token },
+      { id: result.id, TokenUser: result.Token },
       jwtPass,
       { expiresIn: "1h" }
     );
@@ -60,6 +60,7 @@ async function LoginUser({
 async function getLogedLocal(token: string) {
   try {
     const jwtPass = process.env.NEXT_PUBLIC_JWT_PASS ?? "minha-senha";
+
 
     if (token) {
       const { id, TokenUser } = jwt.verify(token, jwtPass) as JwtPayLoad;
@@ -87,13 +88,13 @@ async function getLogedLocal(token: string) {
 
 async function LogoutLocalUser() {
   User = {
-    ID: -1,
+    id: -1,
     UserName: "Guest",
     Password: "",
     Token: "",
     Email: "",
-    created_at: new Date(),
-    my_tasks: [],
+    createdAt: new Date(),
+    myTasks: [],
   };
   const cookStore = await cookies();
   cookStore.delete("TaskDefine-Token");
@@ -101,7 +102,7 @@ async function LogoutLocalUser() {
 }
 
 async function RegistratUser(NewUser: NewUserData) {
-  const { Username, Email } = NewUser;
+  const { UserName, Email } = NewUser;
   try {
     const methods = {
       method: "POST",
@@ -109,8 +110,8 @@ async function RegistratUser(NewUser: NewUserData) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Username: Username,
-        Email: Email,
+        UserName,
+        Email,
       }),
     };
 
@@ -118,8 +119,8 @@ async function RegistratUser(NewUser: NewUserData) {
 
     if (res.status == 500) {
       return 500;
-    } else if (res.status == 200) {
-      return 200;
+    } else if (res.status == 201) {
+      return 201;
     } else {
       return 0;
     }
@@ -129,22 +130,23 @@ async function RegistratUser(NewUser: NewUserData) {
 }
 
 async function EditUser(NewEdit: {
-  ID: number;
+  id: number;
   UserName: string;
   Password: string;
   Email: string;
 }) {
   let retorno = false;
+  const { UserName, Email, Password, id } = NewEdit
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${NewEdit.ID}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Username: NewEdit.UserName,
-        Password: NewEdit.Password,
-        Email: NewEdit.Email,
+        UserName,
+        Password,
+        Email
       }),
     });
     const data = await res.json();
@@ -162,7 +164,7 @@ async function FilterTasksUser(user: UserType | null) {
   const User: UserType | null = user;
 
   if (User) {
-    const IDuSER = User.ID;
+    const IDuSER = User.id;
 
     try {
       const methods = {
@@ -188,8 +190,6 @@ async function FilterTasksUser(user: UserType | null) {
     return [];
   }
 }
-
-
 
 export {
   LoginUser,

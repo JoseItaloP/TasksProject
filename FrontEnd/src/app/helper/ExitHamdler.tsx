@@ -23,7 +23,7 @@ async function EmailHamdler (UserName: string): Promise<ErroType[] | null | stri
             return null
         }
     }catch(e){
-        Erros.push({id: Date.now(), message:`${e}`})
+        Erros.push({ erroId: Date.now(), message: `${e}` })
         return Erros
     }
 }
@@ -51,7 +51,7 @@ async function PassHamdler (Email: string): Promise<ErroType[] | null | boolean>
             return null
         }
     }catch(e){
-        Erros.push({id: Date.now(), message:`${e}`})
+        Erros.push({ erroId: Date.now(), message: `${e}` })
         return Erros
     }
 }

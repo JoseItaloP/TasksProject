@@ -9,65 +9,65 @@ import exportValues from "./mockReturnErro";
     let Ftasks: taskType[] | null = null
     let allTasks: taskType[] = [
        {
-    ID: 1,
+        id: '1',
     Nome: "Planejar reunião da equipe",
     Descricao: "Preparar agenda e slides para a reunião semanal.",
     Status: "Pendente",
     Priority: "Alta",
-    created_at: new Date("2025-07-01T09:00:00Z"),
+        createdAt: new Date("2025-07-01T09:00:00Z"),
   },
   {
-    ID: 2,
+    id: '2',
     Nome: "Desenvolver nova feature de login",
     Descricao: "Implementar autenticação OAuth com Google.",
     Status: "Em Progresso",
     Priority: "Alta",
-    created_at: new Date("2025-06-28T14:30:00Z"),
-    updated_at: new Date("2025-07-02T10:15:00Z"),
+    createdAt: new Date("2025-06-28T14:30:00Z"),
+    updatedAt: new Date("2025-07-02T10:15:00Z"),
   },
   {
-    ID: 3,
+    id: '3',
     Nome: "Revisar código do módulo de relatórios",
     Descricao: "Verificar bugs e otimizações de performance.",
     Status: "Revisão",
     Priority: "Média",
-    created_at: new Date("2025-07-02T11:00:00Z"),
+    createdAt: new Date("2025-07-02T11:00:00Z"),
   },
   {
-    ID: 4,
+    id: '4',
     Nome: "Atualizar documentação da API",
     Descricao: "Adicionar exemplos de uso para os novos endpoints.",
     Status: "Pendente",
     Priority: "Baixa",
-    created_at: new Date("2025-06-25T16:00:00Z"),
+    createdAt: new Date("2025-06-25T16:00:00Z"),
   },
   {
-    ID: 5,
+    id: '5',
     Nome: "Corrigir bug de exibição no mobile",
     Descricao: "Ajustar layout da página de perfil em dispositivos móveis.",
     Status: "Em Progresso",
     Priority: "Alta",
-    created_at: new Date("2025-07-03T08:30:00Z"),
+    createdAt: new Date("2025-07-03T08:30:00Z"),
   },
   {
-    ID: 6,
+    id: '6',
     Nome: "Pesquisar ferramentas de monitoramento",
     Descricao: "Avaliar opções para monitoramento de performance de aplicações.",
     Status: "Pendente",
     Priority: "Média",
-    created_at: new Date("2025-07-01T10:45:00Z"),
+    createdAt: new Date("2025-07-01T10:45:00Z"),
   },
     ]
 
     const filterTasksFromUser = (userToGetTasks: UserType) => {
-        const newTasks: taskType[] = allTasks.filter(task => userToGetTasks.my_tasks.includes(task.ID) )
-        return newTasks
+      const newTasks: taskType[] = allTasks.filter(task => userToGetTasks.myTasks.includes(task.id))
+      return newTasks
     }
 
- const singIn = async ({ UserName, Password }: newLoginUser) => {
+const singIn = async ({ UserName, Password }: newLoginUser) => {
   loading = true
  if (UserName === "User" && Password === "Pass") {
-        const returnErr = exportValues.mockErrFunc({ id: 1, message: 'Erro ao tentar fazer login' });
+   const returnErr = exportValues.mockErrFunc({ erroId: 1, message: 'Erro ao tentar fazer login' });
         loading = false
         return returnErr
     }
@@ -79,7 +79,7 @@ import exportValues from "./mockReturnErro";
 
 async function getLoginUser() {
     
-    //pegar o usuario dos cookies
+
   loading = true
     if (user) {
       Ftasks = filterTasksFromUser(user)
@@ -91,9 +91,9 @@ async function getLoginUser() {
         UserName: "UserName",
         Password: "Password",
         Email: "Email@email.com",
-        ID: 1,
-        created_at: new Date,
-        my_tasks: [1,3,5],
+          id: 1,
+          createdAt: new Date,
+          myTasks: ['1', '3', '5'],
         Token: '000000'
     }
      Ftasks =  filterTasksFromUser(user)
@@ -103,30 +103,30 @@ async function getLoginUser() {
   }
 
   async function LogginOutUser() {
-    //Logout dos cookies
+
     user = null
     return true
   }
 
   async function EditUserhamdle(NewEdit: {
-    ID: number;
+    id: number;
     UserName: string;
     Password: string;
     Email: string;
   }): Promise<ErroType[] | null> {
     
     const errors: ErroType[] = [];
-    const {ID, UserName, Password, Email} = NewEdit
+    const { id, UserName, Password, Email } = NewEdit
     if (
       UserName.length == 0 ||
       Email.length == 0
     ) {
       errors.push({
-        id: 1,
+        erroId: 1,
         message: "Todos os dados devem estar preenchidos.",
       });
       exportValues.mockErrFunc({
-        id: 1,
+        erroId: 1,
         message: "Todos os dados devem estar preenchidos.",
       })
       return errors;
@@ -138,16 +138,16 @@ async function getLoginUser() {
         UserName,
         Password,
         Email,
-        ID,
+        id,
       }
       return null
     }else{
     errors.push({
-        id: 1,
+      erroId: 1,
         message: "Usuario não esta logado.",
       });
       exportValues.mockErrFunc({
-        id: 1,
+        erroId: 1,
         message: "Usuario não esta logado.",
       })
       return errors;
@@ -158,27 +158,27 @@ async function getLoginUser() {
     newTask: NewTaskUpdateType
   ): Promise<ErroType[] | null> {
     const errors: ErroType[] = [];
-    const { Name, Descrição, Priority, Status, TaskID } = newTask;
+    const { Nome, Descricao, Priority, Status, TaskID } = newTask;
 
-    if (Name == null || Descrição == null) {
+    if (Nome == null || Descricao == null) {
       errors.push({
-        id: 1,
+        erroId: 1,
         message: "Todos os dados devem estar preenchidos",
       });
       exportValues.mockErrFunc({
-        id: 1,
+        erroId: 1,
         message: "Todos os dados devem estar preenchidos",
       })
       return errors;
     }
     if(Ftasks && user){
         const tasksFilter = allTasks.map((task)=>{
-            if(task.ID == TaskID){
+          if (task.id == TaskID) {
                 if(Priority==null ||  Status==null){
-                return {...task, Nome: Name, Descricao: Descrição}
+                  return { ...task, Nome, Descricao }
 
                 }
-                return {...task, Nome: Name, Descricao: Descrição, Priority, Status}
+            return { ...task, Nome, Descricao, Priority, Status }
             }
             return task
         })
@@ -186,42 +186,48 @@ async function getLoginUser() {
         Ftasks = filterTasksFromUser(user)
         return null
     }
-    errors.push({id: 1, message:" Sem um conjunto de Tasks no sistema | erro em tasks"})
-    exportValues.mockErrFunc({id: 1, message:" Sem um conjunto de Tasks no sistema | erro em tasks"})
+    errors.push({ erroId: 1, message: " Sem um conjunto de Tasks no sistema | erro em tasks" })
+    exportValues.mockErrFunc({ erroId: 1, message: " Sem um conjunto de Tasks no sistema | erro em tasks" })
     return errors
   }
 
   
   async function createNewTask({NewTask, User}: 
-    {NewTask: newTaskType, User: UserType }): Promise<ErroType[] | null> {
+    { NewTask: newTaskType, User: UserType | null }): Promise<ErroType[] | null> {
 
-    const { Name, Descrição } = NewTask;
+    const { Nome, Descricao, Priority, Status } = NewTask;
+    console.error(User)
+    console.error(user)
+
 
     const errors: ErroType[] = [];
   
-    if (Name === "" || Descrição === "" || User) {
+    if (Nome === "" || Descricao === "" || User?.UserName === '') {
       
-      errors.push({ id: 1, message: "Todos os dados devem estar preenchidos" });
-      exportValues.mockErrFunc({ id: 1, message: "Todos os dados devem estar preenchidos" })
+      errors.push({ erroId: 1, message: "Todos os dados devem estar preenchidos" });
+      exportValues.mockErrFunc({ erroId: 1, message: "Todos os dados devem estar preenchidos" })
       return errors;
     }
 
       if(Ftasks && User && user){
         const newTask: taskType = {
             ...NewTask,
-            ID: Ftasks.length+1,
-            created_at: new Date(),
-            Nome: Name,
-            Descricao: Descrição
+          id: JSON.stringify(Ftasks.length + 1),
+          createdAt: new Date(),
+          Nome,
+          Descricao,
+          Priority,
+          Status
         }
         allTasks.push(newTask)
-        user.my_tasks.push(newTask.ID)
+        user.myTasks.push(newTask.id)
         Ftasks = filterTasksFromUser(user)
+        return null
+      } else {
+        errors.push({ erroId: 1, message: "Erro - falta de tasks ou usuario" });
+        exportValues.mockErrFunc({ erroId: 1, message: "Erro - falta de tasks ou usuario" })
+        return errors
       }
-
-    errors.push({ id: 1, message: "Erro - falta de tasks ou usuario" });
-    exportValues.mockErrFunc({ id: 1, message: "Erro - falta de tasks ou usuario" })
-    return errors
   }
 
 async function setingTasks(localLogin: UserType) {

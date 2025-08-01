@@ -10,24 +10,24 @@ export default function ErrorHandler(){
     function ErrorBox(erros: ErroType[], error: ErroType){
         return(
             <div
-              key={error.id}
+            key={error.erroId}
               className="w-64 bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg"
             >
               <p className="flex-1">{error.message}</p>
               <IoIosClose
                 className="cursor-pointer"
-                onClick={() => erros.filter((erroE)=> erroE.id !== error.id)}
+              onClick={() => erros.filter((erroE) => erroE.erroId !== error.erroId)}
               />
             </div>
         )
     }
 
     function addError(message: string) {
-        const errorId = Date.now(); 
-        const newError = { id: errorId, message }
+      const erroId = Date.now();
+      const newError = { erroId, message }
         errors.push(newError)
         setTimeout(() => {
-          errors.filter((erro)=> erro.id != errorId)
+          errors.filter((erro) => erro.erroId != erroId)
         }, 5000);
 
         return newError

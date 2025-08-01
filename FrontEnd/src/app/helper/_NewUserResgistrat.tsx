@@ -7,17 +7,17 @@ export default async function NewUserResgistrat(NewUser: NewUserData): Promise<E
     if(NewUser.Email === NewUser.ConfEmail){
         const responce = await RegistratUser(NewUser);
         
-        if(responce == 200){
+        if (responce == 201) {
             return null
         }else if(responce == 500){
-            errors.push({ id: Date.now(), message: "Usuario ou Email já cadastrados." });
+            errors.push({ erroId: Date.now(), message: "Usuario ou Email já cadastrados." });
             return errors;
         }else{
-            errors.push({ id: Date.now(), message: "Algum erro ocorreu." });
+            errors.push({ erroId: Date.now(), message: "Algum erro ocorreu." });
             return errors;
         }
     }else{
-        errors.push({ id: Date.now(), message: "Os Emails devem ser iguais" });
+        errors.push({ erroId: Date.now(), message: "Os Emails devem ser iguais" });
         return errors;
     }
     }

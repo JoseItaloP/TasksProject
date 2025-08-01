@@ -7,8 +7,8 @@ import { ErroType, NewTaskUpdateType, taskType } from "@/app/_constructor/_Types
 import LoadingPage from "@/app/_constructor/LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
 
-export default function TaskModal({ params }: { params: number | null }) {
-  const [taskID, setTaskID]           = useState<number | null>(null);
+export default function TaskModal({ params }: { params: string | null }) {
+  const [taskID, setTaskID] = useState<string | null>(null);
   const [task, setTask] = useState<taskType | null>(null);
   const [getPriority, setPriority] = useState<string>("");
   const [getStatus, setStatus] = useState<string>("");
@@ -21,22 +21,14 @@ export default function TaskModal({ params }: { params: number | null }) {
   const router = useRouter();
 
   useEffect(() => {
-    async function resolveParams() {
-      const resolvedParams = params;
-      setTaskID(resolvedParams);
-      
-      if (taskID === null) return router.push('/');
+
+    async function getIdTask(taskFind: taskType) {
       try {
-        const taskFind = Ftasks?.find((task)=> task.ID == taskID) || null
-        
-        if (taskFind === null) {
-          throw new Error(`Objeto com ID ${taskID} não encontrado`);
-        }
+
 
         setTask(taskFind);
         const priorityClass = getPriorityClass(taskFind.Priority);
         const statusClass = getStatusClass(taskFind.Status);
-
 
         setPriority(priorityClass);
         setStatus(statusClass);
@@ -47,8 +39,27 @@ export default function TaskModal({ params }: { params: number | null }) {
         console.error(error);
       }
     }
+    if (Ftasks && taskID) {
+      const taskFind = Ftasks?.find((task) => task.id === taskID)
+      if (!taskFind) { return }
+      getIdTask(taskFind)
+
+    }
+
+  }, [Ftasks, taskID])
+
+  useEffect(() => {
+    async function resolveParams() {
+
+      const resolvedParams = params;
+
+      if (resolvedParams === null) return router.push('/');
+
+      setTaskID(resolvedParams);
+
+    }
     resolveParams();
-  }, [params, Ftasks, taskID]);
+  }, [params]);
 
   const getPriorityClass = (priority: string): string => {
     switch (priority) {
@@ -79,11 +90,11 @@ export default function TaskModal({ params }: { params: number | null }) {
   async function hamdleSubmit() {
     setLoading(true)
     const NewTask: NewTaskUpdateType = {
-      Name: task?.Nome || null,
-      Descrição: task?.Descricao || null,
+      Nome: task?.Nome || null,
+      Descricao: task?.Descricao || null,
       Priority: task?.Priority || null,
       Status: task?.Status || null,
-      TaskID: task?.ID || null
+      TaskID: task?.id || null
   }
       try{
         const upDate = await UpdateTask(NewTask)
@@ -91,7 +102,7 @@ export default function TaskModal({ params }: { params: number | null }) {
           setLoading(false)
           setErros(upDate)
           setTimeout(() => {
-            setErros((prev) => prev.filter((e) => e.id !== upDate[0].id)); 
+            setErros((prev) => prev.filter((e) => e.erroId !== upDate[0].erroId)); 
       }, 5000);
         }else{
           router.push(`/User`)
@@ -116,14 +127,14 @@ export default function TaskModal({ params }: { params: number | null }) {
         <div className="z-20  h-full w-full absolute flex flex-col items-center bg-cold-900/30">
           {erros.map((erro) => (
                 <div
-                  key={erro.id}
+              key={erro.erroId}
                   className=" absolute
                   w-2/4 top-0 bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl z-50"
                 >
                   <p className="flex-1">{erro.message}</p>
                   <IoIosClose
                     className="cursor-pointer text-2xl ml-2"
-                    onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+                onClick={() => setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))}
                   />
                 </div>
               ))}

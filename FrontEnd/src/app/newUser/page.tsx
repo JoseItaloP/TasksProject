@@ -7,7 +7,7 @@ import { IoIosClose } from "react-icons/io";
 import ExitHamdler from "../helper/ExitHamdler";
 
 export default function NewUser() {
-  const [Username, setUsername] = useState("");
+  const [UserName, setUserName] = useState("");
   const [Email, setEmail] = useState("");
   const [ConfEmail, setConfEmail] = useState("");
   const [erros, setErros] = useState<ErroType[]>([]);
@@ -15,16 +15,15 @@ export default function NewUser() {
   async function hamdleSubmit(){
     
     const NewUser: NewUserData = {
-      Username,
+      UserName,
       Email,
       ConfEmail
     };
     const response = await ExitHamdler.NewUserResgistrat(NewUser)
-    if(response){
-      // setLoading(false)
+    if (response) {
       setErros(response)
       setTimeout(() => {
-        setErros((prev) => prev.filter((e) => e.id !== response[0].id)); 
+        setErros((prev) => prev.filter((e) => e.erroId !== response[0].erroId)); 
       }, 5000);
     } else {
       redirect('/Redirect')
@@ -43,13 +42,13 @@ export default function NewUser() {
       <div className="absolute">
         {erros.map((erro) => (
           <div
-            key={erro.id}
+            key={erro.erroId}
             className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
           >
             <p className="flex-1">{erro.message}</p>
             <IoIosClose
               className="cursor-pointer text-2xl ml-2"
-              onClick={() => setErros((prevErros) => prevErros.filter((erroE) => erroE.id !== erro.id))}
+              onClick={() => setErros((prevErros) => prevErros.filter((erroE) => erroE.erroId !== erro.erroId))}
             />
           </div>
         ))}
@@ -69,8 +68,8 @@ export default function NewUser() {
             name="Username"
             id="Username"
             className="text-xl p-1 rounded bg-hot-700 text-cold-800"
-            value={Username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={UserName}
+            onChange={(e) => setUserName(e.target.value)}
           />
         </label>
         <label className="flex flex-col max-[800px]:my-2">

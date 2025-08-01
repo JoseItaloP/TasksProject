@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
-export default function TaskModal({ params }: { params: Promise<{ id: number | null }> }) {
+export default function TaskModal({ params }: { params: Promise<{ id: string | null }> }) {
 
   const [task, setTask] = useState<taskType | null>(null);
   const [getPriority, setPriority] = useState<string>("");
@@ -16,26 +16,30 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
   const [ColorLineS, setColorLineS] = useState<boolean>(false);
   const [CreadoEm, setCreadoEm] = useState('')
   const [edit, setEdit] = useState<boolean>(false);
+  const [showDeletOption, setShowDeleteOption] = useState(false)
+
+
+
   const router = useRouter();
 
   const [erros, setErros] = useState<ErroType[]>([]);
 
-  const { Ftasks, UpdateTask, loadingTasks } = useContext(AuthContext)
+  const { Ftasks, UpdateTask, loadingTasks, deleteTask } = useContext(AuthContext)
 
 
   useEffect(() => {
     async function resolveParams() {
       const IDP = (await params).id
-      if (IDP === null) {
+      if (!IDP) {
         router.push('/')
         return;
       }
-      else {
-        if (Ftasks) {
+      if (!(Ftasks && IDP)) { return }
           try {
+            if (task) return
+            const taskFind = Ftasks?.find((task) => task.id === IDP)
+            if (!taskFind) {
 
-            const taskFind = Ftasks?.find((task) => task.ID == IDP) || null
-            if (taskFind === null) {
               throw new Error(`Objeto com ID ${IDP} não encontrado`);
             }
 
@@ -44,11 +48,11 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
             const priorityClass = getPriorityClass(taskFind.Priority);
             const statusClass = getStatusClass(taskFind.Status);
 
-            const createdAt = JSON.parse(JSON.stringify(taskFind.created_at)) || "";
+            const createdAt = JSON.parse(JSON.stringify(taskFind.createdAt)) || "";
             setCreadoEm(
               createdAt
                 .split('-')
-                .map((item: string) => parseInt(item, 10)) // Remove zeros à esquerda
+                .map((item: string) => parseInt(item, 10))
                 .reverse()
                 .join('/') || '00/00/0000'
             );
@@ -62,8 +66,7 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
             console.error(error)
             router.push('/')
           }
-        }
-      }
+
     }
     resolveParams();
   }, [params, Ftasks]);
@@ -97,11 +100,11 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
   async function hamdleSubmit() {
 
     const NewTask: NewTaskUpdateType = {
-      Name: task?.Nome || null,
-      Descrição: task?.Descricao || null,
+      Nome: task?.Nome || null,
+      Descricao: task?.Descricao || null,
       Priority: task?.Priority || null,
       Status: task?.Status || null,
-      TaskID: task?.ID || null
+      TaskID: task?.id || null
     }
     try {
       const upDate = await UpdateTask(NewTask)
@@ -109,7 +112,7 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
 
         setErros(upDate)
         setTimeout(() => {
-          setErros((prev) => prev.filter((e) => e.id !== upDate[0].id));
+          setErros((prev) => prev.filter((e) => e.erroId !== upDate[0].erroId));
         }, 5000);
       } else {
         // router.push(`/User`)
@@ -119,6 +122,18 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
       console.error('Erro: ', e)
     }
   }
+
+  async function hamdleDelete() {
+    if (!task) return
+    const returnOfDelete = await deleteTask(task.id)
+    if (returnOfDelete) {
+      setErros(returnOfDelete)
+      setShowDeleteOption(false)
+    }
+    setShowDeleteOption(false)
+    router.push("/User")
+  }
+
 
   if (!task) {
     return (
@@ -174,14 +189,14 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
           <div className="z-20 h-full w-full absolute flex flex-col items-center justify-center bg-hot-200/20 top-0">
             {erros.map((erro) => (
               <div
-                key={erro.id}
+                key={erro.erroId}
                 className=" absolute
                                         w-2/4 top-0 bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl z-50"
               >
                 <p className="flex-1">{erro.message}</p>
                 <IoIosClose
                   className="cursor-pointer text-2xl ml-2"
-                  onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+                  onClick={() => setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))}
                 />
               </div>
             ))}
@@ -274,13 +289,73 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
         ) : (
           ''
         )}
+
+        {
+          showDeletOption ? (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-cold-900 border-hot-800 border p-6 rounded-lg shadow-lg text-white">
+                <h1 className="text-xl font-bold mb-4">Deseja realmente deletar esta task?</h1>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={() => hamdleDelete()}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md font-semibold"
+                  >
+                    Sim
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDeleteOption(false)
+                    }}
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md font-semibold"
+                  >
+                    Não
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : ''
+        }
+
+        {erros ? <div className="absolute top-0" key={erros.length}>
+          {erros.map((erro) => (
+            <div
+              key={erro.erroId}
+              className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
+            >
+              <p className="flex-1">{erro.message}</p>
+              <IoIosClose
+                className="cursor-pointer text-2xl ml-2"
+                onClick={() =>
+
+                  setErros((prev) => {
+                    return prev.filter((e) => e.erroId !== erro.erroId)
+                  })}
+
+              />
+            </div>
+          ))}
+        </div>
+          : ''
+        }
+
         <section className="p-5 bg-cold-900 h-5/6 w-3/4 border border-hot-900 rounded-xl flex flex-col">
           <h1 className="w-full text-center">{task.Nome}</h1>
 
           <div className="h-5/6 w-full">
             <h2 className="flex justify-between items-center">
               <p>Descrição</p>
-              <button onClick={() => setEdit(true)}>Editar</button>
+              <div className="flex items-center">
+                <h3 className="ml-1">
+                  <button className="text-red-500 hover:underline" onClick={(e) => {
+                    e.preventDefault();
+                    setShowDeleteOption(true)
+                  }}>
+                    Deletar
+                  </button></h3>
+                <p className="text-xl mx-1">|</p>
+
+                <button onClick={() => setEdit(true)}>Editar</button>
+              </div>
             </h2>
             <p
               className="bg-cold-600 border border-hot-800 rounded text-hot-800 p-2 
@@ -292,7 +367,7 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
             </p>
           </div>
 
-          <div className="flex mt-6 w-full">
+          <div className="flex items-center mt-7 w-full">
             <h3>Status</h3>:
             <p
               className={` ml-2 ${getStatus} 
@@ -309,6 +384,7 @@ export default function TaskModal({ params }: { params: Promise<{ id: number | n
             >
               {task.Priority}
             </p>
+
           </div>
           <div className="flex">
             <h2>Criado em:</h2>

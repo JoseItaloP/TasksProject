@@ -23,7 +23,7 @@ export default async function EmailHamdler (UserName: string): Promise<ErroType[
             return null
         }
     }catch(e){
-        Erros.push({id: Date.now(), message:`${e}`})
+        Erros.push({ erroId: Date.now(), message: `${e}` })
         return Erros
     }
 }

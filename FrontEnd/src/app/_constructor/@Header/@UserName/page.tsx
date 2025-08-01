@@ -1,76 +1,80 @@
 'use client'
 
-import { redirect,  useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import EditUserPage from "./@EditUserPage/page";
 import { IoIosClose } from "react-icons/io";
 import LoadingPage from "../../LoadingPage";
 import { AuthContext } from "@/app/contexts/AuthContext";
-import { UserType } from "../../_Types";
+
 
 
 export default function UserName() {
-  const { userHeader, LogginOutUser } = useContext(AuthContext);
-  const [UsedUser, setUsedUser]= useState<UserType|null>(null)
+  const { LogginOutUser, user, getLoginUser } = useContext(AuthContext);
   const [editUser, setEditUser] = useState<boolean>(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  
-  useEffect(()=>{
-    
-    setEditUser(false)
-    setUsedUser(userHeader)
-    
-  },[userHeader])
 
-  async function LogOut(){
+  useEffect(() => {
+    async function getLogedUser() {
+      if (user) return
+      await getLoginUser()
+      console.log('useHeader in header ------ ', user)
+    }
+    if (!user) {
+      getLogedUser()
+    }
+
+  }, [getLoginUser, user])
+
+  async function LogOut() {
     setLoading(true)
     const LogUser = await LogginOutUser()
-    if(LogUser){
+    if (LogUser) {
       setLoading(false)
       redirect('/')
     }
   }
 
-  function handleSet(){
+  function handleSet() {
     return setEditUser(!editUser)
   }
 
-  function ToUser(){
+  function ToUser() {
     setLoading(true)
     router.refresh()
     router.push('/User')
     setLoading(false)
   }
-    if(UsedUser){
+  if (user) {
 
-      return editUser ? 
+    return editUser ?
       (<div className="flex flex-col items-center group">
 
         <Link href='/User' >
-          {UsedUser.UserName}
+          {user.UserName}
         </Link>
 
-      <section className="w-full h-full absolute z-30 left-0 top-0 flex flex-col items-center justify-center bg-cold-900/30 ">
+        <section className="w-full h-full absolute z-30 left-0 top-0 flex flex-col items-center justify-center bg-cold-900/30 ">
 
-        <section className=" bg-hot-700 text-cold-700 w-1/3 h-1/3 border border-hot-400 rounded-t-lg flex flex-col">
+          <section className=" bg-hot-700 text-cold-700 w-1/3 h-1/3 border border-hot-400 rounded-t-lg flex flex-col">
 
-          <h1 className="bg-cold-800 text-hot-500 w-full max-h-[10%] p-2 flex justify-between rounded-t-lg mb-2">
+            <h1 className="bg-cold-800 text-hot-500 w-full max-h-[10%] p-2 flex justify-between rounded-t-lg mb-2">
+              <p>Editando {user.UserName}</p>
 
-            <p>Editando {UsedUser.UserName}</p>
+              <button onClick={handleSet}>
+                <IoIosClose className="text-2xl cursor-pointer" />
+              </button>
 
-            <button onClick={handleSet}>
-              <IoIosClose className="text-2xl cursor-pointer"/>
-            </button>
-          </h1>
+            </h1>
 
-          <div className="flex-grow overflow-auto">
-            <EditUserPage UserData={UsedUser} />
-          </div>
-          
+            <div className="flex-grow overflow-auto">
+              <EditUserPage UserData={user} />
+            </div>
+
+          </section>
         </section>
-      </section>
       </div>
       )
       :
@@ -78,9 +82,9 @@ export default function UserName() {
         {
           loading ? <LoadingPage absolt={true} /> : ''
         }
-      
+
         <button onClick={ToUser} className="g">
-          {UsedUser.UserName}
+          {user.UserName}
         </button>
         <section className={`absolute z-20 mt-8 mr-20 `}>
           <ul className="list-none 
@@ -96,12 +100,12 @@ export default function UserName() {
           duration-150
           ">
             <li>
-              <form onSubmit={(e)=>{
+              <form onSubmit={(e) => {
                 e.preventDefault()
                 LogOut()
               }}>
-  
-              <button type="submit" className="
+
+                <button type="submit" className="
                   hover:cursor-pointer
                   hover:underline
                   hover:decoration-1
@@ -120,9 +124,9 @@ export default function UserName() {
           </ul>
         </section>
       </div>)
-    }else{
-      return <h1>User</h1>
-    }
-    }
+  } else {
+    return <h1>User</h1>
+  }
+}
 
 

@@ -23,7 +23,7 @@ export default function FindPassword() {
                 setLoading(false);
                 setErros(findPassword)
                 setTimeout(() => {
-                    setErros((prev) => prev.filter((e) => e.id !== findPassword[0].id)); 
+                  setErros((prev) => prev.filter((e) => e.erroId !== findPassword[0].erroId)); 
         
                 }, 5000);
             }else{
@@ -34,10 +34,10 @@ export default function FindPassword() {
       } else {
         setLoading(false);
         const Erros: ErroType[] = []
-        Erros.push({id: Date.now(), message: 'Email não encontrado.'})
+          Erros.push({ erroId: Date.now(), message: 'Email não encontrado.' })
         setErros(Erros)
         setTimeout(() => {
-          setErros((prev) => prev.filter((e) => e.id !== Erros[0].id)); 
+          setErros((prev) => prev.filter((e) => e.erroId !== Erros[0].erroId)); 
 
         }, 5000);
         
@@ -46,12 +46,12 @@ export default function FindPassword() {
       setLoading(false);
       const erros: ErroType[] = [];
       erros.push({
-        id: Date.now(),
+        erroId: Date.now(),
         message: "Preencha o Email para continuar.",
       });
       setErros(erros);
       setTimeout(() => {
-        setErros((prev) => prev.filter((e) => e.id !== erros[0].id));
+        setErros((prev) => prev.filter((e) => e.erroId !== erros[0].erroId));
       }, 5000);
     }
   }
@@ -70,14 +70,14 @@ export default function FindPassword() {
       <div className="absolute top-0">
         {erros.map((erro) => (
           <div
-            key={erro.id}
+            key={erro.erroId}
             className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
           >
             <p className="flex-1" data-testid='erroMessage'>{erro.message}</p>
             <IoIosClose
               className="cursor-pointer text-2xl ml-2"
               onClick={() =>
-                setErros((prev) => prev.filter((e) => e.id !== erro.id))
+                setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))
               }
             />
           </div>

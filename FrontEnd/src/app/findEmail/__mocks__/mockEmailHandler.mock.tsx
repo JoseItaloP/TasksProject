@@ -6,8 +6,8 @@ export default async function EmailHamdler (UserName: string): Promise<ErroType[
     if(UserName == 'UserName'){
         return 'UserName@email.com'
     }else{
-        Erros.push({id: 1, message:`Falha em encontrar o usuario de Email`})
-        exportValues.mockErrFunc({id: 1, message:`Falha em encontrar o usuario de Email`})
+        Erros.push({ erroId: 1, message: `Falha em encontrar o usuario de Email` })
+        exportValues.mockErrFunc({ erroId: 1, message: `Falha em encontrar o usuario de Email` })
         return Erros
     }
     

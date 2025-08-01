@@ -13,14 +13,14 @@ export default function Main() {
   const [userInUse, setUserInUse] = useState<UserType | null>(null)
 
   useEffect(() => {
-    async function getData(){
-
-      if (!user) {
+    async function getData() {
         const usuario = await getLoginUser()
-        setUserInUse(usuario)
-      }else{
+      if (!usuario) {
         router.push('/')
       }
+      setUserInUse(usuario)
+
+
     }
     if(user === null){
       getData()

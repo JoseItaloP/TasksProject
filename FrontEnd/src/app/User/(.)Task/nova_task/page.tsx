@@ -22,24 +22,29 @@ export default function NovaTaskModal() {
     setLoading(true)
    
     const NewTask: newTaskType = {
-      Name: taskName,
-      Descrição: taskDescription,
+      Nome: taskName,
+      Descricao: taskDescription,
       Status: taskStatus,
       Priority: taskPriority,
       UserID: ''
     }
     const User = user
-    const data = {NewTask, User}
-    const resultCrete = await createNewTask(data)
-    if(resultCrete){
-      setLoading(false)
-      setErros(resultCrete)
-      setTimeout(() => {
-        setErros((prev) => prev.filter((e) => e.id !== resultCrete[0].id)); 
-      }, 5000);
-    }else{
+    if (!User) {
       router.refresh()
       router.push(`/User`)
+    } else {
+      const data = { NewTask, User }
+      const resultCrete = await createNewTask(data)
+      if (resultCrete) {
+        setLoading(false)
+        setErros(resultCrete)
+        setTimeout(() => {
+          setErros((prev) => prev.filter((e) => e.erroId !== resultCrete[0].erroId));
+        }, 5000);
+      } else {
+        router.refresh()
+        router.push(`/User`)
+      }
     }
   }
 
@@ -56,13 +61,13 @@ export default function NovaTaskModal() {
       <div className="absolute top-0">
         {erros.map((erro) => (
           <div
-            key={erro.id}
+            key={erro.erroId}
             className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
           >
             <p className="flex-1">{erro.message}</p>
             <IoIosClose
               className="cursor-pointer text-2xl ml-2"
-              onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+              onClick={() => setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))}
             />
           </div>
         ))}

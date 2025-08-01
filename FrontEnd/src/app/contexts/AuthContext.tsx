@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
 
         if (LocalUser) {
-          if ("ID" in LocalUser) {
+          if ("id" in LocalUser) {
             setUserHeader(LocalUser);
           }
         }
@@ -80,13 +80,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function getLoginUser() {
     setLoading(true);
     const { "TaskDefine-Token": token } = parseCookies();
+    console.log('token --- ', token)
 
     if (token) {
       const LocalUser: UserType | defaultErro | null = await getLogedLocal(
         token
       );
 
-      if (LocalUser && "ID" in LocalUser) {
+      console.log('localUser ---- ', LocalUser)
+
+      if (LocalUser && "id" in LocalUser) {
         setUser(LocalUser);
         setUserHeader(LocalUser);
         setLoading(false);
@@ -103,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const errors: ErroType[] = [];
     if(UserName === '' || Password === ''){
       setLoading(false)
-      errors.push({id: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos"})
+      errors.push({ erroId: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos" })
       return errors
       
     }
@@ -112,10 +115,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       Password,
     });
 
-    if ("ID" in LogedUser) {
+    if ("id" in LogedUser) {
 
       setLoading(false);
       setUser(LogedUser);
+      setUserHeader(LogedUser)
 
       router.refresh();
       router.push("/User");
@@ -139,7 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function EditUserhamdle(NewEdit: {
-    ID: number;
+    id: number;
     UserName: string;
     Password: string;
     Email: string;
@@ -148,12 +152,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const errors: ErroType[] = [];
 
     if (
-      NewEdit.UserName.length == 0 ||
-      NewEdit.Email.length == 0
+      !NewEdit.UserName ||
+      !NewEdit.Email
     ) {
       setLoading(false)
       errors.push({
-        id: Date.now(),
+        erroId: Date.now(),
         message: "Todos os dados devem estar preenchidos.",
       });
       return errors;
@@ -172,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error("Error: ", e);
       errors.push({
-        id: Date.now(),
+        erroId: Date.now(),
         message: "Algo de errado ocorreu, cheque o console.",
       });
       setLoading(false);
@@ -189,12 +193,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoadingTasks(true);
 
     const errors: ErroType[] = [];
-    const { Name, Descrição, Priority, Status, TaskID } = newTask;
+    const { Nome, Descricao, Priority, Status, TaskID } = newTask;
 
-    if (Name == null || Descrição == null) {
+    if (Nome == null || Descricao == null) {
       setLoadingTasks(false)
       errors.push({
-        id: Date.now(),
+        erroId: Date.now(),
         message: "Todos os dados devem estar preenchidos",
       });
       return errors;
@@ -209,8 +213,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            Name: Name,
-            Descrição: Descrição,
+            Nome,
+            Descricao,
             Priority: Priority,
             Status: Status,
           }),
@@ -234,7 +238,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setLoadingTasks(false)
         errors.push({
-          id: Date.now(),
+          erroId: Date.now(),
           message: "Erro ao buscar dados, tente novamente.",
         });
         return errors;
@@ -242,7 +246,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       setLoadingTasks(false)
       errors.push({
-        id: Date.now(),
+        erroId: Date.now(),
         message: "Erro ao buscar dados, tente novamente.",
       });
       console.error("Erros: ", e);
@@ -251,16 +255,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function createNewTask({NewTask, User}: 
-    { NewTask: newTaskType, User: UserType }): Promise<ErroType[] | null> {
+    { NewTask: newTaskType, User: UserType | null }): Promise<ErroType[] | null> {
 
-    const { Name, Descrição, Priority, Status } = NewTask;
+    const { Nome, Descricao, Priority, Status } = NewTask;
 
-    const UserID = User?.ID;
+    const UserID = User?.id;
     const errors: ErroType[] = [];
   
-    if (Name === "" || Descrição === "") {
+    if (Nome === "" || Descricao === "") {
       setLoading(false);
-      errors.push({ id: Date.now(), message: "Todos os dados devem estar preenchidos" });
+      errors.push({ erroId: Date.now(), message: "Todos os dados devem estar preenchidos" });
       return errors;
     }
   
@@ -268,7 +272,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Name, Descrição, Priority, Status, UserID }),
+        body: JSON.stringify({ Nome, Descricao, Priority, Status, UserID }),
       });
   
       const result = await fetchData.json();
@@ -287,11 +291,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoadingTasks(false);
         return null;
       } else {
-        errors.push({ id: Date.now(), message: "Erro ao criar Task." });
+        errors.push({ erroId: Date.now(), message: "Erro ao criar Task." });
       }
     } catch (e) {
       console.error("Erro ao tentar criar Task:", e);
-      errors.push({ id: Date.now(), message: "Erro ao tentar criar Task." });
+      errors.push({ erroId: Date.now(), message: "Erro ao tentar criar Task." });
     }
     return errors.length > 0 ? errors : null;
   }
@@ -301,12 +305,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const filtredTasks = await FilterTasksUser(localLogin);
 
-    console.log('localLogin: ', localLogin)
-    console.log('Resultado filtro: ', filtredTasks)
-      
     setFtasks(filtredTasks);
     setLoadingTasks(false);
     return filtredTasks
+  }
+
+  async function deleteTask(idTask: string) {
+    setLoading(true)
+    const errors: ErroType[] = [];
+
+
+    if (user) {
+      setUser({
+        ...user,
+        myTasks: user?.myTasks.filter((id) => id !== idTask)
+
+      })
+    } else {
+      errors.push({ erroId: Date.now(), message: "Usuario nao esta logado" });
+      return errors
+    }
+
+    const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task/${idTask}`, {
+      method: "DELETE",
+    });
+
+    const result = await fetchData.json();
+    if (result) {
+      const filtredTasks = await FilterTasksUser(user);
+      if (filtredTasks) {
+        setFtasks(filtredTasks);
+      }
+      return null
+    } else {
+      errors.push({ erroId: Date.now(), message: "Ocorreu algum erro." });
+      return errors
+    }
   }
 
   return (
@@ -324,7 +358,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         EditUserhamdle,
         UpdateTask,
         createNewTask,
-        setingTasks
+        setingTasks,
+        deleteTask
       }}
     >
       {children}

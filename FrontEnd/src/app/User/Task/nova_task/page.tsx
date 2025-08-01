@@ -13,7 +13,7 @@ export default function NovaTask() {
   const [taskStatus, setTaskStatus] = useState("atuando");
   const [taskPriority, setTaskPriority] = useState("baixa");
   const [loading, setLoading] = useState(false)
-  const {createNewTask,  getLoginUser} = useContext(AuthContext)
+  const { createNewTask, getLoginUser } = useContext(AuthContext)
 
   const [erros, setErros] = useState<ErroType[]>([]);
   const router = useRouter()
@@ -33,21 +33,24 @@ export default function NovaTask() {
     setLoading(true)
 
     const NewTask: newTaskType = {
-      Name: taskName,
-      Descrição: taskDescription,
+      Nome: taskName,
+      Descricao: taskDescription,
       Status: taskStatus,
       Priority: taskPriority,
       UserID: ''
     }
     const User = await getLoginUser()
-    const data = {NewTask, User}
-    const resultCrete = await createNewTask(data)
+    if (!User) {
+      router.refresh()
+      redirect('/User')
+    }
+    const resultCrete = await createNewTask({ NewTask, User })
 
     if(resultCrete){
       setLoading(false)
       setErros(resultCrete)
       setTimeout(() => {
-        setErros((prev) => prev.filter((e) => e.id !== resultCrete[0].id)); 
+        setErros((prev) => prev.filter((e) => e.erroId !== resultCrete[0].erroId)); 
       }, 5000);
       
     }else{
@@ -65,13 +68,13 @@ export default function NovaTask() {
       <div className="absolute top-0">
               {erros.map((erro) => (
                 <div
-                  key={erro.id}
+                  key={erro.erroId}
                   className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
                 >
                   <p className="flex-1">{erro.message}</p>
                   <IoIosClose
                     className="cursor-pointer text-2xl ml-2"
-                    onClick={() => setErros((prev) => prev.filter((e) => e.id !== erro.id))}
+                    onClick={() => setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))}
                   />
                 </div>
               ))}
@@ -128,7 +131,6 @@ export default function NovaTask() {
               name="prioridade"
               id="prioridade"
               onChange={(e) => {
-
                 setTaskPriority(e.target.value);
               }}
             >

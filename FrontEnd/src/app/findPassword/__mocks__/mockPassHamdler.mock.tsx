@@ -8,8 +8,8 @@ export default async function PassHamdler (Email: string): Promise<ErroType[] | 
         return true
     }
     else{
-        Erros.push({id: 1, message: "Erro de Email ao resgate de senha"})
-        exportValues.mockErrFunc({id: 1, message: "Erro de Email ao resgate de senha"})
+        Erros.push({ erroId: 1, message: "Erro de Email ao resgate de senha" })
+        exportValues.mockErrFunc({ erroId: 1, message: "Erro de Email ao resgate de senha" })
         return Erros
     }
 }
