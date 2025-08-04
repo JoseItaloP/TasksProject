@@ -166,6 +166,7 @@ const findEmail = async (req, reply) => {
 
 const findPass = async (req, reply) => {
   const { Email } = req.body
+  console.log('Email vindo ---- ', Email)
   try {
 
     const userFind = await prisma.user.findUnique({
@@ -173,6 +174,8 @@ const findPass = async (req, reply) => {
         Email
       }
     })
+
+    console.log('User finded ------ ', userFind)
 
     if (!userFind) { return reply.code(500).send(false) }
 
