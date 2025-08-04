@@ -76,7 +76,10 @@ const CreateUser = async (req, reply) => {
 
     const Token = v4();
 
-    await prisma.user.create({
+    console.log('user data ---', UserName)
+    console.log('email data ---', Email)
+
+    const user = await prisma.user.create({
       data: {
         UserName,
         Password: hashedPassword,
@@ -86,6 +89,8 @@ const CreateUser = async (req, reply) => {
         myTasks: []
       }
     })
+
+    console.log('user ---- ', user)
 
     await senPassEmail(Email, Password)
 
