@@ -4,7 +4,7 @@ import { render, screen, waitFor } from "@testing-library/react"
 import { passValue } from "@/__test__/helper/passValueTest"
 import * as navigator from "next/navigation"
 import userEvent from "@testing-library/user-event"
-import mockValue from "@/__mocks__/mockValues"
+// import mockValue from "@/__mocks__/mockValues"
 
 jest.mock('next/navigation', () => ({
     useRouter: jest.fn(()=>({
@@ -42,16 +42,16 @@ describe("Nova task test page", ()=>{
         })
 
         
-        const findTask = mockValue.user
-        if(findTask){
-            findTask
-        }
-            
-        
-        
-        await waitFor(()=>{
-            expect(taskTestName).to
-        })
+        // const findTask = mockValue.user
+        // if(findTask){
+        //     return findTask
+        // }
+
+
+
+        // await waitFor(()=>{
+        //     expect(taskTestName).toBeInTheDocument()
+        // })
 
     })
 }

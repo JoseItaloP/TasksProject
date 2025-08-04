@@ -237,6 +237,42 @@ async function setingTasks(localLogin: UserType) {
     Ftasks = filtredTasks
     return filtredTasks
   }
+async function deleteTask(idTask: string) {
+  // setLoading(true)
+  const errors: ErroType[] = [];
+  console.log(idTask)
+  if (idTask) return null
+
+  // if (user) {
+  //   setUser({
+  //     ...user,
+  //     myTasks: user?.myTasks.filter((id) => id !== idTask)
+
+  //   })
+  // } else {
+  //   errors.push({ erroId: Date.now(), message: "Usuario nao esta logado" });
+  //   return errors
+  // }
+
+  // const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task/${idTask}`, {
+  //   method: "DELETE",
+  // });
+
+  // const result = await fetchData.json();
+  // if (result) {
+  //   const filtredTasks = await FilterTasksUser(user);
+  //   if (filtredTasks) {
+  //     setFtasks(filtredTasks);
+  //   }
+  //   return null
+  // } else {
+  //   errors.push({ erroId: Date.now(), message: "Ocorreu algum erro." });
+  //   return errors
+  // }
+  errors.push({ erroId: Date.now(), message: "Ocorreu algum erro." });
+  return errors
+}
+
 
 const mockValue = {
     singIn,
@@ -252,5 +288,6 @@ const mockValue = {
     UpdateTask,
     createNewTask,
     setingTasks,
+  deleteTask
 }
  export default mockValue
