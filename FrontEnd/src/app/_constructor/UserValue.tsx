@@ -103,6 +103,7 @@ async function LogoutLocalUser() {
 
 async function RegistratUser(NewUser: NewUserData) {
   const { UserName, Email } = NewUser;
+  console.log('user ---- ', NewUser)
   try {
     const methods = {
       method: "POST",

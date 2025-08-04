@@ -5,6 +5,7 @@ import { RegistratUser } from "../_constructor/UserValue";
 export default async function NewUserResgistrat(NewUser: NewUserData): Promise<ErroType[] | null> {
     const errors: ErroType[] = [];
     if(NewUser.Email === NewUser.ConfEmail){
+        console.log('user in server ---- ', NewUser)
         const responce = await RegistratUser(NewUser);
         
         if (responce == 201) {
