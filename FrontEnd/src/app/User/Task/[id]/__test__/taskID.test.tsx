@@ -10,7 +10,7 @@ jest.mock('../taskModal', () => ({
     return (
 
       <div data-testid='taskModal-mock'>
-        taskModule Mock 
+        taskModule Mock {JSON.stringify(params)}
       </div>
 
     );
@@ -26,7 +26,7 @@ jest.mock('next/navigation', () => ({
 describe('test do User Task [id]',  ()=>{
     it("should render the taskModal Page",async ()=>{
         
-          const paramsPromise = Promise.resolve({id: passValue.Ftasks[1].ID})
+      const paramsPromise = Promise.resolve({ id: passValue.Ftasks[1].id })
         render(
             <MockAuthProvider value={passValue}>
                 <Page params={paramsPromise}/>
