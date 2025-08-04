@@ -168,6 +168,7 @@ const findPass = async (req, reply) => {
   const { Email } = req.body
   console.log('Email vindo ---- ', Email)
   console.log('env ---- ', process.env.DATABASE_URL)
+  console.log('process - ----', process.env)
   try {
 
     const userFind = await prisma.user.findUnique({
