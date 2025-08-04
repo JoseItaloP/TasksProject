@@ -24,7 +24,7 @@ export default async function PassHamdler (Email: string): Promise<ErroType[] | 
             return null
         }
     }catch(e){
-        Erros.push({id: Date.now(), message:`${e}`})
+        Erros.push({ erroId: Date.now(), message: `${e}` })
         return Erros
     }
 }
