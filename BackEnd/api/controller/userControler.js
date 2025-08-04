@@ -200,7 +200,8 @@ const findPass = async (req, reply) => {
     reply.send(true)
 
   } catch (e) {
-    reply.code(500).send(flase)
+    console.error('Error ---', e)
+    reply.code(500).send(false)
   }
 }
 
