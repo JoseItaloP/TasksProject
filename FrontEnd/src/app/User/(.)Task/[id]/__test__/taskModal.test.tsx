@@ -21,7 +21,7 @@ describe('taskModal tester', ()=>{
      })
 
     it("should render all the data from the task", async ()=>{
-          const ParamsPass =  1
+        const ParamsPass = '1'
         render(
             <MockAuthProvider  value={passValue}>
                 <TaskModal params={ParamsPass} />
@@ -36,7 +36,7 @@ describe('taskModal tester', ()=>{
     })
     it("should throw a error in taskFind", (done)=>{
         
-       const ParamsPass = 2
+        const ParamsPass = '2'
 
         try {
             render(
@@ -65,7 +65,7 @@ describe('taskModal tester', ()=>{
         })
     })
     it("should render the edit on the page", async ()=>{
-        const ParamsPass =  1
+        const ParamsPass = '1'
         render(
             <MockAuthProvider  value={passValue}>
                 <TaskModal params={ParamsPass} />
@@ -91,7 +91,7 @@ describe('taskModal tester', ()=>{
 
     })
     it("shuld edit the name of the task", async ()=>{
-        const ParamsPass =  1
+        const ParamsPass = '1'
         render(
             <MockAuthProvider  value={passValue}>
                 <TaskModal params={ParamsPass} />

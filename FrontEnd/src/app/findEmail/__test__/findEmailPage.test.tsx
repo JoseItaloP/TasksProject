@@ -42,7 +42,7 @@ describe('EmailHandler Page test', ()=>{
        await userEvent.click(BttHandler)
 
         await waitFor(()=>{
-            expect(errSpy).toHaveBeenCalledWith({id: 1, message:`Falha em encontrar o usuario de Email`})
+            expect(errSpy).toHaveBeenCalledWith({ erroId: 1, message: `Falha em encontrar o usuario de Email` })
         })
         
     })

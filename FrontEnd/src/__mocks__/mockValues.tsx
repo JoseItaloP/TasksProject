@@ -1,6 +1,7 @@
 import   {ErroType, newLoginUser, newTaskType, NewTaskUpdateType, taskType, UserType}  from "@/app/_constructor/_Types";
 import exportValues from "./mockReturnErro";
 
+
     let loading: boolean = true
     const loadingTasks: boolean = false
     let user: UserType | null = null
@@ -196,9 +197,6 @@ async function getLoginUser() {
     { NewTask: newTaskType, User: UserType | null }): Promise<ErroType[] | null> {
 
     const { Nome, Descricao, Priority, Status } = NewTask;
-    console.error(User)
-    console.error(user)
-
 
     const errors: ErroType[] = [];
   
@@ -238,39 +236,22 @@ async function setingTasks(localLogin: UserType) {
     return filtredTasks
   }
 async function deleteTask(idTask: string) {
-  // setLoading(true)
+
   const errors: ErroType[] = [];
-  console.log(idTask)
-  if (idTask) return null
+  console.error('user --- ', user)
+  if (user && Ftasks) {
 
-  // if (user) {
-  //   setUser({
-  //     ...user,
-  //     myTasks: user?.myTasks.filter((id) => id !== idTask)
+    const newTasks = Ftasks.filter((task) => task.id !== idTask)
+    const newTasksUser = user.myTasks.filter((taskID) => taskID !== idTask)
+    Ftasks = newTasks
+    user.myTasks = newTasksUser
 
-  //   })
-  // } else {
-  //   errors.push({ erroId: Date.now(), message: "Usuario nao esta logado" });
-  //   return errors
-  // }
+    return null
+  } else {
+    errors.push({ erroId: Date.now(), message: user ? "Task não encontrada" : "Usuario não logado" })
+    return errors
+  }
 
-  // const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task/${idTask}`, {
-  //   method: "DELETE",
-  // });
-
-  // const result = await fetchData.json();
-  // if (result) {
-  //   const filtredTasks = await FilterTasksUser(user);
-  //   if (filtredTasks) {
-  //     setFtasks(filtredTasks);
-  //   }
-  //   return null
-  // } else {
-  //   errors.push({ erroId: Date.now(), message: "Ocorreu algum erro." });
-  //   return errors
-  // }
-  errors.push({ erroId: Date.now(), message: "Ocorreu algum erro." });
-  return errors
 }
 
 

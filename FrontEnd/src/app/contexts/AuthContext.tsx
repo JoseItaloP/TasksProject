@@ -313,8 +313,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function deleteTask(idTask: string) {
     setLoading(true)
     const errors: ErroType[] = [];
-
-
     if (user) {
       setUser({
         ...user,

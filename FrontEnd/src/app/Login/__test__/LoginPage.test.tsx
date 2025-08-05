@@ -74,7 +74,7 @@ describe("Login Page Tester", () => {
         await userEvent.click(bttClick)
 
         await waitFor(() => {
-            expect(erroMock).toHaveBeenCalledWith({id: 1, message: "Erro ao tentar fazer login"})
+            expect(erroMock).toHaveBeenCalledWith({ erroId: 1, message: "Erro ao tentar fazer login" })
         })
     })
     it("should go to newUser page", async ()=>{

@@ -22,7 +22,6 @@ describe("User Page Test", () => {
     })
 
     it("Should render the UserPage", async () => {
-        // const CallGetUser = jest.spyOn(mockValue, 'getLoginUser')
         const spyOn = jest.spyOn(mockValue, 'getLoginUser')
         render(
             <MockAuthProvider >

@@ -34,9 +34,7 @@ describe("New User Page test", ()=>{
         await userEvent.click(bttSend)
 
         await waitFor(()=>{
-            expect(mockNew).toHaveBeenCalledWith({Username: "userName", Email: "user@email.com", ConfEmail: "user@email.com"})
-            // expect(mockNew).toHaveReturnedWith(null)
-
+            expect(mockNew).toHaveBeenCalledWith({ UserName: "userName", Email: "user@email.com", ConfEmail: "user@email.com" })
         })
     })
     it("should return a erro of Email and Confirm", async ()=>{
@@ -62,7 +60,7 @@ describe("New User Page test", ()=>{
         await userEvent.click(bttSend)
 
         await waitFor(()=>{
-            expect(spy).toHaveBeenCalledWith({ id: 1, message: "Emails diferentes" })
+            expect(spy).toHaveBeenCalledWith({ erroId: 1, message: "Emails diferentes" })
         })
     })
     it("should return a erro of UserName", async ()=>{
@@ -88,7 +86,7 @@ describe("New User Page test", ()=>{
         await userEvent.click(bttSend)
 
         await waitFor(()=>{
-            expect(spy).toHaveBeenCalledWith({ id: 1, message: "UserName nao registrado" })
+            expect(spy).toHaveBeenCalledWith({ erroId: 1, message: "UserName nao registrado" })
         })
     })
 })

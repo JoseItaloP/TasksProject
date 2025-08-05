@@ -49,7 +49,7 @@ describe('FindPassword Page test', ()=>{
         await userEvent.click(BttHamdler)
 
         await waitFor(()=>{
-            expect(spyJest).toHaveBeenCalledWith({id: 1, message: "Erro de Email ao resgate de senha"})
+            expect(spyJest).toHaveBeenCalledWith({ erroId: 1, message: "Erro de Email ao resgate de senha" })
         })
 
         expect(screen.getByTestId('erroMessage')).toBeInTheDocument()
