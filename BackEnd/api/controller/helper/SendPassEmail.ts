@@ -34,6 +34,6 @@ async function senPassEmail(Email, Senha) {
 
 }
 
-module.exports = {
+export {
     senPassEmail
 }

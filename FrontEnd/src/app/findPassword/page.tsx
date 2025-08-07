@@ -18,29 +18,16 @@ export default function FindPassword() {
     setLoading(true);
     if (userEmail) {
       const findPassword = await ExitHamdler.PassHamdler(userEmail)
-        if (findPassword) {
-            if(Array.isArray(findPassword)){
-                setLoading(false);
-                setErros(findPassword)
-                setTimeout(() => {
-                  setErros((prev) => prev.filter((e) => e.erroId !== findPassword[0].erroId)); 
-        
-                }, 5000);
-            }else{
-                setPass(true)
-                setLoading(false)
-            }
-
-      } else {
+      if (Array.isArray(findPassword)) {
         setLoading(false);
-        const Erros: ErroType[] = []
-          Erros.push({ erroId: Date.now(), message: 'Email não encontrado.' })
-        setErros(Erros)
+        setErros(findPassword)
         setTimeout(() => {
-          setErros((prev) => prev.filter((e) => e.erroId !== Erros[0].erroId)); 
+          setErros((prev) => prev.filter((e) => e.erroId !== findPassword[0].erroId));
 
         }, 5000);
-        
+      } else {
+        setPass(true)
+        setLoading(false)
       }
     } else {
       setLoading(false);
@@ -55,55 +42,55 @@ export default function FindPassword() {
       }, 5000);
     }
   }
-  if(pass){
+  if (pass) {
     return (
-        <main className="h-full w-full flex flex-col items-center justify-center">
-            <h1 className="text-2xl mb-4">A sua senha foi restaurada, verifique seu Email para adquirir a nova senha!</h1>
-            <button onClick={()=>router.replace('/Login')} className="w-1/5 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"
-          >Voltar para Login!</button>
-        </main>
+      <main className="h-full w-full flex flex-col items-center justify-center">
+        <h1 className="text-2xl mb-4">A sua senha foi restaurada, verifique seu Email para adquirir a nova senha!</h1>
+        <button onClick={() => router.replace('/Login')} className="w-1/5 bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"
+        >Voltar para Login!</button>
+      </main>
     )
-  }else{
-  return (
-    <main className="h-full w-full flex flex-col items-center justify-center">
-      {loading ? <LoadingPage absolt={true} /> : ""}
-      <div className="absolute top-0">
-        {erros.map((erro) => (
-          <div
-            key={erro.erroId}
-            className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
-          >
-            <p className="flex-1" data-testid='erroMessage'>{erro.message}</p>
-            <IoIosClose
-              className="cursor-pointer text-2xl ml-2"
-              onClick={() =>
-                setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))
-              }
+  } else {
+    return (
+      <main className="h-full w-full flex flex-col items-center justify-center">
+        {loading ? <LoadingPage absolt={true} /> : ""}
+        <div className="absolute top-0">
+          {erros.map((erro) => (
+            <div
+              key={erro.erroId}
+              className="w-full bg-yellow-300 text-zinc-800 flex items-center p-2 rounded shadow-lg mt-4 text-xl"
+            >
+              <p className="flex-1" data-testid='erroMessage'>{erro.message}</p>
+              <IoIosClose
+                className="cursor-pointer text-2xl ml-2"
+                onClick={() =>
+                  setErros((prev) => prev.filter((e) => e.erroId !== erro.erroId))
+                }
+              />
+            </div>
+          ))}
+        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            hamdleSubmit();
+          }}
+          className="flex flex-col items-center"
+        >
+          <label className="flex flex-col items-center my-2">
+            <h1 className="text-2xl mb-4 text-center">Forneça o seu Email para continuar</h1>
+            <input
+              type="text"
+              name=""
+              id=""
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+              className="w-full max-[800px]:w-3/4 p-2 text-cold-800 bg-hot-700 border border-cold-800 rounded"
             />
-          </div>
-        ))}
-      </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          hamdleSubmit();
-        }}
-        className="flex flex-col items-center"
-      >
-        <label className="flex flex-col items-center my-2">
-          <h1 className="text-2xl mb-4 text-center">Forneça o seu Email para continuar</h1>
-          <input
-            type="text"
-            name=""
-            id=""
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
-            className="w-full max-[800px]:w-3/4 p-2 text-cold-800 bg-hot-700 border border-cold-800 rounded"
-          />
-        </label>
-        <input type="submit" value="Resgatar Senha" className="w-3/5  bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900"/>
-      </form>
-    </main>
-  );
-    }
+          </label>
+          <input type="submit" value="Resgatar Senha" className="w-3/5  bg-hot-800 text-cold-900 p-3 buttonHAnimationINV text-center rounded border border-cold-900" />
+        </form>
+      </main>
+    );
+  }
 }

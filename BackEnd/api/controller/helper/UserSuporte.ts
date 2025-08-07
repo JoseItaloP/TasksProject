@@ -24,7 +24,7 @@ const { hash } = require('bcryptjs')
     }
   }
 
-module.exports = {
+export {
     GeneratePassword,
     getPass
 };

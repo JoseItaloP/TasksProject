@@ -20,6 +20,7 @@ async function LoginUser({
   UserName,
   Password,
 }: newLoginUser): Promise<UserType | ErroType> {
+  try {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/Login`, {
     method: "POST",
     headers: {
@@ -31,15 +32,15 @@ async function LoginUser({
     }),
   });
 
-  const result: UserType | null = await response.json();
+    const result: UserType | string | null = await response.json();
 
-  if (result === null) {
+    if (typeof (result) == 'string') {
     const erro = {
       erroId: Date.now(),
-      message: "Usuário ou senha não identificados no banco de dados",
+      message: result,
     };
     return erro;
-  } else {
+    } else if (result !== null) {
     const jwtPass = process.env.NEXT_PUBLIC_JWT_PASS ?? "minha-senha";
 
     const token = jwt.sign(
@@ -54,6 +55,20 @@ async function LoginUser({
 
     User = result;
     return result;
+    } else {
+      const erro = {
+        erroId: Date.now(),
+        message: "Falha em se comunicar com bancode dados.",
+      };
+      return erro;
+    }
+  } catch (e) {
+    console.error('Erro: ', e)
+    const erro = {
+      erroId: Date.now(),
+      message: "Falha em se comunicar com bancode dados.",
+    };
+    return erro;
   }
 }
 
@@ -103,7 +118,7 @@ async function LogoutLocalUser() {
 
 async function RegistratUser(NewUser: NewUserData) {
   const { UserName, Email } = NewUser;
-  console.log('user ---- ', NewUser)
+
   try {
     const methods = {
       method: "POST",
@@ -150,7 +165,7 @@ async function EditUser(NewEdit: {
         Email
       }),
     });
-    const data = await res.json();
+    const data: boolean = await res.json();
     if (data) {
       retorno = true;
     }
@@ -181,8 +196,8 @@ async function FilterTasksUser(user: UserType | null) {
       );
       const data: taskType[] = await res.json();
 
-      
       return data;
+
     } catch (e) {
       console.error(e);
       return [];

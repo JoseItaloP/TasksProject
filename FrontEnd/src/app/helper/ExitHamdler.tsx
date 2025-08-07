@@ -1,7 +1,7 @@
-import { ErroType, UserType } from "../_constructor/_Types"
+import { ErroType } from "../_constructor/_Types"
 import NewUserResgistrat from "./_NewUserResgistrat"
 
-async function EmailHamdler (UserName: string): Promise<ErroType[] | null | string> {
+async function EmailHamdler(UserName: string): Promise<ErroType[] | string> {
     const Erros: ErroType[] = []
     try{
         const methods = {
@@ -15,20 +15,22 @@ async function EmailHamdler (UserName: string): Promise<ErroType[] | null | stri
         }
         
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/findEmail`,methods)
-        const data: UserType = await response.json()
+        const data: string = await response.json()
 
-        if(data){
-            return data.Email
+        if (response.status == 200) {
+            return data
         }else{
-            return null
+            Erros.push({ erroId: Date.now(), message: data })
+            return Erros
         }
     }catch(e){
-        Erros.push({ erroId: Date.now(), message: `${e}` })
+        console.error('Erro: ', e)
+        Erros.push({ erroId: Date.now(), message: 'Falha ao se comunicar com servidor' })
         return Erros
     }
 }
 
-async function PassHamdler (Email: string): Promise<ErroType[] | null | boolean> {
+async function PassHamdler(Email: string): Promise<ErroType[] | boolean> {
     const Erros: ErroType[] = []
     try{
         const methods = {
@@ -43,15 +45,25 @@ async function PassHamdler (Email: string): Promise<ErroType[] | null | boolean>
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/findPas`,methods)
 
-        const data: boolean = await response.json();
-        
-        if(data){
-            return true
-        }else{
-            return null
+        switch (response.status) {
+            case 200:
+                return true
+               break;
+           case 400:
+               Erros.push({ erroId: Date.now(), message: 'Usuario não foi encontrado.' })
+               return Erros
+               break;
+           case 500:
+               Erros.push({ erroId: Date.now(), message: 'Falha ao se comunicar com servidor/Banco de dados.' })
+               return Erros
+               break;
+           default:
+               Erros.push({ erroId: Date.now(), message: 'Erro inesperado.' })
+               return Erros
         }
     }catch(e){
-        Erros.push({ erroId: Date.now(), message: `${e}` })
+        console.error('Erro: ', e)
+        Erros.push({ erroId: Date.now(), message: 'Falha ao se comunicar com servidor/Banco de dados.' })
         return Erros
     }
 }

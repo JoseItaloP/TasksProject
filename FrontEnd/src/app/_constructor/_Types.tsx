@@ -1,9 +1,9 @@
  type taskType = {
      id: string;
-        Nome: string;
-        Descricao: string;
-        Status: string;
-        Priority: string;
+     Nome: string;
+     Descricao: string;
+     Status: string;
+     Priority: string;
      createdAt: Date;
      updatedAt?: Date;
     }

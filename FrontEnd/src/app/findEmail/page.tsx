@@ -15,33 +15,20 @@ export default function FindEmail() {
   const router = useRouter();
 
   async function hamdleSubmit() {
+
     setLoading(true);
     if (userName) {
-      const findEmail: ErroType[] | string | null = await ExitHamdler.EmailHamdler(userName);
-      if (findEmail) {
-        if(Array.isArray(findEmail)){
+      const findEmail: ErroType[] | string = await ExitHamdler.EmailHamdler(userName);
+      if (typeof (findEmail) !== 'string') {
             setLoading(false);
             setErros(findEmail)
             setTimeout(() => {
-              setErros((prev) => prev.filter((e) => e.erroId !== findEmail[0].erroId)); 
-      
+              setErros((prev) => prev.filter((e) => e.erroId !== findEmail[0].erroId));
               }, 5000);
         }else{
             setEmail(findEmail)
             setLoading(false)
         }
-
-      } else {
-        setLoading(false);
-        const Erros: ErroType[] = []
-        Erros.push({ erroId: Date.now(), message: 'Usuário não encontrado.' })
-        setErros(Erros)
-        setTimeout(() => {
-          setErros((prev) => prev.filter((e) => e.erroId !== Erros[0].erroId)); 
-
-        }, 5000);
-        
-      }
     } else {
       setLoading(false);
       const erros: ErroType[] = [];
@@ -55,6 +42,7 @@ export default function FindEmail() {
       }, 5000);
     }
   }
+
   if(email.length > 0){
     return (
         <main className="h-full w-full flex flex-col items-center justify-center">

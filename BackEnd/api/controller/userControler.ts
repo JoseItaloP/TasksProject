@@ -1,42 +1,50 @@
-const { v4 } = require("uuid")
-const getFormatData = require('../functions/FormData').exports
-const { compare } = require('bcryptjs')
-const {
+import { v4 } from "uuid"
+import {compare} from 'bcryptjs'
+import {
   getPass,
   GeneratePassword
-} = require('./helper/UserSuporte')
-const { senPassEmail } = require("./helper/SendPassEmail")
+} from './helper/UserSuporte'
+import { senPassEmail } from "./helper/SendPassEmail"
 
-const { PrismaClient } = require("../../generated/prisma/client")
+import { PrismaClient } from "../../generated/prisma/client"
+import { FastifyReply, FastifyRequest } from "fastify"
+import { UserTypeDB } from "../types/UserTypeFromDataBase"
+import { ReqTypes } from "../types/RouteTypeHamdle"
+import { UserType } from "../types/UserTypeToFront"
 
 const prisma = new PrismaClient()
 
-const getUser = async (req, reply) => {
+
+async function getUser(req: FastifyRequest<ReqTypes>, reply: FastifyReply) {
   const { authorization: token } = req.headers
   const { id } = req.params
 
   try {
-    const dbUser = await prisma.user.findUnique({
+    const dbUser: UserType | null = await prisma.user.findUnique({
       where: {
         id
       }
     })
-
+    if(dbUser == null){
+      const erro = { message: 'Usuario não encontrado' }
+      return reply.code(500).send(erro)
+    }
     const ValidateToken = dbUser.Token == token ? true : false
     if (!ValidateToken) {
       const erro = { message: 'Token invalido!' }
       return reply.code(400).send(erro)
     }
-    return reply.send(dbUser)
+    return reply.code(200).send(dbUser)
 
   } catch (e) {
-    const erro = { message: 'Token invalido!' }
-    reply.code(400).send(erro)
+    console.error('Erro: ', e)
+    const erro = { message: 'Usuario não encontrado' }
+    reply.code(500).send(erro)
   }
 
 };
 
-const LoginUser = async (req, reply) => {
+const LoginUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => {
   try {
 
     const { UserName, Password } = req.body
@@ -46,7 +54,7 @@ const LoginUser = async (req, reply) => {
       }
     })
 
-    if (!logedUserName) { return reply.code(500).send(null) }
+    if (!logedUserName) { return reply.code(400).send("Usuário ou senha não identificados no banco de dados") }
 
     const { Password: dataSenha, SaltKey } = logedUserName
 
@@ -54,19 +62,21 @@ const LoginUser = async (req, reply) => {
 
     const comparePass = await compare(passToCompare, dataSenha)
 
-    if (!comparePass) { return reply.code(500).send(null) }
+    if (!comparePass) { return reply.code(400).send("Usuário ou senha não identificados no banco de dados") }
 
-    return reply.send(logedUserName)
+    return reply.code(200).send(logedUserName)
 
   } catch (err) {
-    reply.code(500).send(null);
+    reply.code(500);
   }
 };
 
-const CreateUser = async (req, reply) => {
+const CreateUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => {
   try {
 
     const { UserName, Email } = req.body;
+
+    if(UserName == undefined || Email == undefined) return reply.status(400)
 
     const Password = GeneratePassword(8)
     const {
@@ -76,10 +86,7 @@ const CreateUser = async (req, reply) => {
 
     const Token = v4();
 
-    console.log('user data ---', UserName)
-    console.log('email data ---', Email)
-
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         UserName,
         Password: hashedPassword,
@@ -90,35 +97,38 @@ const CreateUser = async (req, reply) => {
       }
     })
 
-    console.log('user ---- ', user)
-
     await senPassEmail(Email, Password)
 
-    reply.status(201).send('Senha: ' + Password)
+    reply.status(201)
 
 
   } catch (err) {
-    reply.code(500).send(err);
+    console.error('Erro: ', err)
+    reply.code(500);
   }
 
 };
 
-const ChangeUser = async (req, reply) => {
+const ChangeUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => {
 
   try {
     const { id } = req.params;
     const { UserName, Password, Email } = req.body;
-
-    const existingUser = await prisma.user.findUnique({
+    
+    const existingUser: UserTypeDB | null = await prisma.user.findUnique({
       where: { id: id }
     });
-    console.log('Existing User ---------- ', existingUser)
+    
     if (!existingUser) {
-      return reply.code(404).send({ message: 'Usuário não encontrado.' });
+      return reply.code(400);
     }
 
     let updateData = {
       updatedAt: new Date(),
+      UserName: existingUser.UserName,
+      Email:existingUser.Email,
+      Password: existingUser.Password,
+      SaltKey: existingUser.SaltKey
     }
 
     if (UserName !== undefined) { updateData.UserName = UserName }
@@ -130,8 +140,6 @@ const ChangeUser = async (req, reply) => {
       updateData.SaltKey = SaltKey;
     }
 
-    console.log('updated User ------------- ', updateData)
-
     await prisma.user.update({
       where: {
         id
@@ -139,41 +147,34 @@ const ChangeUser = async (req, reply) => {
       data: updateData
     })
 
-    reply.code(200).send(ture)
+    reply.code(200).send(true)
 
   } catch (err) {
-    reply.code(500).send(err)
+    console.error('Erros: ', err)
+    reply.code(500)
   }
 };
 
-const findEmail = async (req, reply) => {
+const findEmail = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => {
   const { UserName } = req.body
   try {
-
     const findUser = await prisma.user.findUnique({
       where: {
         UserName
       }
     })
-
-
     if (!findUser) {
-      return reply.code(500).send(null)
-
+      return reply.code(500).send('Usuario nao encontrado')
     }
-    reply.send(findUser)
-
-
+    reply.code(200).send(findUser.Email)
   } catch (e) {
-    reply.code(500).send(null)
+    reply.code(500).send('Falha em se comunicar com o banco de dados')
   }
 }
 
-const findPass = async (req, reply) => {
+const findPass = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => {
   const { Email } = req.body
-  console.log('Email vindo ---- ', Email)
-  console.log('env ---- ', process.env.DATABASE_URL)
-  console.log('process - ----', process.env)
+  
   try {
 
     const userFind = await prisma.user.findUnique({
@@ -181,10 +182,7 @@ const findPass = async (req, reply) => {
         Email
       }
     })
-
-    console.log('User finded ------ ', userFind)
-
-    if (!userFind) { return reply.code(500).send(false) }
+    if (!userFind) { return reply.code(400).send(false) }
 
     const Password = GeneratePassword(8)
     const { hashedPassword, SaltKey } = await getPass(Password)
@@ -204,15 +202,14 @@ const findPass = async (req, reply) => {
 
     await senPassEmail(Email, Password)
 
-    reply.send(true)
+    reply.code(200).send(true)
 
   } catch (e) {
-    console.error('Error ---', e)
     reply.code(500).send(false)
   }
 }
 
-module.exports = {
+export {
   LoginUser,
   CreateUser,
   getUser,

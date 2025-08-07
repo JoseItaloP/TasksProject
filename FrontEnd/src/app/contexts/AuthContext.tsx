@@ -62,15 +62,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user !== null) {
-      
+
       setLoading(false);
 
       async function setingTasks() {
+
         setLoadingTasks(true);
         const filtredTasks = await FilterTasksUser(user);
-        
+
         setFtasks(filtredTasks);
-        
         setLoadingTasks(false);
       }
       setingTasks();
@@ -80,20 +80,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function getLoginUser() {
     setLoading(true);
     const { "TaskDefine-Token": token } = parseCookies();
-    console.log('token --- ', token)
+
 
     if (token) {
       const LocalUser: UserType | defaultErro | null = await getLogedLocal(
         token
       );
 
-      console.log('localUser ---- ', LocalUser)
-
       if (LocalUser && "id" in LocalUser) {
         setUser(LocalUser);
         setUserHeader(LocalUser);
         setLoading(false);
-        return LocalUser; 
+        return LocalUser;
+      } else {
+        console.error('Erro: ', LocalUser)
       }
     }
 
@@ -102,14 +102,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function singIn({ UserName, Password }: newLoginUser) {
+
     setLoading(true);
     const errors: ErroType[] = [];
-    if(UserName === '' || Password === ''){
+
+    if (UserName === '' || Password === '') {
       setLoading(false)
       errors.push({ erroId: Date.now(), message: "Usuário e senha devem ser totalmente preenchidos" })
       return errors
-      
     }
+
     const LogedUser: UserType | ErroType = await LoginUser({
       UserName,
       Password,
@@ -221,16 +223,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       );
 
-      const data = await fetchData.json();
+      const data: string | null = await fetchData.json();
 
-      if (data) {
+      if (!data) {
 
         setLoadingTasks(true)
 
         const filtredTasks = await FilterTasksUser(user);
 
         setFtasks(filtredTasks);
-        
+
         setLoadingTasks(false)
 
         return null;
@@ -239,7 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoadingTasks(false)
         errors.push({
           erroId: Date.now(),
-          message: "Erro ao buscar dados, tente novamente.",
+          message: data,
         });
         return errors;
       }
@@ -254,52 +256,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function createNewTask({NewTask, User}: 
+  async function createNewTask({ NewTask, User }:
     { NewTask: newTaskType, User: UserType | null }): Promise<ErroType[] | null> {
 
     const { Nome, Descricao, Priority, Status } = NewTask;
 
     const UserID = User?.id;
     const errors: ErroType[] = [];
-  
+
     if (Nome === "" || Descricao === "") {
       setLoading(false);
       errors.push({ erroId: Date.now(), message: "Todos os dados devem estar preenchidos" });
       return errors;
     }
-  
+
     try {
       const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Nome, Descricao, Priority, Status, UserID }),
       });
-  
-      const result = await fetchData.json();
 
-      if (result) {
+      const result: taskType | string = await fetchData.json();
+
+      if (typeof result === 'object' && result !== null && 'id' in result) {
 
         setLoadingTasks(true);
-        
+        // if (Ftasks) {
+        //   const newTasks = [
+        //     ...Ftasks,
+        //     result
+        //   ]
+        //   setFtasks(newTasks)
+        // } else {
+        //   setFtasks([result])
+        // }
         const filtredTasks = await FilterTasksUser(User);
-
-        
         if (filtredTasks) {
           setFtasks(filtredTasks);
         }
-  
         setLoadingTasks(false);
+
         return null;
       } else {
-        errors.push({ erroId: Date.now(), message: "Erro ao criar Task." });
+        errors.push({ erroId: Date.now(), message: result });
       }
     } catch (e) {
       console.error("Erro ao tentar criar Task:", e);
-      errors.push({ erroId: Date.now(), message: "Erro ao tentar criar Task." });
+      errors.push({ erroId: Date.now(), message: "Erro ao tentar criar Task:" });
     }
     return errors.length > 0 ? errors : null;
   }
-  
+
   async function setingTasks(localLogin: UserType) {
     setLoadingTasks(true);
 
@@ -313,30 +321,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function deleteTask(idTask: string) {
     setLoading(true)
     const errors: ErroType[] = [];
-    if (user) {
-      setUser({
-        ...user,
-        myTasks: user?.myTasks.filter((id) => id !== idTask)
+    try {
+      if (user) {
+        setUser({
+          ...user,
+          myTasks: user?.myTasks.filter((id) => id !== idTask)
 
-      })
-    } else {
-      errors.push({ erroId: Date.now(), message: "Usuario nao esta logado" });
-      return errors
-    }
-
-    const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task/${idTask}`, {
-      method: "DELETE",
-    });
-
-    const result = await fetchData.json();
-    if (result) {
-      const filtredTasks = await FilterTasksUser(user);
-      if (filtredTasks) {
-        setFtasks(filtredTasks);
+        })
+      } else {
+        errors.push({ erroId: Date.now(), message: "Usuario nao esta logado" });
+        return errors
       }
-      return null
-    } else {
-      errors.push({ erroId: Date.now(), message: "Ocorreu algum erro." });
+
+      const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task/${idTask}`, {
+        method: "DELETE",
+        body: JSON.stringify({
+          UserID: user.id
+        }),
+      });
+
+      const result: string | null = await fetchData.json();
+      if (!result) {
+        const filtredTasks = await FilterTasksUser(user);
+        if (filtredTasks) {
+          setFtasks(filtredTasks);
+        }
+        return null
+      } else {
+        errors.push({ erroId: Date.now(), message: result });
+        return errors
+      }
+    } catch (err) {
+      console.error('Erro: ', err)
+      errors.push({ erroId: Date.now(), message: 'Erro ao em fetch para deletetar task' })
       return errors
     }
   }
