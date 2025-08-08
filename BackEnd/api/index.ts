@@ -2,7 +2,7 @@
 // const { fastifySwagger } = require('@fastify/swagger')
 // const { fastifySwaggerUi } = require('@fastify/swagger-ui')
 
-import {fastify} from 'fastify';
+import { fastify, FastifyReply, FastifyRequest } from 'fastify';
 import {fastifySwagger} from '@fastify/swagger'
 import {fastifySwaggerUi} from '@fastify/swagger-ui'
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
@@ -48,19 +48,8 @@ app.get('/', async (req, reply) => {
   return reply.send('hello');
 });
 
-// module.exports = async (req, res) => {
-//   await fastify.ready();
-//   fastify.server.emit('request', req, res);
-// };
-
-const start = async () => {
-  try {
-
-    await app.listen({ port: 3000 });
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
+module.exports = async (req: FastifyRequest, res: FastifyReply) => {
+  await app.ready();
+  app.server.emit('request', req, res);
 };
 
-start();
