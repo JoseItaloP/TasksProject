@@ -1,4 +1,5 @@
-const nodemailer = require("nodemailer")
+import { SentMessageInfo } from "nodemailer"
+import nodemailer from "nodemailer"
 
 const smtp = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -13,7 +14,7 @@ const smtp = nodemailer.createTransport({
   }
 })
 
-async function senPassEmail(Email, Senha) {
+async function senPassEmail(Email: string, Senha: string) {
   const configEmail = {
     from: "verifyers843@gmail.com",
     to: `${Email}`,
@@ -23,12 +24,13 @@ async function senPassEmail(Email, Senha) {
     `
   }
 
-  return await new Promise((resolve, reject) => {
-    smtp.sendMail(configEmail).then(res => {
+  return await new Promise<SentMessageInfo>((resolve, reject) => {
+    smtp.sendMail(configEmail).then((res: SentMessageInfo) => {
       smtp.close()
       resolve(res)
-    }).catch(error => {
-      reject(error)
+    }).catch((error: any) => {
+      console.error('Error: ', error)
+      reject('Erro in send Email')
     })
   })
 

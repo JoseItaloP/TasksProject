@@ -1,7 +1,6 @@
-const { hash } = require('bcryptjs')
+import { hash } from 'bcryptjs'
 
-  
-  function GeneratePassword(PassLen){
+function GeneratePassword(PassLen: number) {
     const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ!@#$%^&*()+?><:{}[]";
         let passwordLength = PassLen;
         let password = "";
@@ -13,7 +12,7 @@ const { hash } = require('bcryptjs')
         return password
   }
 
-  async function getPass(Password){
+async function getPass(Password: string) {
     const SaltKey = GeneratePassword(16);
     const SaltPass = JSON.stringify(Password) + JSON.stringify(SaltKey);
     const hashedPassword = await hash(SaltPass, 8);

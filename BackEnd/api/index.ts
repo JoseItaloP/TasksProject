@@ -22,7 +22,7 @@ app.addHook('onRequest', (request, reply, done) => {
   done();
 });
 
-app.register(fastifyCors, {origin: `${process.env.FRONT_URL}`})
+// app.register(fastifyCors, {origin: `${process.env.FRONT_URL}`})
 
 app.options('*', (req, reply) => {
   reply.status(204).send();
@@ -48,8 +48,24 @@ app.get('/', async (req, reply) => {
   return reply.send('hello');
 });
 
-module.exports = async (req: FastifyRequest, res: FastifyReply) => {
+
+if (process.env.TESTING_ENV === "true") {
+  const start = async () => {
+    try {
+
+      await app.listen({ port: 3000 });
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  };
+
+  start()
+  exports = { start }
+
+} else {
+  module.exports = async (req: FastifyRequest, res: FastifyReply) => {
   await app.ready();
   app.server.emit('request', req, res);
 };
-
+}
