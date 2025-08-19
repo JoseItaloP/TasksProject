@@ -1,7 +1,3 @@
-// const fastify = require('fastify')({ logger: true });
-// const { fastifySwagger } = require('@fastify/swagger')
-// const { fastifySwaggerUi } = require('@fastify/swagger-ui')
-
 import { fastify, FastifyReply, FastifyRequest } from 'fastify';
 import { fastifySwagger } from '@fastify/swagger'
 import { fastifySwaggerUi } from '@fastify/swagger-ui'
@@ -49,11 +45,11 @@ app.get('/', async (req, reply) => {
   return reply.send('hello');
 });
 
+const exportFunct = async (req: FastifyRequest, res: FastifyReply) => {
+  await app.ready();
+  app.server.emit('request', req, res);
+};
 
+export { exportFunct }
 
-  module.exports = async (req: FastifyRequest, res: FastifyReply) => {
-    await app.ready();
-    app.server.emit('request', req, res);
-  };
-
-export = app 
+export { app } 
