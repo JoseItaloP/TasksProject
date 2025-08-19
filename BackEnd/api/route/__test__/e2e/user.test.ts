@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { app } from "../../../index";
+import { app } from "./help/serverTest";
 import request from "supertest";
 import { PrismaClient } from "../../../../generated/prisma/client"
 import { FastifyReply, FastifyRequest } from "fastify";

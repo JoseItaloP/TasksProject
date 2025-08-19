@@ -4,15 +4,10 @@ import { fastifySwaggerUi } from '@fastify/swagger-ui';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 
 import { ZodTypeProvider } from 'fastify-type-provider-zod';
-import UserRoute from './route/user';
-import TaskRoute from './route/task';
+import UserRoute from '../../../user'
+import TaskRoute from '../../../task';
 
 let app: any;
-
-async function build() {
-  if (app) {
-    return app;
-  }
 
   const newApp = fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -51,13 +46,5 @@ async function build() {
     return reply.send('Hello, world!');
   });
 
-  await newApp.ready();
   app = newApp;
-
-  return app;
-}
-
-export default async function handler(req: FastifyRequest, res: FastifyReply) {
-  const fastifyApp = await build();
-  fastifyApp.server.emit('request', req, res);
-}
+  export {app}
