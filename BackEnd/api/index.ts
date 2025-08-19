@@ -50,10 +50,10 @@ app.get('/', async (req, reply) => {
 });
 
 
-if (process.env.TESTING_ENV === "false") {
+
   module.exports = async (req: FastifyRequest, res: FastifyReply) => {
     await app.ready();
     app.server.emit('request', req, res);
   };
-}
+
 export = app 
