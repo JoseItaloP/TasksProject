@@ -9,11 +9,6 @@ import TaskRoute from './route/task';
 
 let app: any;
 
-async function build() {
-  if (app) {
-    return app;
-  }
-
   const newApp = fastify().withTypeProvider<ZodTypeProvider>();
 
   newApp.setValidatorCompiler(validatorCompiler);
@@ -51,14 +46,12 @@ async function build() {
     return reply.send('Hello, world!');
   });
 
-  await newApp.ready();
   app = newApp;
 
-  return app;
-}
-
-
 export default async function handler(req: FastifyRequest, res: FastifyReply) {
-  const fastifyApp = await build();
+  const serverRedy = await app.redy()
+  const fastifyApp = await serverRedy;
   fastifyApp.server.emit('request', req, res);
 }
+
+export { app }

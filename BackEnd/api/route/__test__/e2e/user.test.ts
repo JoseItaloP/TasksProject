@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import  app  from "../../../index"; 
+import { app } from "../../../index";
 import request from "supertest";
 import { PrismaClient } from "../../../../generated/prisma/client"
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { ReqTypes } from "../../../types/RouteTypeHamdle";
 import { UserType } from "../../../types/UserTypeToFront";
 import { getPass } from "../../../controller/helper/UserSuporte";
@@ -15,7 +15,7 @@ describe('E2E test for the route User',()=>{
     let testUser: UserType
 
     beforeAll(async ()=>{ 
-       app.post('/userTestCreate',async(req: FastifyRequest<ReqTypes>, reply)=>{
+        app.post('/userTestCreate', async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => {
             const {
                 UserName, Email
             } = req.body
@@ -39,7 +39,7 @@ describe('E2E test for the route User',()=>{
             reply.code(201).send(returnUser)
         })
         
-        app.delete('/deleteAllUsers', async (req, reply)=>{
+        app.delete('/deleteAllUsers', async (req: FastifyRequest, reply: FastifyReply) => {
             await prisma.user.deleteMany()
             reply.code(200)
         })

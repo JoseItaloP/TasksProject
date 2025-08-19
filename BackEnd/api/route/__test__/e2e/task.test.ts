@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import  app  from "../../../index"; 
+import { app } from "../../../index";
 import { PrismaClient } from "../../../../generated/prisma/client"
 import { taskType } from "../../../types/TaskType";
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { ReqTypes, ReqTypeTask } from "../../../types/RouteTypeHamdle";
 import { UserType } from "../../../types/UserTypeToFront";
 import { getPass } from "../../../controller/helper/UserSuporte";
@@ -19,7 +19,7 @@ describe("E2E test for the route Task", ()=>{
     beforeAll(async ()=>{
         // criar rotas para uso de test
 
-        app.post('/createTaskUserTest',async (req: FastifyRequest<ReqAll>, reply)=>{
+        app.post('/createTaskUserTest', async (req: FastifyRequest<ReqAll>, reply: FastifyReply) => {
             const { Nome, Descricao, Status, Priority, UserName, Email } = req.body;
 
             if(!UserName || !Email) return reply.code(400)
@@ -64,12 +64,12 @@ describe("E2E test for the route Task", ()=>{
 
         })
 
-        app.delete('/deleteAllUsers', async (req, reply)=>{
+        app.delete('/deleteAllUsers', async (req: FastifyRequest, reply: FastifyReply) => {
             await prisma.user.deleteMany()
             reply.code(200)
         })
 
-        app.delete('/deleteAllTask', async (req, reply)=>{
+        app.delete('/deleteAllTask', async (req: FastifyRequest, reply: FastifyReply) => {
             await prisma.tasks.deleteMany()
             reply.code(200)
         })
