@@ -31,8 +31,6 @@ async function build() {
     reply.status(204).send();
   });
 
-  newApp.register(UserRoute);
-  newApp.register(TaskRoute);
 
   newApp.register(fastifySwagger, {
     openapi: {
@@ -47,6 +45,10 @@ async function build() {
     routePrefix: '/docs'
     });
 
+
+  newApp.register(UserRoute);
+  newApp.register(TaskRoute);
+
   newApp.get('/', async (req, reply) => {
     return reply.send('Hello, world!');
   });
@@ -57,7 +59,23 @@ async function build() {
   return app;
 }
 
-export default async function handler(req: FastifyRequest, res: FastifyReply) {
+const start = async () => {
+  try {
+    const init = await build()
+    await init.listen({ port: 8080 });
+    console.log(`Servidor aberto na porta 8080`)
+  } catch (err) {
+    app.log.error(err);
+    process.exit(1);
+  }
+};
+if (process.env.ON_VERCEL === "NO") {
+  start();
+}
+
+async function handler(req: FastifyRequest, res: FastifyReply) {
   const fastifyApp = await build();
   fastifyApp.server.emit('request', req, res);
 }
+
+export default handler

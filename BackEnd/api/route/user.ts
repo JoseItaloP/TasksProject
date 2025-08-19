@@ -25,7 +25,7 @@ const UserTypeSchema = z.object({
 
 
 const optgetUser = {
-    shema: {
+    schema: {
         tags: ['users'],
         description: 'push one user by ID',
         params: z.object({
@@ -35,7 +35,7 @@ const optgetUser = {
             authorization: z.string()
         })
     },
-    responce: {
+    response: {
         200: UserTypeSchema,
         400: z.object({
             message: z.string()
@@ -43,12 +43,11 @@ const optgetUser = {
         500: z.object({
             message: z.string()
         })
-    },
-    handler: getUser,
+    }
 }
 
 const optLoginUser = {
-    shema: {
+    schema: {
         tags: ['users'],
         description: 'Login the user',
         body: z.object({
@@ -56,102 +55,97 @@ const optLoginUser = {
             Password: z.string()
         })
     },
-    responce: {
+    response: {
         200: UserTypeSchema,
         400: z.string().describe('senha invalida'),
         500: z.null().describe('fail to conclude the Login')
-    },
-    handler: LoginUser,
+    }
 }
 
 const optCreateUser = {
-    shema: {
+    schema: {
         tags: ['users'],
         describe: 'create a new user',
-        body: {
+        body: z.object({
             UserName: z.string(),
             Email: z.email()
-        }
+        })
     },
-    responce: {
+    response: {
         201: z.null().describe('User created'),
         400: z.null().describe('UserName or Email not found'),
         500: z.null().describe('Falha ao se conectar com Banco de dados')
-    },
-    handler: CreateUser,
+    }
 }
 
 const optChangeUser = {
-    shema: {
+    schema: {
         tags: ['users'],
         describe: 'change a user',
-        param: z.object({
+        params: z.object({
             id: z.string()
         }),
         body: z.object({
-            UserName: z.string().optional,
-            Password: z?.string(),
-            Email: z?.email()
+            UserName: z.string().optional(),
+            Password: z.string().optional(),
+            Email: z.email().optional()
         })
     },
-    responce: {
+    response: {
         200: z.boolean("true"),
         400: z.string().describe('Usuario não encontrado.'),
         500: z.null().describe('Falha ao se comunicar com Bando de dados')
-    },
-    handler: ChangeUser,
+    }
 }
 
 const optFindEmail = {
-    shema: {
+    schema: {
         tags: ['users'],
         describe: 'return the email of the user',
         body: z.object({
             UserName: z.string()
         })
     },
-    responce: {
+    response: {
         200: z.email(),
         400: z.string(),
         500: z.string()
-    },
-    handler: findEmail,
+    }
 }
 
 const optFindPass = {
-    shema: {
+    schema: {
         tags: ['users'],
         describe: 'find the password by the email',
         body: z.object({
             Email: z.email()
         })
     },
-    responce: {
-        200: z.boolean("true"),
+    response: {
+        200: z.boolean(),
         400: z.string(),
-        500: z.boolean("false")
-    },
-    handler: findPass,
+        500: z.boolean()
+    }
 }
-const UserRoute = (fastify: FastifyTypedInstance) => {
+export async function UserRoute(fastify: FastifyTypedInstance) {
 
     //GET USER
-    fastify.get("/user/:id", optgetUser)
+    fastify.get("/user/:id", optgetUser, getUser)
 
     //POST get login user
-    fastify.post("/user/Login", optLoginUser)
+    fastify.post("/user/Login", optLoginUser, LoginUser)
 
-    //POST create user
-    fastify.post("/user", optCreateUser)
+    // //POST create user
+    fastify.post("/user", optCreateUser, CreateUser)
 
-    //POST get Email
-    fastify.post("/user/findEmail", optFindEmail)
+    // //POST get Email
+    fastify.post("/user/findEmail", optFindEmail, findEmail)
 
-    fastify.post("/user/findPas", optFindPass)
+    fastify.post("/user/findPas", optFindPass, findPass)
 
-    //PUT change datas
-    fastify.put("/user/:id", optChangeUser)
+    // //PUT change datas
+    fastify.put("/user/:id", optChangeUser, ChangeUser)
 
 }
 
-export = UserRoute
+export default UserRoute

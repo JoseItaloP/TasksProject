@@ -21,7 +21,6 @@ const TaskSchema = z.object({
 
 
 const optGetTask = {
-    handler: getUserTasks,
     schema: {
         tags: ['Tasks'],
         description: 'Retorna as tasks de um usuário específico.',
@@ -41,7 +40,6 @@ const optGetTask = {
 };
 
 const optPostTask = {
-    handler: postTasks,
     schema: {
         tags: ['Tasks'],
         description: 'Cria uma nova task e a associa a um usuário.',
@@ -58,7 +56,7 @@ const optPostTask = {
             500: z.object({
                 statusCode: z.number(),
                 code: z.string(),
-                messge: z.string()
+                message: z.string()
             }
             ),
         },
@@ -67,7 +65,6 @@ const optPostTask = {
 
 
 const optDeleteTask = {
-    handler: deleteTasks,
     schema: {
         tags: ['Tasks'],
         description: 'Deleta uma task pelo ID.',
@@ -86,7 +83,6 @@ const optDeleteTask = {
 };
 
 const optEditTask = {
-    handler: putTasks,
     schema: {
         tags: ['Tasks'],
         description: 'Edita uma task existente.',
@@ -111,20 +107,19 @@ const optEditTask = {
 
 const TaskRoute = (fastify: FastifyTypedInstance) => {
 
-
     // GET user Tasks
-    fastify.get('/user/task/:id', optGetTask);
+    fastify.get('/user/task/:id', optGetTask, getUserTasks);
 
     // POST Create new task
-    fastify.post('/user/task', optPostTask);
+    fastify.post('/user/task', optPostTask, postTasks);
 
     // DELETE task
-    fastify.delete('/user/task/:id', optDeleteTask);
+    fastify.delete('/user/task/:id', optDeleteTask, deleteTasks);
 
     // PUT edit task
-    fastify.put('/user/task/:id', optEditTask);
+    fastify.put('/user/task/:id', optEditTask, putTasks);
 };
 
 
 
-export = TaskRoute;
+export default TaskRoute;
