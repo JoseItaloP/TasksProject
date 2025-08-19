@@ -6,16 +6,15 @@
   "scripts": {
     "postinstall": "prisma generate",
     "dev": "tsx --watch api/index.ts",
-    "test": "vitest",
-    "test:watch": "--watch vitest"
+    "test": "node --env-file=.env.test ./node_modules/vitest/vitest.mjs",
+    "test:watch": "node --watch --env-file=.env.test ./node_modules/vitest/vitest.mjs",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.2",
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
     "@prisma/client": "^6.12.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/nodemailer": "^6.4.17",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
     "fastify": "^5.4.0",
@@ -27,7 +26,10 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^24.2.0",
+    "@types/nodemailer": "^6.4.17",
+    "@types/supertest": "^6.0.3",
     "prisma": "^6.12.0",
     "supertest": "^7.1.4",
     "tsx": "^4.20.3",

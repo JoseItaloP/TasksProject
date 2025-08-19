@@ -1,12 +1,11 @@
 import { FastifyTypedInstance } from "../types/FastifyInstance";
 import { z } from 'zod/v4'
 import {
-    
     getUserTasks,
     postTasks,
     deleteTasks,
     putTasks
-}  from '../controller/tasksControler'
+} from '../controller/tasksControler'
 
 
 
@@ -16,23 +15,10 @@ const TaskSchema = z.object({
     Descricao: z.string(),
     Status: z.string(),
     Priority: z.string(),
-    updatedAt: z.string(), 
+    createdAt: z.date(),
+    updatedAt: z.date().nullable().optional()
 });
 
-// const optGetAllTask = {
-//     handler: getTasks,
-//     schema: {
-//         tags: ['Tasks'],
-//         description: 'Retorna todas as tasks.',
-        
-//         response: {
-//             200: z.array(TaskSchema),
-//             500: z.object({
-//                 message: z.string(),
-//             }),
-//         },
-//     },
-// };
 
 const optGetTask = {
     handler: getUserTasks,
@@ -44,7 +30,7 @@ const optGetTask = {
         }),
         response: {
             200: z.array(TaskSchema),
-            404: z.object({
+            400: z.object({
                 message: z.string(),
             }),
             500: z.object({
@@ -69,10 +55,16 @@ const optPostTask = {
         response: {
             201: TaskSchema,
             400: z.string(),
-            500: z.string(),
+            500: z.object({
+                statusCode: z.number(),
+                code: z.string(),
+                messge: z.string()
+            }
+            ),
         },
     },
 };
+
 
 const optDeleteTask = {
     handler: deleteTasks,
@@ -118,8 +110,7 @@ const optEditTask = {
 };
 
 const TaskRoute = (fastify: FastifyTypedInstance) => {
-    // GET tasks
-    // fastify.get('/user/task', optGetAllTask);
+
 
     // GET user Tasks
     fastify.get('/user/task/:id', optGetTask);
@@ -134,4 +125,6 @@ const TaskRoute = (fastify: FastifyTypedInstance) => {
     fastify.put('/user/task/:id', optEditTask);
 };
 
-module.exports = TaskRoute;
+
+
+export = TaskRoute;

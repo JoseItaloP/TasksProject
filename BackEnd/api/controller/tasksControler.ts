@@ -7,23 +7,10 @@ import { PrismaClient } from "../../generated/prisma/client"
 
 const prisma = new PrismaClient()
 
-// const getTasks = async (req: FastifyRequest, reply: FastifyReply) => {
-//   try {
-
-//     const result: taskType[] = await prisma.tasks.findMany()
-
-//     reply.code(200).send(result);
-
-//   } catch (err) {
-
-//     reply.code(500).send(err);
-
-//   }
-// };
-
 const getUserTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyReply) => {
   const { id } = req.params;
   try {
+
     const userFind: UserType | null = await prisma.user.findUnique({
       where: {
         id
@@ -31,21 +18,21 @@ const getUserTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyRepl
     })
 
     if (!userFind) {
-      return reply.code(404).send({ message: "Usuário não encontrado" });
+      return reply.code(400).send({ message: "Usuário não encontrado" });
     }
 
-    
     const tasks: taskType[] = await prisma.tasks.findMany()
 
-    const filteredTasks = tasks.filter((task) => userFind.myTasks.includes(task.id));
+    const filteredTasks: taskType[] = tasks.filter((task) => userFind.myTasks.includes(task.id));
 
-    reply.send(filteredTasks);
+    reply.code(200).send(filteredTasks);
 
   } catch (err) {
+
     const error = 'Erro ao se comunicar com o servidor'
     console.error(err)
-    reply.code(500).send(error);
-    
+    reply.code(500).send({ message: error });
+
   }
 };
 
@@ -54,14 +41,18 @@ const postTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyReply) 
 
     const { Nome, Descricao, Status, Priority, UserID: id } = req.body;
 
+
+
     const findUser: UserType | null = await prisma.user.findUnique({
       where: {
         id
       }
     })
 
-    if (!findUser)  return reply.code(400).send('Usuario não encontrado.') 
-    if(!Nome || !Descricao || !Status || !Priority || !id) return reply.send(400).send('Todos os dados devem ser preenchidos')
+    if (!findUser) return reply.code(400).send('Usuario não encontrado.')
+    console.error('nome ', Nome?.length)
+    if (!Nome || !Descricao || !Status || !Priority) { return reply.code(400).send('Todos os dados devem ser preenchidos') }
+
     const newTask: taskType = await prisma.tasks.create({
       data: {
         Nome,
@@ -86,7 +77,7 @@ const postTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyReply) 
 
     reply.code(201).send(newTask);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
     reply.code(500).send("Erro ao tentar criar Task.");
   }
@@ -95,16 +86,25 @@ const postTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyReply) 
 const deleteTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyReply) => {
   try {
     const { id } = req.params;
-    const {UserID} = req.body
+    const { UserID } = req.body
 
     const userEdit = await prisma.user.findUnique({
-      where:{
+      where: {
         id: UserID
       }
     })
-    if(!userEdit){
+
+    if (!userEdit) {
       return reply.code(400).send('Usuario não encontrado')
     }
+
+    const taskExist = await prisma.tasks.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!taskExist) return reply.code(400).send("Task não encontrada")
 
     await prisma.tasks.delete({
       where: {
@@ -112,19 +112,19 @@ const deleteTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyReply
       }
     })
 
-    const myNewsTasks = userEdit.myTasks.filter((tasksId)=> tasksId !== id)
+    const myNewsTasks = userEdit.myTasks.filter((tasksId) => tasksId !== id)
     await prisma.user.update(({
-      where:{
+      where: {
         id: UserID
       },
-      data:{
+      data: {
         myTasks: myNewsTasks
       }
     }))
 
     reply.code(200);
   } catch (err) {
-    console.error("Erro: ",err)
+    console.error("Erro: ", err)
     reply.code(500).send('Erro ao Deletar a task');
   }
 };
@@ -135,7 +135,10 @@ const putTasks = async (req: FastifyRequest<ReqTypeTask>, reply: FastifyReply) =
     const { Nome, Descricao, Priority, Status } = req.body;
     const { id } = req.params;
 
-    if (!Nome  || !Descricao || !Priority || !Status ) return reply.code(400).send("Dados preenchidos não chegaram ao banco de dados, tente novamente.");
+    const findTask = await prisma.tasks.findUnique({ where: { id } })
+    if (!findTask) return reply.code(400).send("Task nao encontrada.")
+
+    if (!Nome || !Descricao || !Priority || !Status) return reply.code(400).send("Dados preenchidos não chegaram ao banco de dados, tente novamente.");
     const data = new Date()
 
     await prisma.tasks.update({

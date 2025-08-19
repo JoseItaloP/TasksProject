@@ -18,13 +18,13 @@ const prisma = new PrismaClient()
 async function getUser(req: FastifyRequest<ReqTypes>, reply: FastifyReply) {
   const { authorization: token } = req.headers
   const { id } = req.params
-
   try {
     const dbUser: UserType | null = await prisma.user.findUnique({
       where: {
         id
       }
     })
+
     if(dbUser == null){
       const erro = { message: 'Usuario não encontrado' }
       return reply.code(500).send(erro)
@@ -34,6 +34,7 @@ async function getUser(req: FastifyRequest<ReqTypes>, reply: FastifyReply) {
       const erro = { message: 'Token invalido!' }
       return reply.code(400).send(erro)
     }
+    console.error('USER RETURN ----- ', dbUser)
     return reply.code(200).send(dbUser)
 
   } catch (e) {
@@ -54,7 +55,7 @@ const LoginUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => 
       }
     })
 
-    if (!logedUserName) { return reply.code(400).send("Usuário ou senha não identificados no banco de dados") }
+    if (!logedUserName) { return reply.code(400).send("Usuário não identificados no banco de dados") }
 
     const { Password: dataSenha, SaltKey } = logedUserName
 
@@ -62,7 +63,7 @@ const LoginUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => 
 
     const comparePass = await compare(passToCompare, dataSenha)
 
-    if (!comparePass) { return reply.code(400).send("Usuário ou senha não identificados no banco de dados") }
+    if (!comparePass) { return reply.code(400).send("Senha não coincide com Usuario") }
 
     return reply.code(200).send(logedUserName)
 
@@ -79,10 +80,11 @@ const CreateUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) =>
     if(UserName == undefined || Email == undefined) return reply.status(400)
 
     const Password = GeneratePassword(8)
-    const {
-      hashedPassword,
-      SaltKey
-    } = await getPass(Password)
+    if (!Password) return reply.code(500)
+    const returnGetPass = await getPass(Password)
+    if (!returnGetPass) return reply.code(500)
+    const hashedPassword = returnGetPass.hashedPassword
+    const SaltKey = returnGetPass.SaltKey
 
     const Token = v4();
 
@@ -118,9 +120,8 @@ const ChangeUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) =>
     const existingUser: UserTypeDB | null = await prisma.user.findUnique({
       where: { id: id }
     });
-    
     if (!existingUser) {
-      return reply.code(400);
+      return reply.code(400).send('Usuario nao encontrado');
     }
 
     let updateData = {
@@ -134,7 +135,12 @@ const ChangeUser = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) =>
     if (UserName !== undefined) { updateData.UserName = UserName }
     if (Email !== undefined) { updateData.Email = Email }
     if (Password) {
-      const { hashedPassword, SaltKey } = await getPass(Password)
+
+
+      const returnGetPass = await getPass(Password)
+      if (!returnGetPass) return reply.code(500)
+      const hashedPassword = returnGetPass.hashedPassword
+      const SaltKey = returnGetPass.SaltKey
 
       updateData.Password = hashedPassword;
       updateData.SaltKey = SaltKey;
@@ -164,7 +170,7 @@ const findEmail = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => 
       }
     })
     if (!findUser) {
-      return reply.code(500).send('Usuario nao encontrado')
+      return reply.code(400).send('Usuario nao encontrado')
     }
     reply.code(200).send(findUser.Email)
   } catch (e) {
@@ -176,16 +182,21 @@ const findPass = async (req: FastifyRequest<ReqTypes>, reply: FastifyReply) => {
   const { Email } = req.body
   
   try {
+    if (!Email) return reply.code(400).send('Email não foi preenchido')
 
     const userFind = await prisma.user.findUnique({
       where: {
         Email
       }
     })
-    if (!userFind) { return reply.code(400).send(false) }
+    if (!userFind) { return reply.code(400).send('Usuario não encontrado') }
 
     const Password = GeneratePassword(8)
-    const { hashedPassword, SaltKey } = await getPass(Password)
+    if (!Password) return reply.code(500)
+    const returnGetPass = await getPass(Password)
+    if (!returnGetPass) return reply.code(500)
+    const hashedPassword = returnGetPass.hashedPassword
+    const SaltKey = returnGetPass.SaltKey
 
     const updatedAt = new Date();
 

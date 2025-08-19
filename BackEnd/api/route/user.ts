@@ -1,5 +1,6 @@
 import { FastifyTypedInstance } from "../types/FastifyInstance"
 
+
 import {
     LoginUser,
     CreateUser,
@@ -11,19 +12,20 @@ import {
 import z from "zod/v4"
 
 const UserTypeSchema = z.object({
-  id: z.number(),
-  UserName: z.string(),
-  Password: z.string(),
-  Email: z.email(), 
-  Token: z.string(),
-  myTasks: z.array(z.string()), 
-  createdAt: z.date(),
-  updatedAt: z.date().optional() 
+    id: z.number(),
+    UserName: z.string(),
+    Password: z.string(),
+    Email: z.email(),
+    Token: z.string(),
+    myTasks: z.array(z.string()),
+    createdAt: z.date(),
+    updatedAt: z.date().nullable().optional(),
+    SaltKey: z.string()
 });
 
 
 const optgetUser = {
-    shema:{
+    shema: {
         tags: ['users'],
         description: 'push one user by ID',
         params: z.object({
@@ -46,7 +48,7 @@ const optgetUser = {
 }
 
 const optLoginUser = {
-    shema:{
+    shema: {
         tags: ['users'],
         description: 'Login the user',
         body: z.object({
@@ -54,7 +56,7 @@ const optLoginUser = {
             Password: z.string()
         })
     },
-    responce:{
+    responce: {
         200: UserTypeSchema,
         400: z.string().describe('senha invalida'),
         500: z.null().describe('fail to conclude the Login')
@@ -63,15 +65,15 @@ const optLoginUser = {
 }
 
 const optCreateUser = {
-    shema:{
+    shema: {
         tags: ['users'],
         describe: 'create a new user',
-        body:{
+        body: {
             UserName: z.string(),
             Email: z.email()
         }
     },
-    responce:{
+    responce: {
         201: z.null().describe('User created'),
         400: z.null().describe('UserName or Email not found'),
         500: z.null().describe('Falha ao se conectar com Banco de dados')
@@ -80,58 +82,60 @@ const optCreateUser = {
 }
 
 const optChangeUser = {
-    shema:{
+    shema: {
         tags: ['users'],
         describe: 'change a user',
         param: z.object({
             id: z.string()
         }),
         body: z.object({
-            UserName: z.string().optional, 
-            Password: z?.string(), 
+            UserName: z.string().optional,
+            Password: z?.string(),
             Email: z?.email()
         })
     },
     responce: {
         200: z.boolean("true"),
-        400: z.null().describe('Usuario não encontrado.'),
+        400: z.string().describe('Usuario não encontrado.'),
         500: z.null().describe('Falha ao se comunicar com Bando de dados')
     },
     handler: ChangeUser,
 }
 
-const optFindEmail={
-    shema:{
+const optFindEmail = {
+    shema: {
         tags: ['users'],
         describe: 'return the email of the user',
         body: z.object({
             UserName: z.string()
         })
     },
-    responce:{
+    responce: {
         200: z.email(),
+        400: z.string(),
         500: z.string()
     },
     handler: findEmail,
 }
 
-const optFindPass={
-    shema:{
+const optFindPass = {
+    shema: {
         tags: ['users'],
         describe: 'find the password by the email',
         body: z.object({
             Email: z.email()
         })
     },
-    responce:{
+    responce: {
         200: z.boolean("true"),
+        400: z.string(),
         500: z.boolean("false")
     },
     handler: findPass,
 }
 const UserRoute = (fastify: FastifyTypedInstance) => {
 
-     //GET USER
+    //GET USER
     fastify.get("/user/:id", optgetUser)
 
     //POST get login user
@@ -150,4 +154,4 @@ const UserRoute = (fastify: FastifyTypedInstance) => {
 
 }
 
-module.exports = UserRoute
+export = UserRoute
