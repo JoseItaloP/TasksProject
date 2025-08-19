@@ -41,7 +41,7 @@ async function LoginUser({
     };
     return erro;
     } else if (result !== null) {
-    const jwtPass = process.env.NEXT_PUBLIC_JWT_PASS ?? "minha-senha";
+      const jwtPass = process.env.JWT_PASS ?? "minha-senha";
 
     const token = jwt.sign(
       { id: result.id, TokenUser: result.Token },
@@ -74,7 +74,7 @@ async function LoginUser({
 
 async function getLogedLocal(token: string) {
   try {
-    const jwtPass = process.env.NEXT_PUBLIC_JWT_PASS ?? "minha-senha";
+    const jwtPass = process.env.JWT_PASS ?? "minha-senha";
 
 
     if (token) {
