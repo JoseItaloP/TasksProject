@@ -208,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const fetchData = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/task/${TaskID}`,
+        `${process.env.API_URL}/user/task/${TaskID}`,
         {
           method: "PUT",
           headers: {
@@ -271,7 +271,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task`, {
+      const fetchData = await fetch(`${process.env.API_URL}/user/task`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Nome, Descricao, Priority, Status, UserID }),
@@ -333,7 +333,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return errors
       }
 
-      const fetchData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/task/${idTask}`, {
+      const fetchData = await fetch(`${process.env.API_URL}/user/task/${idTask}`, {
         method: "DELETE",
         body: JSON.stringify({
           UserID: user.id

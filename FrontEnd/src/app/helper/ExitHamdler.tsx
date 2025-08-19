@@ -14,7 +14,7 @@ async function EmailHamdler(UserName: string): Promise<ErroType[] | string> {
             })
         }
         
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/findEmail`,methods)
+        const response = await fetch(`${process.env.API_URL}/user/findEmail`, methods)
         const data: string = await response.json()
 
         if (response.status == 200) {

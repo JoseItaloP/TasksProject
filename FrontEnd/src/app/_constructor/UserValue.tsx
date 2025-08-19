@@ -21,7 +21,7 @@ async function LoginUser({
   Password,
 }: newLoginUser): Promise<UserType | ErroType> {
   try {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/Login`, {
+    const response = await fetch(`${process.env.API_URL}/user/Login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -88,7 +88,7 @@ async function getLogedLocal(token: string) {
         },
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${id}`, methods);
+      const res = await fetch(`${process.env.API_URL}/user/${id}`, methods);
 
       const data: UserType | defaultErro = await res.json();
 
@@ -131,7 +131,7 @@ async function RegistratUser(NewUser: NewUserData) {
       }),
     };
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, methods);
+    const res = await fetch(`${process.env.API_URL}/user`, methods);
 
     if (res.status == 500) {
       return 500;
@@ -154,7 +154,7 @@ async function EditUser(NewEdit: {
   let retorno = false;
   const { UserName, Email, Password, id } = NewEdit
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${id}`, {
+    const res = await fetch(`${process.env.API_URL}/user/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -191,7 +191,7 @@ async function FilterTasksUser(user: UserType | null) {
       };
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/task/${IDuSER}`,
+        `${process.env.API_URL}/user/task/${IDuSER}`,
         methods
       );
       const data: taskType[] = await res.json();
